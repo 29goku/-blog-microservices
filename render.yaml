@@ -1,7 +1,23 @@
+databases:
+  - name: blog-user-db
+    databaseName: blog_user_db
+    plan: free
+
+  - name: blog-post-db
+    databaseName: blog_post_db
+    plan: free
+
+  - name: blog-comment-db
+    databaseName: blog_comment_db
+    plan: free
+
+  - name: like-dislike-db
+    databaseName: like_dislike_db
+    plan: free
+
 services:
   # ─────────────────────────────────────────
   # Eureka Service Discovery
-  # Deploy first; copy its public URL into EUREKA_URI for all other services.
   # ─────────────────────────────────────────
   - type: web
     name: eureka-server
@@ -15,7 +31,7 @@ services:
         value: 8761
 
   # ─────────────────────────────────────────
-  # API Gateway  (public entry point)
+  # API Gateway
   # ─────────────────────────────────────────
   - type: web
     name: api-gateway
@@ -27,7 +43,6 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      # Set to: https://<eureka-server>.onrender.com/eureka/
       - key: EUREKA_URI
         sync: false
 
@@ -44,13 +59,18 @@ services:
     envVars:
       - key: PORT
         value: 8081
-      # jdbc:mysql://<host>:<port>/blog_user_db?createDatabaseIfNotExist=true&useSSL=true
       - key: DB_URL
-        sync: false
+        fromDatabase:
+          name: blog-user-db
+          property: connectionString
       - key: DB_USERNAME
-        sync: false
+        fromDatabase:
+          name: blog-user-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: blog-user-db
+          property: password
       - key: EUREKA_URI
         sync: false
 
@@ -67,17 +87,19 @@ services:
     envVars:
       - key: PORT
         value: 8082
-      # jdbc:mysql://<host>:<port>/blog_post_db?createDatabaseIfNotExist=true&useSSL=true
       - key: DB_URL
-        sync: false
+        fromDatabase:
+          name: blog-post-db
+          property: connectionString
       - key: DB_USERNAME
-        sync: false
+        fromDatabase:
+          name: blog-post-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: blog-post-db
+          property: password
       - key: EUREKA_URI
-        sync: false
-      # Upstash Kafka broker, e.g. <id>.upstash.io:9092
-      - key: KAFKA_BROKERS
         sync: false
 
   # ─────────────────────────────────────────
@@ -93,16 +115,19 @@ services:
     envVars:
       - key: PORT
         value: 8083
-      # jdbc:mysql://<host>:<port>/blog_comment_db?createDatabaseIfNotExist=true&useSSL=true
       - key: DB_URL
-        sync: false
+        fromDatabase:
+          name: blog-comment-db
+          property: connectionString
       - key: DB_USERNAME
-        sync: false
+        fromDatabase:
+          name: blog-comment-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: blog-comment-db
+          property: password
       - key: EUREKA_URI
-        sync: false
-      - key: KAFKA_BROKERS
         sync: false
 
   # ─────────────────────────────────────────
@@ -118,12 +143,17 @@ services:
     envVars:
       - key: PORT
         value: 8084
-      # jdbc:mysql://<host>:<port>/like_dislike_db?createDatabaseIfNotExist=true&useSSL=true
       - key: DB_URL
-        sync: false
+        fromDatabase:
+          name: like-dislike-db
+          property: connectionString
       - key: DB_USERNAME
-        sync: false
+        fromDatabase:
+          name: like-dislike-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: like-dislike-db
+          property: password
       - key: EUREKA_URI
         sync: false
