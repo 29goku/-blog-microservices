@@ -59,10 +59,18 @@ services:
     envVars:
       - key: PORT
         value: 8081
-      - key: DB_URL
+      - key: DB_HOST
         fromDatabase:
           name: blog-user-db
-          property: jdbcUrl
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blog-user-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: blog-user-db
+          property: database
       - key: DB_USERNAME
         fromDatabase:
           name: blog-user-db
@@ -87,10 +95,18 @@ services:
     envVars:
       - key: PORT
         value: 8082
-      - key: DB_URL
+      - key: DB_HOST
         fromDatabase:
           name: blog-post-db
-          property: jdbcUrl
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blog-post-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: blog-post-db
+          property: database
       - key: DB_USERNAME
         fromDatabase:
           name: blog-post-db
@@ -115,10 +131,18 @@ services:
     envVars:
       - key: PORT
         value: 8083
-      - key: DB_URL
+      - key: DB_HOST
         fromDatabase:
           name: blog-comment-db
-          property: jdbcUrl
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blog-comment-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: blog-comment-db
+          property: database
       - key: DB_USERNAME
         fromDatabase:
           name: blog-comment-db
@@ -143,10 +167,18 @@ services:
     envVars:
       - key: PORT
         value: 8084
-      - key: DB_URL
+      - key: DB_HOST
         fromDatabase:
           name: like-dislike-db
-          property: jdbcUrl
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: like-dislike-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: like-dislike-db
+          property: database
       - key: DB_USERNAME
         fromDatabase:
           name: like-dislike-db
