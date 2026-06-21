@@ -1,0 +1,45 @@
+# Maven build output
+target/
+*.class
+*.jar
+*.war
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Screenshots
+*.png
+
+# Logs
+*.log
+
+# Docs (auto-generated)
+API_GATEWAY_IMPL.md
+ARCHITECTURE.txt
+DASHBOARD_QUICK_START.md
+DELIVERY_SUMMARY.txt
+DEVELOPMENT.md
+FRONTEND_SETUP.md
+INDEX.md
+INTERACTIVE_DASHBOARD_SUMMARY.md
+LIKE_SERVICE_CHECKLIST.md
+LIKE_SERVICE_GUIDE.md
+PROJECT_SUMMARY.md
+QUICK_START.md
+REQUEST_FLOW_GUIDE.md
+SETUP.md
+SIDEBAR_GUIDE.md
+SIDEBAR_IMPLEMENTATION.md
+START_HERE.txt
