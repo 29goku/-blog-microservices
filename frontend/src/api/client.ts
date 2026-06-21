@@ -1,7 +1,9 @@
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
 const API_BASE = {
-  users: 'http://localhost:8080/api',
-  posts: 'http://localhost:8080/api',
-  comments: 'http://localhost:8080/api',
+  users: `${BASE}/api`,
+  posts: `${BASE}/api`,
+  comments: `${BASE}/api`,
 };
 
 const defaultHeaders = {
