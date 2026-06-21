@@ -1,0 +1,144 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content":
+    - /url: "#geist-skip-nav"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e9]:
+            - link "s' projects Hobby" [ref=e10] [cursor=pointer]:
+              - /url: /s-projects-e7410203
+              - img [ref=e11]
+              - generic [ref=e12]:
+                - generic [ref=e13]: s' projects
+                - generic [ref=e14]: Hobby
+            - button [ref=e15] [cursor=pointer]:
+              - img [ref=e17]
+          - button "Find… F" [ref=e20]:
+            - generic [ref=e22]:
+              - img [ref=e24]
+              - generic [ref=e26]: Find…
+              - generic [ref=e28]: F
+        - navigation [ref=e30]:
+          - generic [ref=e33]:
+            - link "Overview" [ref=e34] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices
+              - generic [ref=e38]: Overview
+            - link "Deployments" [ref=e39] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/deployments
+              - img [ref=e41]
+              - generic [ref=e44]: Deployments
+            - link "Logs" [ref=e45] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/logs
+              - img [ref=e47]
+              - generic [ref=e50]: Logs
+            - link "Analytics" [ref=e51] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/analytics
+              - img [ref=e53]
+              - generic [ref=e56]: Analytics
+            - link "Speed Insights" [ref=e57] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/speed-insights
+              - img [ref=e59]
+              - generic [ref=e62]: Speed Insights
+            - link "Observability" [ref=e63] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/observability
+              - img [ref=e65]
+              - generic [ref=e68]: Observability
+              - img [ref=e70]
+            - link "Firewall" [ref=e72] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/firewall
+              - img [ref=e74]
+              - generic [ref=e78]: Firewall
+              - img [ref=e80]
+            - link "CDN" [ref=e82] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/cdn
+              - img [ref=e84]
+              - generic [ref=e87]: CDN
+              - img [ref=e89]
+            - separator [ref=e91]
+            - link "Environment Variables" [ref=e92] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/settings/environment-variables
+              - img [ref=e94]
+              - generic [ref=e97]: Environment Variables
+            - link "Domains" [ref=e98] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/settings/domains
+              - img [ref=e100]
+              - generic [ref=e103]: Domains
+            - link "Connect Beta" [ref=e104] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/connect
+              - img [ref=e106]
+              - generic [ref=e108]:
+                - generic [ref=e109]: Connect
+                - generic [ref=e110]: Beta
+            - link "Integrations" [ref=e111] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/settings/integrations
+              - img [ref=e113]
+              - generic [ref=e116]: Integrations
+            - link "Storage" [ref=e117] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/stores
+              - img [ref=e119]
+              - generic [ref=e122]: Storage
+            - link "Flags" [ref=e123] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/flags
+              - img [ref=e125]
+              - generic [ref=e128]: Flags
+              - img [ref=e130]
+            - link "Agent" [ref=e132] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/agent
+              - img [ref=e134]
+              - generic [ref=e137]: Agent
+              - img [ref=e139]
+            - link "AI Gateway" [ref=e141] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/ai-gateway
+              - img [ref=e143]
+              - generic [ref=e146]: AI Gateway
+              - img [ref=e148]
+            - link "Sandboxes" [ref=e150] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/sandboxes
+              - img [ref=e152]
+              - generic [ref=e155]: Sandboxes
+              - img [ref=e157]
+            - link "Workflows" [ref=e159] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/workflows
+              - img [ref=e161]
+              - generic [ref=e164]: Workflows
+            - separator [ref=e165]
+            - link "Usage" [ref=e166] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/usage
+              - img [ref=e168]
+              - generic [ref=e171]: Usage
+            - link "Support" [ref=e172] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/support
+              - img [ref=e174]
+              - generic [ref=e177]: Support
+            - link "Settings" [ref=e178] [cursor=pointer]:
+              - /url: /s-projects-e7410203/blog-microservices/settings
+              - img [ref=e180]
+              - generic [ref=e183]: Settings
+              - img [ref=e185]
+        - generic [ref=e191]:
+          - button "Avatar for 29goku 29goku" [ref=e192] [cursor=pointer]:
+            - img "Avatar for 29goku" [ref=e193]:
+              - img "Avatar for 29goku" [ref=e194]
+            - generic [ref=e196]: 29goku
+            - img [ref=e198]
+          - img [ref=e202]
+      - button [ref=e205] [cursor=pointer]:
+        - img [ref=e206]
+    - generic [ref=e210]:
+      - generic [ref=e213]:
+        - link "blog-microservices" [ref=e214] [cursor=pointer]:
+          - /url: /s-projects-e7410203/blog-microservices
+          - generic [ref=e217]: blog-microservices
+        - button [ref=e218] [cursor=pointer]:
+          - img [ref=e220]
+        - link "Back to team view" [ref=e224] [cursor=pointer]:
+          - /url: /s-projects-e7410203/~/deployments
+          - img [ref=e226]
+      - generic [ref=e230]: Deployments
+  - alert [ref=e565]
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - img
