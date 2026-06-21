@@ -14,8 +14,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-  autoconfigure:
-    exclude: org.springframework.cloud.stream.binder.kafka.config.KafkaBinderConfiguration
 
 server:
   port: ${PORT:8083}
