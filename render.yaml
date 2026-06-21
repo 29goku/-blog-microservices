@@ -43,8 +43,25 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      - key: EUREKA_URI
-        value: https://eureka-server.onrender.com/eureka/
+      # Eureka is unusable across separate Render services (each gets its own
+      # public hostname and Eureka registers internal IPs). Disable it and use
+      # direct service URLs below.
+      - key: EUREKA_CLIENT_ENABLED
+        value: "false"
+      - key: EUREKA_REGISTER
+        value: "false"
+      - key: EUREKA_FETCH
+        value: "false"
+      - key: GATEWAY_DISCOVERY_ENABLED
+        value: "false"
+      - key: USER_SERVICE_URL
+        value: https://user-service.onrender.com
+      - key: POST_SERVICE_URL
+        value: https://post-service.onrender.com
+      - key: COMMENT_SERVICE_URL
+        value: https://comment-service.onrender.com
+      - key: LIKE_DISLIKE_SERVICE_URL
+        value: https://like-dislike-service.onrender.com
 
   # ─────────────────────────────────────────
   # User Service
@@ -79,8 +96,12 @@ services:
         fromDatabase:
           name: blog-user-db
           property: password
-      - key: EUREKA_URI
-        value: https://eureka-server.onrender.com/eureka/
+      - key: EUREKA_CLIENT_ENABLED
+        value: "false"
+      - key: EUREKA_REGISTER
+        value: "false"
+      - key: EUREKA_FETCH
+        value: "false"
 
   # ─────────────────────────────────────────
   # Post Service
@@ -115,8 +136,14 @@ services:
         fromDatabase:
           name: blog-post-db
           property: password
-      - key: EUREKA_URI
-        value: https://eureka-server.onrender.com/eureka/
+      - key: EUREKA_CLIENT_ENABLED
+        value: "false"
+      - key: EUREKA_REGISTER
+        value: "false"
+      - key: EUREKA_FETCH
+        value: "false"
+      - key: USER_SERVICE_URL
+        value: https://user-service.onrender.com
 
   # ─────────────────────────────────────────
   # Comment Service
@@ -151,8 +178,16 @@ services:
         fromDatabase:
           name: blog-comment-db
           property: password
-      - key: EUREKA_URI
-        value: https://eureka-server.onrender.com/eureka/
+      - key: EUREKA_CLIENT_ENABLED
+        value: "false"
+      - key: EUREKA_REGISTER
+        value: "false"
+      - key: EUREKA_FETCH
+        value: "false"
+      - key: USER_SERVICE_URL
+        value: https://user-service.onrender.com
+      - key: POST_SERVICE_URL
+        value: https://post-service.onrender.com
 
   # ─────────────────────────────────────────
   # Like-Dislike Service
@@ -187,5 +222,13 @@ services:
         fromDatabase:
           name: like-dislike-db
           property: password
-      - key: EUREKA_URI
-        value: https://eureka-server.onrender.com/eureka/
+      - key: EUREKA_CLIENT_ENABLED
+        value: "false"
+      - key: EUREKA_REGISTER
+        value: "false"
+      - key: EUREKA_FETCH
+        value: "false"
+      - key: USER_SERVICE_URL
+        value: https://user-service.onrender.com
+      - key: POST_SERVICE_URL
+        value: https://post-service.onrender.com

@@ -5,23 +5,23 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: ${GATEWAY_DISCOVERY_ENABLED:false}
           lower-case-service-id: true
       routes:
         - id: user-service
-          uri: lb://user-service
+          uri: ${USER_SERVICE_URL:lb://user-service}
           predicates:
             - Path=/api/users/**
         - id: post-service
-          uri: lb://post-service
+          uri: ${POST_SERVICE_URL:lb://post-service}
           predicates:
             - Path=/api/posts/**
         - id: comment-service
-          uri: lb://comment-service
+          uri: ${COMMENT_SERVICE_URL:lb://comment-service}
           predicates:
             - Path=/api/comments/**
         - id: like-dislike-service
-          uri: lb://like-dislike-service
+          uri: ${LIKE_DISLIKE_SERVICE_URL:lb://like-dislike-service}
           predicates:
             - Path=/api/likedislike/**
       globalcors:
@@ -43,7 +43,20 @@ logging:
 
 eureka:
   client:
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
+    register-with-eureka: ${EUREKA_REGISTER:true}
+    fetch-registry: ${EUREKA_FETCH:true}
     service-url:
       defaultZone: ${EUREKA_URI:http://eureka-server:8761/eureka/}
   instance:
     prefer-ip-address: true
+
+management:
+  health:
+    # Don't fail /actuator/health when Eureka is unreachable / disabled
+    defaults:
+      enabled: true
+    discoveryClient:
+      enabled: false
+
+

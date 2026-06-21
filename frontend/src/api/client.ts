@@ -1,4 +1,8 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// In production we deploy behind Vercel, which proxies `/api/*` to the
+// Render-hosted API gateway via `vercel.json` rewrites. That keeps requests
+// same-origin (no CORS) and avoids hard-coding the backend URL in the bundle.
+// For local development, set VITE_API_URL=http://localhost:8080 in `.env.local`.
+const BASE = import.meta.env.VITE_API_URL ?? '';
 
 const API_BASE = {
   users: `${BASE}/api`,
