@@ -5,6 +5,10 @@
     {
       "name": "GBrowser - IntelliJ IDEs Plugin | Marketplace",
       "url": "https://plugins.jetbrains.com/plugin/14458-gbrowser"
+    },
+    {
+      "name": "frontend",
+      "url": "http://localhost:5173/"
     }
   ]
 }]]></component>

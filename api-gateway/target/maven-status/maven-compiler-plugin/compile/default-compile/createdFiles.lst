@@ -1,6 +1,0 @@
-com/blog/gateway/controller/TrackingController.class
-com/blog/gateway/ApiGatewayApplication.class
-com/blog/gateway/filter/RequestTrackingFilter.class
-com/blog/gateway/service/RequestTrackingService.class
-com/blog/gateway/config/GatewayConfig.class
-com/blog/gateway/model/RequestMetadata.class
