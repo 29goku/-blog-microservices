@@ -1,0 +1,35 @@
+[     113ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:14336
+[     147ms] [ERROR] Access to fetch at 'http://localhost:8080/api/users' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:5174/:0
+[     148ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/api/users:0
+[     148ms] [ERROR] Access to fetch at 'http://localhost:8080/api/posts' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:5174/:0
+[     148ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/api/posts:0
+[     165ms] [ERROR] Access to fetch at 'http://localhost:8080/api/posts' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:5174/:0
+[     165ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/api/posts:0
+[     165ms] [ERROR] Access to fetch at 'http://localhost:8080/api/users' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:5174/:0
+[     165ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/api/users:0
+[     165ms] [ERROR] Failed to load users: TypeError: Failed to fetch
+    at Object.getAll (http://localhost:5174/src/api/client.ts:13:21)
+    at loadUsers (http://localhost:5174/src/App.tsx:40:31)
+    at http://localhost:5174/src/App.tsx:24:3
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:12903:13)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:850:66)
+    at commitHookEffectListMount (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:6616:153)
+    at commitHookPassiveMountEffects (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:6651:55)
+    at commitPassiveMountOnFiber (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:7617:22)
+    at recursivelyTraversePassiveMountEffects (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:7605:5)
+    at commitPassiveMountOnFiber (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:7671:14) @ http://localhost:5174/@vite/client:509
+[     167ms] [ERROR] Access to fetch at 'http://localhost:8080/api/users' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:5174/:0
+[     167ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/api/users:0
+[     167ms] [ERROR] Access to fetch at 'http://localhost:8080/api/users' from origin 'http://localhost:5174' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:5174/:0
+[     167ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8080/api/users:0
+[     167ms] [ERROR] Failed to load users: TypeError: Failed to fetch
+    at Object.getAll (http://localhost:5174/src/api/client.ts:13:21)
+    at loadUsers (http://localhost:5174/src/App.tsx:40:31)
+    at http://localhost:5174/src/App.tsx:24:3
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:12903:13)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:850:66)
+    at commitHookEffectListMount (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:6616:153)
+    at commitHookPassiveMountEffects (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:6651:55)
+    at reconnectPassiveEffects (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:7700:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:7687:5)
+    at reconnectPassiveEffects (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=b4efacf2:7712:14) @ http://localhost:5174/@vite/client:509
