@@ -1,0 +1,1429 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]:
+            - link "Render" [ref=e7] [cursor=pointer]:
+              - /url: /
+              - img "Render" [ref=e8]
+            - navigation [ref=e16]:
+              - list [ref=e17]:
+                - listitem [ref=e18]:
+                  - link "Docs" [ref=e19] [cursor=pointer]:
+                    - /url: /docs
+                    - generic [ref=e20]: Docs
+                - listitem [ref=e22]:
+                  - link "Changelog" [ref=e23] [cursor=pointer]:
+                    - /url: /changelog
+                    - generic [ref=e24]: Changelog
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e28]: Search
+              - img
+              - textbox "Search" [ref=e29]:
+                - /placeholder: Search the docs
+            - button "Ask AI" [ref=e30] [cursor=pointer]:
+              - img [ref=e31]
+              - text: Ask AI
+          - generic [ref=e36]:
+            - list
+            - link "Dashboard" [ref=e37] [cursor=pointer]:
+              - /url: https://dashboard.render.com/
+              - text: Dashboard
+      - generic [ref=e38]:
+        - main [ref=e39]:
+          - navigation "Side Navigation" [ref=e40]:
+            - navigation [ref=e42]:
+              - button "Start" [expanded] [ref=e43] [cursor=pointer]:
+                - generic [ref=e44]:
+                  - img [ref=e46]
+                  - generic [ref=e49]: Start
+                - img [ref=e50]
+              - list [ref=e57]:
+                - list [ref=e58]:
+                  - listitem [ref=e59]:
+                    - link "Home" [ref=e60] [cursor=pointer]:
+                      - /url: /docs
+                  - listitem [ref=e61]:
+                    - link "Your first deploy" [ref=e62] [cursor=pointer]:
+                      - /url: /docs/your-first-deploy
+                  - listitem [ref=e63]:
+                    - link "Free instances" [ref=e64] [cursor=pointer]:
+                      - /url: /docs/free
+                  - listitem [ref=e65]:
+                    - link "Platform features by plan" [ref=e66] [cursor=pointer]:
+                      - /url: /docs/platform-features-by-plan
+                  - listitem [ref=e67]:
+                    - link "Use with coding agents" [ref=e68] [cursor=pointer]:
+                      - /url: /docs/llm-support
+                  - listitem [ref=e69]:
+                    - link "FAQ" [ref=e70] [cursor=pointer]:
+                      - /url: /docs/faq
+                  - listitem [ref=e71]:
+                    - link "Templates" [ref=e72] [cursor=pointer]:
+                      - /url: https://render.com/templates
+                      - text: Templates
+                      - img [ref=e73]
+                  - list [ref=e76]:
+                    - listitem [ref=e77]: Migrate from…
+                    - list [ref=e78]:
+                      - listitem [ref=e79]:
+                        - link "Heroku" [ref=e80] [cursor=pointer]:
+                          - /url: /docs/migrate-from-heroku
+                      - listitem [ref=e81]:
+                        - link "Railway" [ref=e82] [cursor=pointer]:
+                          - /url: /docs/migrate-from-railway
+              - button "Compute" [expanded] [ref=e83] [cursor=pointer]:
+                - generic [ref=e84]:
+                  - img [ref=e86]
+                  - generic [ref=e91]: Compute
+                - img [ref=e92]
+              - list [ref=e99]:
+                - list [ref=e100]:
+                  - listitem [ref=e101]:
+                    - link "Instance types (compute specs)" [ref=e102] [cursor=pointer]:
+                      - /url: /docs/compute-plans
+                  - listitem [ref=e103]:
+                    - link "Multi-service architectures" [ref=e104] [cursor=pointer]:
+                      - /url: /docs/multi-service-architecture
+                  - list [ref=e105]:
+                    - listitem [ref=e106]: Service types
+                    - list [ref=e107]:
+                      - listitem [ref=e108]:
+                        - link "Which to use?" [ref=e109] [cursor=pointer]:
+                          - /url: /docs/service-types
+                      - listitem [ref=e110]:
+                        - link "Static sites" [ref=e111] [cursor=pointer]:
+                          - /url: /docs/static-sites
+                      - listitem [ref=e112]:
+                        - link "Web services" [ref=e113] [cursor=pointer]:
+                          - /url: /docs/web-services
+                      - listitem [ref=e114]:
+                        - link "Private services" [ref=e115] [cursor=pointer]:
+                          - /url: /docs/private-services
+                      - listitem [ref=e116]:
+                        - link "Background workers" [ref=e117] [cursor=pointer]:
+                          - /url: /docs/background-workers
+                      - listitem [ref=e118]:
+                        - link "Cron jobs" [ref=e119] [cursor=pointer]:
+                          - /url: /docs/cronjobs
+                      - listitem [ref=e120]:
+                        - link "Workflows Beta" [ref=e121] [cursor=pointer]:
+                          - /url: /docs/workflows-redirect
+                          - text: Workflows
+                          - generic [ref=e122]: Beta
+              - button "Deploys" [expanded] [ref=e123] [cursor=pointer]:
+                - generic [ref=e124]:
+                  - img [ref=e126]
+                  - generic [ref=e129]: Deploys
+                - img [ref=e130]
+              - list [ref=e137]:
+                - list [ref=e138]:
+                  - listitem [ref=e139]:
+                    - link "How deploys work" [ref=e140] [cursor=pointer]:
+                      - /url: /docs/deploys
+                  - listitem [ref=e141]:
+                    - link "Supported languages" [ref=e142] [cursor=pointer]:
+                      - /url: /docs/language-support
+                  - listitem [ref=e143]:
+                    - link "Build pipeline" [ref=e144] [cursor=pointer]:
+                      - /url: /docs/build-pipeline
+                  - listitem [ref=e145]:
+                    - link "Deploy hooks" [ref=e146] [cursor=pointer]:
+                      - /url: /docs/deploy-hooks
+                  - listitem [ref=e147]:
+                    - link "Troubleshooting deploys" [ref=e148] [cursor=pointer]:
+                      - /url: /docs/troubleshooting-deploys
+                  - list [ref=e149]:
+                    - listitem [ref=e150]: Previewing changes
+                    - list [ref=e151]:
+                      - listitem [ref=e152]:
+                        - link "Single-service previews" [ref=e153] [cursor=pointer]:
+                          - /url: /docs/service-previews
+                      - listitem [ref=e154]:
+                        - link "Preview environments (multi-service)" [ref=e155] [cursor=pointer]:
+                          - /url: /docs/preview-environments
+                  - list [ref=e156]:
+                    - listitem [ref=e157]: Docker deploys
+                    - list [ref=e158]:
+                      - listitem [ref=e159]:
+                        - link "Overview" [ref=e160] [cursor=pointer]:
+                          - /url: /docs/docker
+                      - listitem [ref=e161]:
+                        - link "Deploy a registered image" [ref=e162] [cursor=pointer]:
+                          - /url: /docs/deploying-an-image
+                      - listitem [ref=e163]:
+                        - link "Using secrets" [ref=e164] [cursor=pointer]:
+                          - /url: /docs/docker-secrets
+                  - list [ref=e165]:
+                    - listitem [ref=e166]: Git providers
+                    - list [ref=e167]:
+                      - listitem [ref=e168]:
+                        - link "GitHub" [ref=e169] [cursor=pointer]:
+                          - /url: /docs/github
+                      - listitem [ref=e170]:
+                        - link "GitLab" [ref=e171] [cursor=pointer]:
+                          - /url: /docs/gitlab
+                      - listitem [ref=e172]:
+                        - link "Bitbucket" [ref=e173] [cursor=pointer]:
+                          - /url: /docs/bitbucket
+                      - listitem [ref=e174]:
+                        - link "Deploying a specific commit" [ref=e175] [cursor=pointer]:
+                          - /url: /docs/deploying-a-commit
+                      - listitem [ref=e176]:
+                        - link "Monorepo support" [ref=e177] [cursor=pointer]:
+                          - /url: /docs/monorepo-support
+                  - list [ref=e178]:
+                    - listitem [ref=e179]: Runtime
+                    - list [ref=e180]:
+                      - listitem [ref=e181]:
+                        - link "Native runtimes" [ref=e182] [cursor=pointer]:
+                          - /url: /docs/native-runtimes
+                      - listitem [ref=e183]:
+                        - link "Environment variables & secrets" [ref=e184] [cursor=pointer]:
+                          - /url: /docs/configure-environment-variables
+                      - listitem [ref=e185]:
+                        - link "Default environment variables" [ref=e186] [cursor=pointer]:
+                          - /url: /docs/environment-variables
+              - button "Workflows Beta" [expanded] [ref=e187] [cursor=pointer]:
+                - generic [ref=e188]:
+                  - img [ref=e190]
+                  - generic [ref=e195]:
+                    - text: Workflows
+                    - generic [ref=e196]: Beta
+                - img [ref=e197]
+              - list [ref=e204]:
+                - list [ref=e205]:
+                  - listitem [ref=e206]:
+                    - link "Intro to workflows" [ref=e207] [cursor=pointer]:
+                      - /url: /docs/workflows
+                  - listitem [ref=e208]:
+                    - link "Tutorial" [ref=e209] [cursor=pointer]:
+                      - /url: /docs/workflows-tutorial
+                  - listitem [ref=e210]:
+                    - link "Limits & pricing" [ref=e211] [cursor=pointer]:
+                      - /url: /docs/workflows-limits
+                  - list [ref=e212]:
+                    - listitem [ref=e213]: How to…
+                    - list [ref=e214]:
+                      - listitem [ref=e215]:
+                        - link "Define tasks" [ref=e216] [cursor=pointer]:
+                          - /url: /docs/workflows-defining
+                      - listitem [ref=e217]:
+                        - link "Trigger runs" [ref=e218] [cursor=pointer]:
+                          - /url: /docs/workflows-running
+                      - listitem [ref=e219]:
+                        - link "Develop locally" [ref=e220] [cursor=pointer]:
+                          - /url: /docs/workflows-local-development
+                  - list [ref=e221]:
+                    - listitem [ref=e222]: SDK reference
+                    - list [ref=e223]:
+                      - listitem [ref=e224]:
+                        - link "TypeScript SDK" [ref=e225] [cursor=pointer]:
+                          - /url: /docs/workflows-sdk-typescript
+                      - listitem [ref=e226]:
+                        - link "Python SDK" [ref=e227] [cursor=pointer]:
+                          - /url: /docs/workflows-sdk-python
+                  - list [ref=e228]:
+                    - listitem [ref=e229]: Example workflows
+                    - list [ref=e230]:
+                      - listitem [ref=e231]:
+                        - link "TypeScript examples" [ref=e232] [cursor=pointer]:
+                          - /url: https://github.com/render-examples/render-workflows-examples-ts
+                          - text: TypeScript examples
+                          - img [ref=e233]
+                      - listitem [ref=e236]:
+                        - link "Python examples" [ref=e237] [cursor=pointer]:
+                          - /url: https://github.com/render-examples/render-workflows-examples-python
+                          - text: Python examples
+                          - img [ref=e238]
+              - button "Datastores" [expanded] [ref=e241] [cursor=pointer]:
+                - generic [ref=e242]:
+                  - img [ref=e244]
+                  - generic [ref=e246]: Datastores
+                - img [ref=e247]
+              - list [ref=e254]:
+                - list [ref=e255]:
+                  - listitem [ref=e256]:
+                    - link "Persistent disks" [ref=e257] [cursor=pointer]:
+                      - /url: /docs/disks
+                  - list [ref=e258]:
+                    - listitem [ref=e259]: Key Value (Redis®-compatible)
+                    - list [ref=e260]:
+                      - listitem [ref=e261]:
+                        - link "Creating & connecting" [ref=e262] [cursor=pointer]:
+                          - /url: /docs/key-value
+                      - listitem [ref=e263]:
+                        - link "Valkey/Redis FAQ" [ref=e264] [cursor=pointer]:
+                          - /url: /docs/valkey-faq
+                  - list [ref=e265]:
+                    - listitem [ref=e266]: Postgres databases
+                    - list [ref=e267]:
+                      - listitem [ref=e268]:
+                        - link "Overview" [ref=e269] [cursor=pointer]:
+                          - /url: /docs/postgresql
+                      - listitem [ref=e270]:
+                        - link "Creating & connecting" [ref=e271] [cursor=pointer]:
+                          - /url: /docs/postgresql-creating-connecting
+                      - listitem [ref=e272]:
+                        - link "Recovery & backups" [ref=e273] [cursor=pointer]:
+                          - /url: /docs/postgresql-backups
+                      - listitem [ref=e274]:
+                        - link "Database credentials" [ref=e275] [cursor=pointer]:
+                          - /url: /docs/postgresql-credentials
+                      - listitem [ref=e276]:
+                        - link "Read replicas" [ref=e277] [cursor=pointer]:
+                          - /url: /docs/postgresql-read-replicas
+                      - listitem [ref=e278]:
+                        - link "High availability" [ref=e279] [cursor=pointer]:
+                          - /url: /docs/postgresql-high-availability
+                      - listitem [ref=e280]:
+                        - link "Admin apps" [ref=e281] [cursor=pointer]:
+                          - /url: /docs/postgresql-apps
+                      - listitem [ref=e282]:
+                        - link "Extensions" [ref=e283] [cursor=pointer]:
+                          - /url: /docs/postgresql-extensions
+                      - listitem [ref=e284]:
+                        - link "Version upgrades" [ref=e285] [cursor=pointer]:
+                          - /url: /docs/postgresql-upgrading
+                      - listitem [ref=e286]:
+                        - link "Logical replication" [ref=e287] [cursor=pointer]:
+                          - /url: /docs/postgresql-logical-replication
+                      - listitem [ref=e288]:
+                        - link "Connection pooling" [ref=e289] [cursor=pointer]:
+                          - /url: /docs/postgresql-connection-pooling
+                      - listitem [ref=e290]:
+                        - link "Troubleshooting performance" [ref=e291] [cursor=pointer]:
+                          - /url: /docs/postgresql-performance-troubleshooting
+                      - listitem [ref=e292]:
+                        - link "Flexible plans" [ref=e293] [cursor=pointer]:
+                          - /url: /docs/postgresql-refresh
+                      - listitem [ref=e294]:
+                        - link "Legacy instance types" [ref=e295] [cursor=pointer]:
+                          - /url: /docs/postgresql-legacy-instance-types
+              - button "Networking" [expanded] [ref=e296] [cursor=pointer]:
+                - generic [ref=e297]:
+                  - img [ref=e299]
+                  - generic [ref=e301]: Networking
+                - img [ref=e302]
+              - list [ref=e309]:
+                - list [ref=e310]:
+                  - listitem [ref=e311]:
+                    - link "Regions" [ref=e312] [cursor=pointer]:
+                      - /url: /docs/regions
+                  - listitem [ref=e313]:
+                    - link "Inbound IP rules" [ref=e314] [cursor=pointer]:
+                      - /url: /docs/inbound-ip-rules
+                  - listitem [ref=e315]:
+                    - link "Edge caching" [ref=e316] [cursor=pointer]:
+                      - /url: /docs/web-service-caching
+                  - listitem [ref=e317]:
+                    - link "WebSockets" [ref=e318] [cursor=pointer]:
+                      - /url: /docs/websocket
+                  - listitem [ref=e319]:
+                    - link "TLS certificates" [ref=e320] [cursor=pointer]:
+                      - /url: /docs/tls
+                  - list [ref=e321]:
+                    - listitem [ref=e322]: Custom domains
+                    - list [ref=e323]:
+                      - listitem [ref=e324]:
+                        - link "Overview" [ref=e325] [cursor=pointer]:
+                          - /url: /docs/custom-domains
+                      - listitem [ref=e326]:
+                        - link "Cloudflare" [ref=e327] [cursor=pointer]:
+                          - /url: /docs/configure-cloudflare-dns
+                      - listitem [ref=e328]:
+                        - link "Namecheap" [ref=e329] [cursor=pointer]:
+                          - /url: /docs/configure-namecheap-dns
+                      - listitem [ref=e330]:
+                        - link "Other DNS providers" [ref=e331] [cursor=pointer]:
+                          - /url: /docs/configure-other-dns
+                  - list [ref=e332]:
+                    - listitem [ref=e333]: Internal traffic
+                    - list [ref=e334]:
+                      - listitem [ref=e335]:
+                        - link "Private network" [ref=e336] [cursor=pointer]:
+                          - /url: /docs/private-network
+                      - listitem [ref=e337]:
+                        - link "Private links" [ref=e338] [cursor=pointer]:
+                          - /url: /docs/private-link
+                  - list [ref=e339]:
+                    - listitem [ref=e340]: Outbound traffic
+                    - list [ref=e341]:
+                      - listitem [ref=e342]:
+                        - link "Default IP ranges" [ref=e343] [cursor=pointer]:
+                          - /url: /docs/outbound-ip-addresses
+                      - listitem [ref=e344]:
+                        - link "Dedicated IP addresses New" [ref=e345] [cursor=pointer]:
+                          - /url: /docs/dedicated-ips
+                          - text: Dedicated IP addresses
+                          - generic [ref=e346]: New
+                      - listitem [ref=e347]:
+                        - link "Outbound bandwidth" [ref=e348] [cursor=pointer]:
+                          - /url: /docs/outbound-bandwidth
+                  - list [ref=e349]:
+                    - listitem [ref=e350]: Static site config
+                    - list [ref=e351]:
+                      - listitem [ref=e352]:
+                        - link "Custom response headers" [ref=e353] [cursor=pointer]:
+                          - /url: /docs/static-site-headers
+                      - listitem [ref=e354]:
+                        - link "Redirects & rewrites" [ref=e355] [cursor=pointer]:
+                          - /url: /docs/redirects-rewrites
+              - button "Operational Controls" [expanded] [ref=e356] [cursor=pointer]:
+                - generic [ref=e357]:
+                  - img [ref=e359]
+                  - generic [ref=e363]: Operational Controls
+                - img [ref=e364]
+              - list [ref=e371]:
+                - list [ref=e372]:
+                  - listitem [ref=e373]:
+                    - link "The Render Dashboard" [ref=e374] [cursor=pointer]:
+                      - /url: /docs/render-dashboard
+                  - listitem [ref=e375]:
+                    - link "SSH / Shell access" [ref=e376] [cursor=pointer]:
+                      - /url: /docs/ssh
+                  - listitem [ref=e377]:
+                    - link "Projects & environments" [ref=e378] [cursor=pointer]:
+                      - /url: /docs/projects
+                  - list [ref=e379]:
+                    - listitem [ref=e380]: Service actions
+                    - list [ref=e381]:
+                      - listitem [ref=e382]:
+                        - link "Scaling" [ref=e383] [cursor=pointer]:
+                          - /url: /docs/scaling
+                      - listitem [ref=e384]:
+                        - link "Rollbacks" [ref=e385] [cursor=pointer]:
+                          - /url: /docs/rollbacks
+                      - listitem [ref=e386]:
+                        - link "Maintenance mode" [ref=e387] [cursor=pointer]:
+                          - /url: /docs/maintenance-mode
+                      - listitem [ref=e388]:
+                        - link "One-off jobs" [ref=e389] [cursor=pointer]:
+                          - /url: /docs/one-off-jobs
+                  - list [ref=e390]:
+                    - listitem [ref=e391]: Infrastructure as code
+                    - list [ref=e392]:
+                      - listitem [ref=e393]:
+                        - link "Blueprints overview" [ref=e394] [cursor=pointer]:
+                          - /url: /docs/infrastructure-as-code
+                      - listitem [ref=e395]:
+                        - link "render.yaml reference" [ref=e396] [cursor=pointer]:
+                          - /url: /docs/blueprint-spec
+                      - listitem [ref=e397]:
+                        - link "Terraform provider" [ref=e398] [cursor=pointer]:
+                          - /url: /docs/terraform-provider
+              - button "Observability" [expanded] [ref=e399] [cursor=pointer]:
+                - generic [ref=e400]:
+                  - img [ref=e402]
+                  - generic [ref=e404]: Observability
+                - img [ref=e405]
+              - list [ref=e412]:
+                - list [ref=e413]:
+                  - listitem [ref=e414]:
+                    - link "Health checks" [ref=e415] [cursor=pointer]:
+                      - /url: /docs/health-checks
+                  - listitem [ref=e416]:
+                    - link "Uptime best practices" [ref=e417] [cursor=pointer]:
+                      - /url: /docs/uptime-best-practices
+                  - list [ref=e418]:
+                    - listitem [ref=e419]: Notifications
+                    - list [ref=e420]:
+                      - listitem [ref=e421]:
+                        - link "Webhooks" [ref=e422] [cursor=pointer]:
+                          - /url: /docs/webhooks
+                      - listitem [ref=e423]:
+                        - link "Email / Slack" [ref=e424] [cursor=pointer]:
+                          - /url: /docs/notifications
+                  - list [ref=e425]:
+                    - listitem [ref=e426]: Metrics
+                    - list [ref=e427]:
+                      - listitem [ref=e428]:
+                        - link "In-dashboard metrics" [ref=e429] [cursor=pointer]:
+                          - /url: /docs/service-metrics
+                      - listitem [ref=e430]:
+                        - link "OpenTelemetry streaming" [ref=e431] [cursor=pointer]:
+                          - /url: /docs/metrics-streams
+                  - list [ref=e432]:
+                    - listitem [ref=e433]: Logging
+                    - list [ref=e434]:
+                      - listitem [ref=e435]:
+                        - link "In-dashboard logs" [ref=e436] [cursor=pointer]:
+                          - /url: /docs/logging
+                      - listitem [ref=e437]:
+                        - link "Log streams (syslog/HTTPS)" [ref=e438] [cursor=pointer]:
+                          - /url: /docs/log-streams
+              - button "Integrations" [expanded] [ref=e439] [cursor=pointer]:
+                - generic [ref=e440]:
+                  - img [ref=e442]
+                  - generic [ref=e446]: Integrations
+                - img [ref=e447]
+              - list [ref=e454]:
+                - list [ref=e455]:
+                  - listitem [ref=e456]:
+                    - link "MCP Server" [ref=e457] [cursor=pointer]:
+                      - /url: /docs/mcp-server
+                  - list [ref=e458]:
+                    - listitem [ref=e459]: Render CLI
+                    - list [ref=e460]:
+                      - listitem [ref=e461]:
+                        - link "Overview" [ref=e462] [cursor=pointer]:
+                          - /url: /docs/cli
+                      - listitem [ref=e463]:
+                        - link "Command reference" [ref=e464] [cursor=pointer]:
+                          - /url: /docs/cli-reference
+                  - list [ref=e465]:
+                    - listitem [ref=e466]: REST API
+                    - list [ref=e467]:
+                      - listitem [ref=e468]:
+                        - link "Overview" [ref=e469] [cursor=pointer]:
+                          - /url: /docs/api
+                      - listitem [ref=e470]:
+                        - link "API reference" [ref=e471] [cursor=pointer]:
+                          - /url: https://api-docs.render.com
+                          - text: API reference
+                          - img [ref=e472]
+                  - list [ref=e475]:
+                    - listitem [ref=e476]: Third-party connections
+                    - list [ref=e477]:
+                      - listitem [ref=e478]:
+                        - link "AWS OIDC Beta" [ref=e479] [cursor=pointer]:
+                          - /url: /docs/oidc
+                          - text: AWS OIDC
+                          - generic [ref=e480]: Beta
+                      - listitem [ref=e481]:
+                        - link "Datadog" [ref=e482] [cursor=pointer]:
+                          - /url: /docs/datadog
+              - button "User Management" [expanded] [ref=e483] [cursor=pointer]:
+                - generic [ref=e484]:
+                  - img [ref=e486]
+                  - generic [ref=e491]: User Management
+                - img [ref=e492]
+              - list [ref=e499]:
+                - list [ref=e500]:
+                  - listitem [ref=e501]:
+                    - link "Workspaces, members, & roles" [ref=e502] [cursor=pointer]:
+                      - /url: /docs/team-members
+                  - listitem [ref=e503]:
+                    - link "New workspace plans" [ref=e504] [cursor=pointer]:
+                      - /url: /docs/new-workspace-plans
+                  - listitem [ref=e505]:
+                    - link "Login settings" [ref=e506] [cursor=pointer]:
+                      - /url: /docs/login-settings
+                  - listitem [ref=e507]:
+                    - link "Audit logs" [ref=e508] [cursor=pointer]:
+                      - /url: /docs/audit-logs
+                  - list [ref=e509]:
+                    - listitem [ref=e510]: Organizations
+                    - list [ref=e511]:
+                      - listitem [ref=e512]:
+                        - link "Overview" [ref=e513] [cursor=pointer]:
+                          - /url: /docs/organizations
+                      - listitem [ref=e514]:
+                        - link "SAML SSO" [ref=e515] [cursor=pointer]:
+                          - /url: /docs/saml-sso
+              - button "Platform Protections" [expanded] [ref=e516] [cursor=pointer]:
+                - generic [ref=e517]:
+                  - img [ref=e519]
+                  - generic [ref=e522]: Platform Protections
+                - img [ref=e523]
+              - list [ref=e530]:
+                - list [ref=e531]:
+                  - listitem [ref=e532]:
+                    - link "DDoS protection" [ref=e533] [cursor=pointer]:
+                      - /url: /docs/ddos-protection
+                  - listitem [ref=e534]:
+                    - link "Platform maintenance" [ref=e535] [cursor=pointer]:
+                      - /url: /docs/platform-maintenance
+                  - list [ref=e536]:
+                    - listitem [ref=e537]: Compliance
+                    - list [ref=e538]:
+                      - listitem [ref=e539]:
+                        - link "Overview" [ref=e540] [cursor=pointer]:
+                          - /url: /docs/certifications-compliance
+                      - listitem [ref=e541]:
+                        - link "HIPAA (US health data)" [ref=e542] [cursor=pointer]:
+                          - /url: /docs/hipaa-compliance
+                      - listitem [ref=e543]:
+                        - link "HIPAA best practices" [ref=e544] [cursor=pointer]:
+                          - /url: /docs/hipaa-best-practices
+                      - listitem [ref=e545]:
+                        - link "Shared responsibility model" [ref=e546] [cursor=pointer]:
+                          - /url: /docs/shared-responsibility-model
+                      - listitem [ref=e547]:
+                        - link "Pentest policy" [ref=e548] [cursor=pointer]:
+                          - /url: /docs/penetration-testing
+              - button "Compare" [expanded] [ref=e549] [cursor=pointer]:
+                - generic [ref=e550]:
+                  - img [ref=e552]
+                  - generic [ref=e554]: Compare
+                - img [ref=e555]
+              - list [ref=e562]:
+                - list [ref=e563]:
+                  - listitem [ref=e564]:
+                    - link "Heroku vs Render" [ref=e565] [cursor=pointer]:
+                      - /url: /docs/render-vs-heroku-comparison
+                  - listitem [ref=e566]:
+                    - link "Vercel vs Render" [ref=e567] [cursor=pointer]:
+                      - /url: /docs/render-vs-vercel-comparison
+          - generic [ref=e568]:
+            - article [ref=e569]:
+              - generic [ref=e570]:
+                - heading "Create and Connect to Render Postgres" [level=1] [ref=e572]
+                - generic [ref=e573]:
+                  - generic [ref=e574]:
+                    - paragraph [ref=e575]:
+                      - strong [ref=e576]: Migrating a large database from Heroku?
+                    - paragraph [ref=e577]: The Render team can help you orchestrate your migration to minimize downtime, even for apps with multi-terabyte databases.
+                    - paragraph [ref=e578]:
+                      - link "Contact the Render team" [ref=e579] [cursor=pointer]:
+                        - /url: https://render.com/migrate-from-heroku
+                        - generic [ref=e580]: Contact the Render team
+                        - img [ref=e581]
+                  - paragraph [ref=e587]: Render Postgres databases provide fully managed, scalable storage of relational data.
+                  - paragraph [ref=e588]:
+                    - text: All paid Render Postgres databases provide
+                    - link "point-in-time recovery" [ref=e589] [cursor=pointer]:
+                      - /url: /docs/postgresql-backups
+                    - text: and on-demand logical exports. Larger instances support
+                    - link "read replicas" [ref=e590] [cursor=pointer]:
+                      - /url: /docs/postgresql-read-replicas
+                    - text: and
+                    - link "high availability" [ref=e591] [cursor=pointer]:
+                      - /url: /docs/postgresql-high-availability
+                    - text: for improved performance and reliability.
+                  - heading "Quickstarts" [level=2] [ref=e592]:
+                    - link [ref=e593] [cursor=pointer]:
+                      - /url: "#quickstarts"
+                      - img [ref=e594]
+                    - text: Quickstarts
+                  - paragraph [ref=e596]: "Here are a few Render quickstarts that include a Render Postgres database as part of their application stack:"
+                  - list [ref=e597]:
+                    - listitem [ref=e598]:
+                      - link "Django" [ref=e599] [cursor=pointer]:
+                        - /url: /docs/deploy-django
+                    - listitem [ref=e600]:
+                      - link "Rails" [ref=e601] [cursor=pointer]:
+                        - /url: /docs/deploy-rails-8
+                    - listitem [ref=e602]:
+                      - link "Phoenix" [ref=e603] [cursor=pointer]:
+                        - /url: /docs/deploy-phoenix-distillery
+                  - heading "Create your database" [level=2] [ref=e604]:
+                    - link [ref=e605] [cursor=pointer]:
+                      - /url: "#create-your-database"
+                      - img [ref=e606]
+                    - text: Create your database
+                  - list [ref=e608]:
+                    - listitem [ref=e609]:
+                      - paragraph [ref=e610]:
+                        - text: Go to
+                        - link "dashboard.render.com/new/database" [ref=e611] [cursor=pointer]:
+                          - /url: https://dashboard.render.com/new/database
+                        - text: ", or click"
+                        - strong [ref=e612]: + New > Postgres
+                        - text: in the Render Dashboard.
+                      - paragraph [ref=e613]: "This form appears:"
+                      - paragraph [ref=e615]:
+                        - img "New Postgres creation form" [ref=e617]
+                    - listitem [ref=e618]:
+                      - paragraph [ref=e619]:
+                        - text: Provide a helpful
+                        - strong [ref=e620]: Name
+                        - text: for your database.
+                      - list [ref=e621]:
+                        - listitem [ref=e622]: You can change this value at any time.
+                    - listitem [ref=e623]:
+                      - paragraph [ref=e624]:
+                        - text: Optionally fill in the
+                        - strong [ref=e625]: Database
+                        - text: and/or
+                        - strong [ref=e626]: User
+                        - text: fields if you want to set your PostgreSQL
+                        - code [ref=e627]: dbname
+                        - text: and/or username.
+                      - list [ref=e628]:
+                        - listitem [ref=e629]: Render generates values for either of these that you don't specify.
+                        - listitem [ref=e630]:
+                          - text: You
+                          - emphasis [ref=e631]: can't
+                          - text: change these values after creating your database.
+                    - listitem [ref=e632]:
+                      - paragraph [ref=e633]:
+                        - text: Choose a
+                        - strong [ref=e634]:
+                          - button "Show definition for region" [ref=e635]: Region
+                        - text: to run your database in.
+                      - list [ref=e636]:
+                        - listitem [ref=e637]:
+                          - text: Choose the same region as your services that will connect to the database. This minimizes latency and enables communication over your
+                          - button "Show definition for private network" [ref=e638]: private network
+                          - text: .
+                    - listitem [ref=e639]:
+                      - paragraph [ref=e640]:
+                        - text: Optionally change the
+                        - strong [ref=e641]: PostgreSQL Version
+                        - text: if you want to use an older version.
+                      - list [ref=e642]:
+                        - listitem [ref=e643]: Major versions 13 through 18 are available for all new instances.
+                        - listitem [ref=e644]:
+                          - text: Versions 11 and 12 are available for workspaces that have at least one
+                          - emphasis [ref=e645]: existing
+                          - text: database on the corresponding version.
+                    - listitem [ref=e646]:
+                      - paragraph [ref=e647]:
+                        - text: Scroll down and select an
+                        - strong [ref=e648]: instance type
+                        - text: for your database. This determines its available RAM and CPU.
+                      - paragraph [ref=e650]:
+                        - link "Learn about limitations of the Free instance type" [ref=e651] [cursor=pointer]:
+                          - /url: /docs/free#free-postgres
+                        - text: .
+                      - paragraph [ref=e653]:
+                        - img "Selecting a Postgres instance type" [ref=e655]
+                      - paragraph [ref=e656]:
+                        - text: You can
+                        - link "change your instance type" [ref=e657] [cursor=pointer]:
+                          - /url: "#changing-your-instance-type"
+                        - text: later.
+                    - listitem [ref=e658]:
+                      - paragraph [ref=e659]: Scroll down and set your database's initial storage, in GB.
+                      - list [ref=e660]:
+                        - listitem [ref=e661]: You can specify 1 GB or any multiple of 5 GB.
+                        - listitem [ref=e662]: You can increase your storage later, but you can't decrease it.
+                    - listitem [ref=e663]:
+                      - paragraph [ref=e664]:
+                        - text: Optionally enable
+                        - strong [ref=e665]: Storage Autoscaling
+                        - text: .
+                      - list [ref=e666]:
+                        - listitem [ref=e667]:
+                          - text: Whenever your database is 90% full, Render automatically increases its storage by 50%, rounded up to the nearest multiple of 5 GB. You can't reduce storage after increasing it.
+                          - link "Learn more" [ref=e668] [cursor=pointer]:
+                            - /url: "#storage-autoscaling"
+                          - text: .
+                    - listitem [ref=e669]:
+                      - paragraph [ref=e670]:
+                        - text: Click
+                        - strong [ref=e671]: Create Database
+                        - text: .
+                  - paragraph [ref=e672]:
+                    - text: You're all set! Your new database's status updates to
+                    - strong [ref=e673]: Available
+                    - text: in the Render Dashboard when it's ready to use.
+                  - heading "Connect to your database" [level=2] [ref=e674]:
+                    - link [ref=e675] [cursor=pointer]:
+                      - /url: "#connect-to-your-database"
+                      - img [ref=e676]
+                    - text: Connect to your database
+                  - paragraph [ref=e678]: "Every Render Postgres database has two different URLs for incoming connections:"
+                  - list [ref=e679]:
+                    - listitem [ref=e680]:
+                      - text: An
+                      - strong [ref=e681]: internal URL
+                      - text: for connections from your other Render services hosted in the
+                      - emphasis [ref=e682]: same region
+                    - listitem [ref=e683]:
+                      - text: An
+                      - strong [ref=e684]: external URL
+                      - text: for connections from
+                      - emphasis [ref=e685]: everything else
+                  - document [ref=e687]:
+                    - generic [ref=e689]:
+                      - paragraph [ref=e697]: Render
+                      - generic [ref=e701]:
+                        - paragraph [ref=e707]:
+                          - text: Internal
+                          - text: URL
+                        - paragraph [ref=e713]:
+                          - text: External
+                          - text: URL
+                      - generic [ref=e714]:
+                        - paragraph [ref=e723]:
+                          - text: Your dev machine
+                          - text: (admin tools, etc.)
+                        - paragraph [ref=e732]:
+                          - text: Web
+                          - text: service
+                        - paragraph [ref=e739]: DB
+                  - paragraph [ref=e740]:
+                    - strong [ref=e741]: Use the internal URL wherever possible.
+                    - text: It minimizes query latency by enabling communication over your
+                    - button "Show definition for private network" [ref=e742]: private network
+                    - text: .
+                  - paragraph [ref=e743]:
+                    - text: Both URLs are available from the
+                    - strong [ref=e744]: Connect
+                    - text: menu in the top-right corner of your database's page in the
+                    - link "Render Dashboard" [ref=e745] [cursor=pointer]:
+                      - /url: https://dashboard.render.com
+                    - text: ":"
+                  - paragraph [ref=e747]:
+                    - img "The Connect menu for a Render Postgres database" [ref=e749]
+                  - paragraph [ref=e750]:
+                    - text: "How you connect to your database depends on your code: some frameworks expect a single connection string or URL in an environment variable, while others need multiple connection parameters in a configuration file. See"
+                    - link "Quickstarts" [ref=e751] [cursor=pointer]:
+                      - /url: "#quickstarts"
+                    - text: for examples.
+                  - paragraph [ref=e752]:
+                    - text: At a minimum, your app needs to know your database's hostname, port, username, password, and database name (such as
+                    - code [ref=e753]: mydb
+                    - text: in the
+                    - link "official PostgreSQL tutorial" [ref=e754] [cursor=pointer]:
+                      - /url: https://www.postgresql.org/docs/current/tutorial-createdb.html
+                    - text: ).
+                  - paragraph [ref=e756]:
+                    - text: Render Postgres uses the default PostgreSQL port
+                    - code [ref=e757]: "5432"
+                    - text: . You can usually leave this port unspecified.
+                  - heading "Internal connections" [level=3] [ref=e758]:
+                    - link [ref=e759] [cursor=pointer]:
+                      - /url: "#internal-connections"
+                      - img [ref=e760]
+                    - text: Internal connections
+                  - paragraph [ref=e763]:
+                    - text: To use the internal URL, your connecting service and your database must belong to the same account and
+                    - link "region" [ref=e764] [cursor=pointer]:
+                      - /url: /docs/regions
+                    - text: .
+                  - paragraph [ref=e765]:
+                    - text: Wherever possible, connect to your database using its internal URL. Internal connection details are available on your database's
+                    - strong [ref=e766]: Info
+                    - text: page in the
+                    - link "Render Dashboard" [ref=e767] [cursor=pointer]:
+                      - /url: https://dashboard.render.com
+                    - text: ":"
+                  - paragraph [ref=e769]:
+                    - img "PostgreSQL private connection details in the Render Dashboard" [ref=e771]
+                  - paragraph [ref=e772]: "You can view both individual details and the assembled internal URL, which has the following format:"
+                  - generic [ref=e773]:
+                    - generic [ref=e775]:
+                      - generic [ref=e776]: plaintext
+                      - button "Copy to clipboard" [ref=e777] [cursor=pointer]:
+                        - generic [ref=e778]: Copy to clipboard
+                        - img [ref=e779]
+                    - generic [ref=e784]: postgresql://USER:PASSWORD@INTERNAL_HOST:PORT/DATABASE
+                  - paragraph [ref=e785]: Use whichever format your framework expects for database credentials.
+                  - heading "External connections" [level=3] [ref=e786]:
+                    - link [ref=e787] [cursor=pointer]:
+                      - /url: "#external-connections"
+                      - img [ref=e788]
+                    - text: External connections
+                  - generic [ref=e790]:
+                    - paragraph [ref=e791]:
+                      - strong [ref=e792]: External URL connections are slower because they traverse the public internet.
+                    - paragraph [ref=e793]:
+                      - text: To minimize latency, use your database's
+                      - link "internal URL" [ref=e794] [cursor=pointer]:
+                        - /url: "#internal-connections"
+                      - text: when connecting from a Render service running in the same region.
+                  - paragraph [ref=e795]:
+                    - text: Tools and systems outside of Render can connect to your database via its external URL, available from its
+                    - strong [ref=e796]: Info
+                    - text: page in the
+                    - link "Render Dashboard" [ref=e797] [cursor=pointer]:
+                      - /url: https://dashboard.render.com
+                    - text: ":"
+                  - paragraph [ref=e799]:
+                    - img "PostgreSQL public connection details in the Render Dashboard" [ref=e801]
+                  - paragraph [ref=e802]: "Most database clients understand the external URL, which has the following format:"
+                  - generic [ref=e803]:
+                    - generic [ref=e805]:
+                      - generic [ref=e806]: plaintext
+                      - button "Copy to clipboard" [ref=e807] [cursor=pointer]:
+                        - generic [ref=e808]: Copy to clipboard
+                        - img [ref=e809]
+                    - generic [ref=e814]: postgresql://USER:PASSWORD@EXTERNAL_HOST:PORT/DATABASE
+                  - paragraph [ref=e815]:
+                    - text: You can also run the provided
+                    - strong [ref=e816]: PSQL Command
+                    - text: directly in your terminal to start a psql session.
+                  - heading "Common external connection issues" [level=4] [ref=e817]:
+                    - link [ref=e818] [cursor=pointer]:
+                      - /url: "#common-external-connection-issues"
+                      - img [ref=e819]
+                    - text: Common external connection issues
+                  - generic [ref=e821]:
+                    - 'heading "\"FATAL: No SNI information found\"" [level=6] [ref=e823]':
+                      - link [ref=e824] [cursor=pointer]:
+                        - /url: "#fatal-no-sni-information-found"
+                        - img [ref=e825]
+                      - text: "\"FATAL: No SNI information found\""
+                    - paragraph [ref=e828]:
+                      - text: Make sure your PostgreSQL client always connects using your database's full external connection URL,
+                      - emphasis [ref=e829]: not
+                      - text: an IP address that the hostname resolved to during a previous connection attempt.
+                  - generic [ref=e830]:
+                    - heading "TLS handshake errors" [level=6] [ref=e832]:
+                      - link [ref=e833] [cursor=pointer]:
+                        - /url: "#tls-handshake-errors"
+                        - img [ref=e834]
+                      - text: TLS handshake errors
+                    - generic [ref=e836]:
+                      - paragraph [ref=e837]: "Confirm that your PostgreSQL client supports TLS version 1.2 or higher, and that it supports any of the following cipher suites:"
+                      - group [ref=e838]:
+                        - generic "+ Click to show" [ref=e839] [cursor=pointer]:
+                          - text: +
+                          - strong [ref=e840]: Click to show
+                  - heading "Restricting external access" [level=3] [ref=e841]:
+                    - link [ref=e842] [cursor=pointer]:
+                      - /url: "#restricting-external-access"
+                      - img [ref=e843]
+                    - text: Restricting external access
+                  - paragraph [ref=e845]: By default, your Render Postgres instance is accessible from any IP address (if the connection uses valid credentials). You can modify this default behavior by restricting access to a set of IPs or even disabling external access entirely.
+                  - paragraph [ref=e846]:
+                    - text: In the
+                    - link "Render Dashboard" [ref=e847] [cursor=pointer]:
+                      - /url: https://dashboard.render.com
+                    - text: ", go to your database's"
+                    - strong [ref=e848]: Info
+                    - text: page and scroll down to the
+                    - strong [ref=e849]: Networking
+                    - text: "section:"
+                  - paragraph [ref=e851]:
+                    - img "Setting PostgreSQL access control in the Render Dashboard" [ref=e853]
+                  - paragraph [ref=e854]:
+                    - text: You can specify IP address blocks using
+                    - link "CIDR notation" [ref=e855] [cursor=pointer]:
+                      - /url: https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_blocks
+                    - text: . The default block is
+                    - code [ref=e856]: 0.0.0.0/0
+                    - text: ", which allows access from any IP address."
+                  - generic [ref=e857]:
+                    - paragraph [ref=e858]:
+                      - strong [ref=e859]:
+                        - text: These rules apply only to connections that use your database's
+                        - link "external URL" [ref=e860] [cursor=pointer]:
+                          - /url: "#external-connections"
+                          - strong [ref=e861]: external URL
+                        - text: .
+                    - paragraph [ref=e862]:
+                      - text: Your Render services in the same region as your database can always connect using your database's
+                      - link "internal URL" [ref=e863] [cursor=pointer]:
+                        - /url: "#internal-connections"
+                      - text: .
+                  - heading "Connection limits" [level=3] [ref=e864]:
+                    - link [ref=e865] [cursor=pointer]:
+                      - /url: "#connection-limits"
+                      - img [ref=e866]
+                    - text: Connection limits
+                  - paragraph [ref=e868]: "Your database's maximum number of simultaneous connections depends on its instance type's total memory (RAM):"
+                  - table [ref=e870]:
+                    - rowgroup [ref=e871]:
+                      - row "Memory Max Connections" [ref=e872]:
+                        - columnheader "Memory" [ref=e873]
+                        - columnheader "Max Connections" [ref=e874]
+                    - rowgroup [ref=e875]:
+                      - row "< 8GB 100 connections" [ref=e876]:
+                        - cell "< 8GB" [ref=e877]:
+                          - paragraph [ref=e878]: < 8GB
+                        - cell "100 connections" [ref=e879]
+                      - row "8 GB <= memory < 16 GB 200 connections" [ref=e880]:
+                        - cell "8 GB <= memory < 16 GB" [ref=e881]:
+                          - paragraph [ref=e882]: 8 GB <= memory < 16 GB
+                        - cell "200 connections" [ref=e883]
+                      - row "16 GB <= memory < 32 GB 400 connections" [ref=e884]:
+                        - cell "16 GB <= memory < 32 GB" [ref=e885]:
+                          - paragraph [ref=e886]: 16 GB <= memory < 32 GB
+                        - cell "400 connections" [ref=e887]
+                      - row ">= 32GB 500 connections" [ref=e888]:
+                        - cell ">= 32GB" [ref=e889]:
+                          - paragraph [ref=e890]: ">= 32GB"
+                        - cell "500 connections" [ref=e891]
+                  - paragraph [ref=e892]:
+                    - text: If you're approaching your connection limit, consider
+                    - link "upgrading your instance type" [ref=e893] [cursor=pointer]:
+                      - /url: "#changing-your-instance-type"
+                    - text: or implementing
+                    - link "connection pooling" [ref=e894] [cursor=pointer]:
+                      - /url: /docs/postgresql-connection-pooling
+                    - text: .
+                  - generic [ref=e895]:
+                    - paragraph [ref=e896]:
+                      - strong [ref=e897]:
+                        - text: Databases on a
+                        - link "legacy instance type" [ref=e898] [cursor=pointer]:
+                          - /url: /docs/postgresql-legacy-instance-types
+                          - strong [ref=e899]: legacy instance type
+                        - text: "support fewer connections:"
+                    - group [ref=e900]:
+                      - generic "+ View legacy instance connection limits" [ref=e901] [cursor=pointer]:
+                        - text: +
+                        - strong [ref=e902]: View legacy instance connection limits
+                    - paragraph [ref=e903]:
+                      - text: You can move your database to a flexible plan by
+                      - link "changing its instance type" [ref=e904] [cursor=pointer]:
+                        - /url: "#changing-your-instance-type"
+                      - text: .
+                  - heading "Adding storage" [level=2] [ref=e905]:
+                    - link [ref=e906] [cursor=pointer]:
+                      - /url: "#adding-storage"
+                      - img [ref=e907]
+                    - text: Adding storage
+                  - paragraph [ref=e909]:
+                    - text: You set your database's initial storage during
+                    - link "creation" [ref=e910] [cursor=pointer]:
+                      - /url: "#create-your-database"
+                    - text: . Any time after that, you can increase your database's storage to any higher multiple of 5 GB, up to 16 TB.
+                  - generic [ref=e911]:
+                    - paragraph [ref=e912]:
+                      - strong [ref=e913]: Need more than 16 TB of storage?
+                    - paragraph [ref=e914]:
+                      - text: Please
+                      - link "contact support" [ref=e915] [cursor=pointer]:
+                        - /url: https://dashboard.render.com?contact-support
+                      - text: in the Render Dashboard.
+                  - paragraph [ref=e916]:
+                    - text: You can increase storage
+                    - link "automatically" [ref=e917] [cursor=pointer]:
+                      - /url: "#storage-autoscaling"
+                    - text: or
+                    - link "manually" [ref=e918] [cursor=pointer]:
+                      - /url: "#increasing-storage-manually"
+                    - text: .
+                  - paragraph [ref=e919]: "Note the following:"
+                  - list [ref=e920]:
+                    - listitem [ref=e921]: After you increase a database's storage, you can't increase it again for 12 hours.
+                    - listitem [ref=e922]: It is not possible to reduce a database's storage.
+                    - listitem [ref=e923]:
+                      - text: Databases on a
+                      - link "legacy instance type" [ref=e924] [cursor=pointer]:
+                        - /url: /docs/postgresql-legacy-instance-types
+                      - text: have a fixed storage capacity.
+                      - list [ref=e925]:
+                        - listitem [ref=e926]:
+                          - text: You can move your database to a flexible plan by
+                          - link "changing its instance type" [ref=e927] [cursor=pointer]:
+                            - /url: "#changing-your-instance-type"
+                          - text: .
+                  - heading "Storage autoscaling" [level=3] [ref=e928]:
+                    - link [ref=e929] [cursor=pointer]:
+                      - /url: "#storage-autoscaling"
+                      - img [ref=e930]
+                    - text: Storage autoscaling
+                  - paragraph [ref=e932]:
+                    - text: You can automatically add storage to your database whenever it's running low. With
+                    - strong [ref=e933]: storage autoscaling
+                    - text: enabled, Render detects when your database is 90% full and permanently increases its storage by 50%, rounded up to the nearest multiple of 5 GB.
+                  - paragraph [ref=e934]: "Here are some example increases:"
+                  - table [ref=e936]:
+                    - rowgroup [ref=e937]:
+                      - row "Original Storage New Storage" [ref=e938]:
+                        - columnheader "Original Storage" [ref=e939]
+                        - columnheader "New Storage" [ref=e940]
+                    - rowgroup [ref=e941]:
+                      - row "1 GB 5 GB" [ref=e942]:
+                        - cell "1 GB" [ref=e943]
+                        - cell "5 GB" [ref=e944]
+                      - row "10 GB 15 GB" [ref=e945]:
+                        - cell "10 GB" [ref=e946]
+                        - cell "15 GB" [ref=e947]
+                      - row "25 GB 40 GB" [ref=e948]:
+                        - cell "25 GB" [ref=e949]
+                        - cell "40 GB" [ref=e950]
+                  - paragraph [ref=e951]: "Enable storage autoscaling with any of the following methods:"
+                  - generic [ref=e952]:
+                    - tablist [ref=e953]:
+                      - tab "Dashboard" [selected] [ref=e954] [cursor=pointer]: Dashboard
+                      - tab "API" [ref=e956] [cursor=pointer]: API
+                    - tabpanel "Dashboard" [ref=e958]:
+                      - heading "Dashboard" [level=4] [ref=e959]:
+                        - link [ref=e960] [cursor=pointer]:
+                          - /url: "#dashboard"
+                          - img [ref=e961]
+                        - text: Dashboard
+                      - list [ref=e963]:
+                        - listitem [ref=e964]:
+                          - paragraph [ref=e965]:
+                            - text: From your database's
+                            - strong [ref=e966]: Info
+                            - text: page in the
+                            - link "Render Dashboard" [ref=e967] [cursor=pointer]:
+                              - /url: https://dashboard.render.com
+                            - text: ", scroll down to the"
+                            - strong [ref=e968]: PostgreSQL Instance
+                            - text: section and click
+                            - strong [ref=e969]: Update
+                            - text: ":"
+                          - paragraph [ref=e971]:
+                            - img "Update PostgreSQL storage in the Render Dashboard" [ref=e973]
+                        - listitem [ref=e974]:
+                          - paragraph [ref=e975]:
+                            - text: Scroll down to the
+                            - strong [ref=e976]: Enable Storage Autoscaling
+                            - text: field and toggle the switch.
+                        - listitem [ref=e977]:
+                          - paragraph [ref=e978]:
+                            - text: Click
+                            - strong [ref=e979]: Save Changes
+                            - text: .
+                      - paragraph [ref=e980]: That's it! Render will automatically add storage to your database whenever it's 90% full.
+                  - heading "Increasing storage manually" [level=3] [ref=e981]:
+                    - link [ref=e982] [cursor=pointer]:
+                      - /url: "#increasing-storage-manually"
+                      - img [ref=e983]
+                    - text: Increasing storage manually
+                  - paragraph [ref=e985]: "Manually add storage to your database with any of the following methods:"
+                  - generic [ref=e986]:
+                    - tablist [ref=e987]:
+                      - tab "Dashboard" [selected] [ref=e988] [cursor=pointer]: Dashboard
+                      - tab "API" [ref=e990] [cursor=pointer]: API
+                    - tabpanel "Dashboard" [ref=e992]:
+                      - heading "Dashboard" [level=4] [ref=e993]:
+                        - link [ref=e994] [cursor=pointer]:
+                          - /url: "#dashboard-1"
+                          - img [ref=e995]
+                        - text: Dashboard
+                      - list [ref=e997]:
+                        - listitem [ref=e998]:
+                          - paragraph [ref=e999]:
+                            - text: From your database's
+                            - strong [ref=e1000]: Info
+                            - text: page in the
+                            - link "Render Dashboard" [ref=e1001] [cursor=pointer]:
+                              - /url: https://dashboard.render.com
+                            - text: ", scroll down to the"
+                            - strong [ref=e1002]: PostgreSQL Instance
+                            - text: section and click
+                            - strong [ref=e1003]: Update
+                            - text: ":"
+                          - paragraph [ref=e1005]:
+                            - img "Update PostgreSQL storage in the Render Dashboard" [ref=e1007]
+                        - listitem [ref=e1008]:
+                          - paragraph [ref=e1009]:
+                            - text: Scroll down to the
+                            - strong [ref=e1010]: Storage
+                            - text: field and provide a new value.
+                          - list [ref=e1011]:
+                            - listitem [ref=e1012]: Provide any multiple of 5 GB greater than the current storage capacity.
+                        - listitem [ref=e1013]:
+                          - paragraph [ref=e1014]:
+                            - text: Click
+                            - strong [ref=e1015]: Save Changes
+                            - text: .
+                      - paragraph [ref=e1016]: That's it! The additional storage becomes available within a minute or two.
+                  - heading "Running out of storage" [level=3] [ref=e1017]:
+                    - link [ref=e1018] [cursor=pointer]:
+                      - /url: "#running-out-of-storage"
+                      - img [ref=e1019]
+                    - text: Running out of storage
+                  - paragraph [ref=e1021]:
+                    - strong [ref=e1022]: If your database exceeds its storage limit, it becomes unhealthy.
+                    - text: Render automatically suspends the database to prevent data loss or other unexpected behavior.
+                  - paragraph [ref=e1023]: "To restore your database:"
+                  - list [ref=e1024]:
+                    - listitem [ref=e1025]:
+                      - paragraph [ref=e1026]:
+                        - text: In the
+                        - link "Render Dashboard" [ref=e1027] [cursor=pointer]:
+                          - /url: https://dashboard.render.com
+                        - text: ", scroll to the bottom of your database's"
+                        - strong [ref=e1028]: Info
+                        - text: page and click
+                        - strong [ref=e1029]: Resume Database
+                        - text: .
+                    - listitem [ref=e1030]:
+                      - paragraph [ref=e1031]: Wait a minute or two for the database to finish resuming.
+                    - listitem [ref=e1032]:
+                      - paragraph [ref=e1033]:
+                        - text: Follow the steps to
+                        - link "manually add storage capacity" [ref=e1034] [cursor=pointer]:
+                          - /url: "#increasing-storage-manually"
+                        - text: .
+                      - list [ref=e1035]:
+                        - listitem [ref=e1036]: If you wait too long after resuming, Render will suspend your database again. In this case, return to step 1.
+                  - paragraph [ref=e1037]: Your database will become healthy within a few minutes.
+                  - heading "Changing your instance type" [level=2] [ref=e1038]:
+                    - link [ref=e1039] [cursor=pointer]:
+                      - /url: "#changing-your-instance-type"
+                      - img [ref=e1040]
+                    - text: Changing your instance type
+                  - paragraph [ref=e1042]:
+                    - text: You can change your Render Postgres database's instance type, which determines its available RAM and CPU.
+                    - link "View available instance types" [ref=e1043] [cursor=pointer]:
+                      - /url: /docs/compute-plans?tab=postgres#available-instance-types
+                    - text: .
+                  - generic [ref=e1044]:
+                    - paragraph [ref=e1045]:
+                      - strong [ref=e1046]: Your database will be unavailable temporarily during the change.
+                    - list [ref=e1047]:
+                      - listitem [ref=e1048]:
+                        - text: With
+                        - link "high availability" [ref=e1049] [cursor=pointer]:
+                          - /url: /docs/postgresql-high-availability
+                        - text: enabled, your database is unavailable for only a few seconds.
+                      - listitem [ref=e1050]: Otherwise, it's unavailable for a few minutes.
+                    - paragraph [ref=e1051]: Schedule your change during off hours to minimize user impact.
+                  - list [ref=e1052]:
+                    - listitem [ref=e1053]:
+                      - paragraph [ref=e1054]:
+                        - text: From your database's
+                        - strong [ref=e1055]: Info
+                        - text: page in the
+                        - link "Render Dashboard" [ref=e1056] [cursor=pointer]:
+                          - /url: https://dashboard.render.com
+                        - text: ", scroll down to the"
+                        - strong [ref=e1057]: PostgreSQL Instance
+                        - text: section and click
+                        - strong [ref=e1058]: Update
+                        - text: ":"
+                      - paragraph [ref=e1060]:
+                        - img "Update Postgres instance type in the Render Dashboard" [ref=e1062]
+                    - listitem [ref=e1063]:
+                      - paragraph [ref=e1064]:
+                        - text: Under
+                        - strong [ref=e1065]: Plan Options
+                        - text: ", select a new"
+                        - strong [ref=e1066]: Instance Type
+                        - text: .
+                      - list [ref=e1067]:
+                        - listitem [ref=e1068]:
+                          - text: If your database currently uses a
+                          - link "legacy instance type" [ref=e1069] [cursor=pointer]:
+                            - /url: /docs/postgresql-legacy-instance-types
+                          - text: ", you won't be able to move"
+                          - emphasis [ref=e1070]: back
+                          - text: to a legacy instance type after changing.
+                    - listitem [ref=e1071]:
+                      - paragraph [ref=e1072]:
+                        - text: Click
+                        - strong [ref=e1073]: Save Changes
+                        - text: .
+                  - paragraph [ref=e1074]: That's it! Your new instance will be available within a few minutes.
+                  - heading "Adding multiple databases to a single instance" [level=2] [ref=e1075]:
+                    - link [ref=e1076] [cursor=pointer]:
+                      - /url: "#adding-multiple-databases-to-a-single-instance"
+                      - img [ref=e1077]
+                    - text: Adding multiple databases to a single instance
+                  - paragraph [ref=e1079]: "You can create additional databases in your Render Postgres instance with the following steps:"
+                  - list [ref=e1080]:
+                    - listitem [ref=e1081]:
+                      - paragraph [ref=e1082]:
+                        - text: In your terminal, open a psql session to your instance using the
+                        - strong [ref=e1083]: PSQL Command
+                        - text: provided in the
+                        - link "Render Dashboard" [ref=e1084] [cursor=pointer]:
+                          - /url: https://dashboard.render.com
+                        - text: ":"
+                      - paragraph [ref=e1086]:
+                        - img "Postgres public connection details in the Render Dashboard" [ref=e1088]
+                    - listitem [ref=e1089]:
+                      - paragraph [ref=e1090]:
+                        - text: Run
+                        - code [ref=e1091]: CREATE DATABASE <name>
+                        - text: ", providing the name for your new database."
+                  - paragraph [ref=e1092]: "You're all set! Use your instance's same internal and external URLs to connect, except substitute your new database's name as the final component:"
+                  - generic [ref=e1093]:
+                    - generic [ref=e1095]:
+                      - generic [ref=e1096]: plaintext
+                      - button "Copy to clipboard" [ref=e1097] [cursor=pointer]:
+                        - generic [ref=e1098]: Copy to clipboard
+                        - img [ref=e1099]
+                    - generic [ref=e1104]: postgresql://USER:PASSWORD@INTERNAL_HOST:PORT/DATABASE
+                  - heading "Encryption" [level=2] [ref=e1105]:
+                    - link [ref=e1106] [cursor=pointer]:
+                      - /url: "#encryption"
+                      - img [ref=e1107]
+                    - text: Encryption
+                  - paragraph [ref=e1109]:
+                    - text: Render Postgres databases are encrypted at rest using AES-256 data encryption. This encryption applies to both primary and replica instances, along with all backups.
+                    - link "External connections" [ref=e1110] [cursor=pointer]:
+                      - /url: "#external-connections"
+                    - text: to your database are encrypted in transit using Render-managed TLS certificates.
+                  - heading "Metrics and logs" [level=2] [ref=e1111]:
+                    - link [ref=e1112] [cursor=pointer]:
+                      - /url: "#metrics-and-logs"
+                      - img [ref=e1113]
+                    - text: Metrics and logs
+                  - heading "Dashboard" [level=3] [ref=e1115]:
+                    - link [ref=e1116] [cursor=pointer]:
+                      - /url: "#dashboard-2"
+                      - img [ref=e1117]
+                    - text: Dashboard
+                  - paragraph [ref=e1119]:
+                    - text: View a variety of metrics for your database (disk usage, active connections, etc.) from its
+                    - strong [ref=e1120]: Metrics
+                    - text: page in the
+                    - link "Render Dashboard" [ref=e1121] [cursor=pointer]:
+                      - /url: https://dashboard.render.com
+                    - text: ":"
+                  - paragraph [ref=e1123]:
+                    - img "Postgres metrics in the Render Dashboard" [ref=e1125]
+                  - paragraph [ref=e1126]:
+                    - text: For details, see
+                    - link "Service Metrics" [ref=e1127] [cursor=pointer]:
+                      - /url: /docs/service-metrics#available-metrics
+                    - text: .
+                  - heading "Datadog" [level=3] [ref=e1128]:
+                    - link [ref=e1129] [cursor=pointer]:
+                      - /url: "#datadog"
+                      - img [ref=e1130]
+                    - text: Datadog
+                  - paragraph [ref=e1132]: The Datadog integration provides additional metrics related to your PostgreSQL instance's host and disk. You can also use the Datadog UI to create dashboards and alerts for your database.
+                  - paragraph [ref=e1133]:
+                    - text: For details, see the
+                    - link "Datadog integration docs" [ref=e1134] [cursor=pointer]:
+                      - /url: /docs/datadog#setting-up-postgres-monitoring
+                    - text: .
+                  - heading "Viewing slow query logs" [level=3] [ref=e1135]:
+                    - link [ref=e1136] [cursor=pointer]:
+                      - /url: "#viewing-slow-query-logs"
+                      - img [ref=e1137]
+                    - text: Viewing slow query logs
+                  - paragraph [ref=e1139]:
+                    - text: Queries that take longer than 2 seconds are logged with a line that starts with
+                    - code [ref=e1140]: "duration:"
+                    - text: "followed by the SQL statement. Here's an example:"
+                  - paragraph [ref=e1141]:
+                    - img "Postgres slow query log" [ref=e1143]
+                  - heading "Deleting your database" [level=2] [ref=e1144]:
+                    - link [ref=e1145] [cursor=pointer]:
+                      - /url: "#deleting-your-database"
+                      - img [ref=e1146]
+                    - text: Deleting your database
+                  - generic [ref=e1148]:
+                    - paragraph [ref=e1149]:
+                      - strong [ref=e1150]: Render does not retain backups or snapshots of a deleted database instance!
+                    - paragraph [ref=e1151]: Make sure to download any necessary backups before deleting your database.
+                  - paragraph [ref=e1152]:
+                    - text: You can delete a database instance in the
+                    - link "Render Dashboard" [ref=e1153] [cursor=pointer]:
+                      - /url: https://dashboard.render.com
+                    - text: . Scroll down to the bottom of your database's
+                    - strong [ref=e1154]: Info
+                    - text: page and click
+                    - strong [ref=e1155]: Delete Database
+                    - text: .
+                  - heading "Additional topics" [level=2] [ref=e1156]:
+                    - link [ref=e1157] [cursor=pointer]:
+                      - /url: "#additional-topics"
+                      - img [ref=e1158]
+                    - text: Additional topics
+                  - paragraph [ref=e1160]: "See articles on the following:"
+                  - list [ref=e1161]:
+                    - listitem [ref=e1162]:
+                      - link "Recovery and backups" [ref=e1163] [cursor=pointer]:
+                        - /url: /docs/postgresql-backups
+                    - listitem [ref=e1164]:
+                      - link "Read replicas" [ref=e1165] [cursor=pointer]:
+                        - /url: /docs/postgresql-read-replicas
+                    - listitem [ref=e1166]:
+                      - link "High availability" [ref=e1167] [cursor=pointer]:
+                        - /url: /docs/postgresql-high-availability
+                    - listitem [ref=e1168]:
+                      - link "Upgrading your PostgreSQL version" [ref=e1169] [cursor=pointer]:
+                        - /url: /docs/postgresql-upgrading
+                    - listitem [ref=e1170]:
+                      - link "Connection pooling" [ref=e1171] [cursor=pointer]:
+                        - /url: /docs/postgresql-connection-pooling
+                    - listitem [ref=e1172]:
+                      - link "Render Postgres extensions" [ref=e1173] [cursor=pointer]:
+                        - /url: /docs/postgresql-extensions
+                    - listitem [ref=e1174]:
+                      - link "Performance troubleshooting" [ref=e1175] [cursor=pointer]:
+                        - /url: /docs/postgresql-performance-troubleshooting
+            - generic [ref=e1177]:
+              - generic [ref=e1178]:
+                - button "Copy page" [ref=e1179] [cursor=pointer]:
+                  - img [ref=e1180]
+                  - generic [ref=e1183]: Copy page
+                - button "Toggle Menu" [ref=e1184] [cursor=pointer]:
+                  - img "Toggle Menu" [ref=e1185]
+              - generic [ref=e1191]:
+                - heading "Create and Connect to Render Postgres" [level=6] [ref=e1192]:
+                  - link "Create and Connect to Render Postgres" [ref=e1193] [cursor=pointer]:
+                    - /url: /docs/postgresql-creating-connecting
+                - list [ref=e1194]:
+                  - listitem [ref=e1195]:
+                    - link "Quickstarts" [ref=e1196] [cursor=pointer]:
+                      - /url: "#quickstarts"
+                  - listitem [ref=e1197]:
+                    - link "Create your database" [ref=e1198] [cursor=pointer]:
+                      - /url: "#create-your-database"
+                  - listitem [ref=e1199]:
+                    - link "Connect to your database" [ref=e1200] [cursor=pointer]:
+                      - /url: "#connect-to-your-database"
+                    - list [ref=e1201]:
+                      - listitem [ref=e1202]:
+                        - link "Internal connections" [ref=e1203] [cursor=pointer]:
+                          - /url: "#internal-connections"
+                      - listitem [ref=e1204]:
+                        - link "External connections" [ref=e1205] [cursor=pointer]:
+                          - /url: "#external-connections"
+                      - listitem [ref=e1206]:
+                        - link "Restricting external access" [ref=e1207] [cursor=pointer]:
+                          - /url: "#restricting-external-access"
+                      - listitem [ref=e1208]:
+                        - link "Connection limits" [ref=e1209] [cursor=pointer]:
+                          - /url: "#connection-limits"
+                  - listitem [ref=e1210]:
+                    - link "Adding storage" [ref=e1211] [cursor=pointer]:
+                      - /url: "#adding-storage"
+                    - list [ref=e1212]:
+                      - listitem [ref=e1213]:
+                        - link "Storage autoscaling" [ref=e1214] [cursor=pointer]:
+                          - /url: "#storage-autoscaling"
+                      - listitem [ref=e1215]:
+                        - link "Increasing storage manually" [ref=e1216] [cursor=pointer]:
+                          - /url: "#increasing-storage-manually"
+                      - listitem [ref=e1217]:
+                        - link "Running out of storage" [ref=e1218] [cursor=pointer]:
+                          - /url: "#running-out-of-storage"
+                  - listitem [ref=e1219]:
+                    - link "Changing your instance type" [ref=e1220] [cursor=pointer]:
+                      - /url: "#changing-your-instance-type"
+                  - listitem [ref=e1221]:
+                    - link "Adding multiple databases to a single instance" [ref=e1222] [cursor=pointer]:
+                      - /url: "#adding-multiple-databases-to-a-single-instance"
+                  - listitem [ref=e1223]:
+                    - link "Encryption" [ref=e1224] [cursor=pointer]:
+                      - /url: "#encryption"
+                  - listitem [ref=e1225]:
+                    - link "Metrics and logs" [ref=e1226] [cursor=pointer]:
+                      - /url: "#metrics-and-logs"
+                    - list [ref=e1227]:
+                      - listitem [ref=e1228]:
+                        - link "Dashboard" [ref=e1229] [cursor=pointer]:
+                          - /url: "#dashboard-2"
+                      - listitem [ref=e1230]:
+                        - link "Datadog" [ref=e1231] [cursor=pointer]:
+                          - /url: "#datadog"
+                      - listitem [ref=e1232]:
+                        - link "Viewing slow query logs" [ref=e1233] [cursor=pointer]:
+                          - /url: "#viewing-slow-query-logs"
+                  - listitem [ref=e1234]:
+                    - link "Deleting your database" [ref=e1235] [cursor=pointer]:
+                      - /url: "#deleting-your-database"
+                  - listitem [ref=e1236]:
+                    - link "Additional topics" [ref=e1237] [cursor=pointer]:
+                      - /url: "#additional-topics"
+                - button "Did this page help?" [ref=e1239] [cursor=pointer]
+        - contentinfo [ref=e1240]:
+          - generic [ref=e1243]:
+            - list [ref=e1244]:
+              - listitem [ref=e1245]:
+                - link "Pricing" [ref=e1246] [cursor=pointer]:
+                  - /url: /pricing
+                  - generic [ref=e1247]: Pricing
+              - listitem [ref=e1248]:
+                - link "Blog" [ref=e1249] [cursor=pointer]:
+                  - /url: /blog
+                  - generic [ref=e1250]: Blog
+              - listitem [ref=e1251]:
+                - link "Security" [ref=e1252] [cursor=pointer]:
+                  - /url: /security
+                  - generic [ref=e1253]: Security
+              - listitem [ref=e1254]:
+                - link "Customers" [ref=e1255] [cursor=pointer]:
+                  - /url: /customers
+                  - generic [ref=e1256]: Customers
+              - listitem [ref=e1257]:
+                - link "Careers" [ref=e1258] [cursor=pointer]:
+                  - /url: /careers
+                  - generic [ref=e1259]: Careers
+            - list [ref=e1260]:
+              - listitem [ref=e1261]: © Render 2026
+    - button "Toggle theme" [ref=e1262] [cursor=pointer]:
+      - img [ref=e1264]
+      - img [ref=e1272]
+  - alert [ref=e1274]

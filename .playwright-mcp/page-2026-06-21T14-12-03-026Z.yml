@@ -1,0 +1,517 @@
+- generic [ref=e1]:
+  - navigation:
+    - link "Skip to content" [ref=e2] [cursor=pointer]:
+      - /url: "#main"
+      - generic [ref=e4]: Skip to content
+  - banner [ref=e5]:
+    - generic [ref=e8]:
+      - navigation "Global" [ref=e10]:
+        - link "Home, Aiven" [ref=e11] [cursor=pointer]:
+          - /url: /
+          - img [ref=e12]
+        - generic "Main" [ref=e14]:
+          - list [ref=e16]:
+            - listitem [ref=e17]:
+              - button "Products" [ref=e18] [cursor=pointer]:
+                - generic [ref=e19]: Products
+                - img [ref=e20]
+            - listitem [ref=e22]:
+              - button "Solutions" [ref=e23] [cursor=pointer]:
+                - generic [ref=e24]: Solutions
+                - img [ref=e25]
+            - listitem [ref=e27]:
+              - button "Developers" [ref=e28] [cursor=pointer]:
+                - generic [ref=e29]: Developers
+                - img [ref=e30]
+            - listitem [ref=e32]:
+              - link "Pricing" [ref=e33] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e34]:
+              - link "Blog" [ref=e35] [cursor=pointer]:
+                - /url: /blog
+      - generic [ref=e36]:
+        - link "Log in" [ref=e37] [cursor=pointer]:
+          - /url: https://console.aiven.io/login
+          - img [ref=e38]
+        - button "Click here to open search" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+        - link "Book a demo" [ref=e44] [cursor=pointer]:
+          - /url: /book-demo
+          - generic [ref=e46]: Book a demo
+        - link "Get building" [ref=e47] [cursor=pointer]:
+          - /url: https://console.aiven.io/signup
+          - generic [ref=e49]: Get building
+  - main [ref=e50]:
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - heading "Free managed MySQL database" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - paragraph [ref=e60]: Start prototyping, experiment, and spin up your first hosted MySQL database in the cloud at no cost. And if your needs grow, easily scale up to large production environments.
+          - link "Get building" [ref=e63] [cursor=pointer]:
+            - /url: https://console.aiven.io/signup
+            - generic [ref=e65]: Get building
+      - img [ref=e68]
+    - generic [ref=e72]:
+      - generic [ref=e75]:
+        - heading "Who is it for?" [level=2] [ref=e76]
+        - paragraph [ref=e78]: Aiven's free hosted MySQL plan is ideal for anyone who is looking to easily get started with MySQL database, whether it's for personal or professional use. It's perfect for small-scale projects, prototypes, and experiments, and provides all the essential features you need to get up and running quickly.
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - img [ref=e84]
+          - paragraph [ref=e86]: Temporarily test and prototype during product development
+        - generic [ref=e87]:
+          - img [ref=e89]
+          - paragraph [ref=e91]: Use it as a small database to store data from another tool
+        - generic [ref=e92]:
+          - img [ref=e94]
+          - paragraph [ref=e96]: Learn more about the basic database concepts, SQL language, and application development
+      - link "See docs" [ref=e100] [cursor=pointer]:
+        - /url: https://aiven.io/docs/products/mysql/get-started
+        - generic [ref=e102]: See docs
+    - generic [ref=e106]:
+      - generic [ref=e107]:
+        - heading "What’s included in your free MySQL database?" [level=2] [ref=e108]
+        - paragraph [ref=e109]:
+          - text: With Aiven's free hosted MySQL plan, you run on your own dedicated virtual machine, with no resource sharing and no "noisy neighbours". Enjoy premium MySQL as a service capabilities such as daily backups,
+          - link "Terraform integration" [ref=e110] [cursor=pointer]:
+            - /url: https://aiven.io/docs/tools/terraform
+          - text: ", and more. Our easy-to-use and intuitive GUI simplifies managed database operations, but you can also use"
+          - link "Aiven’s CLI" [ref=e111] [cursor=pointer]:
+            - /url: https://aiven.io/docs/tools/cli
+          - text: or Terraform for infrastructure management.
+        - table [ref=e114]:
+          - rowgroup [ref=e115]:
+            - row "Feature" [ref=e116]:
+              - columnheader "Feature" [ref=e117]:
+                - generic [ref=e119]: Feature
+              - columnheader [ref=e120]
+          - rowgroup [ref=e121]:
+            - row "Dedicated VMs 1" [ref=e122]:
+              - cell "Dedicated VMs" [ref=e123]:
+                - generic [ref=e125]: Dedicated VMs
+              - cell "1" [ref=e126]:
+                - generic [ref=e128]: "1"
+            - row "CPU per VM 1" [ref=e129]:
+              - cell "CPU per VM" [ref=e130]:
+                - generic [ref=e132]: CPU per VM
+              - cell "1" [ref=e133]:
+                - generic [ref=e135]: "1"
+            - row "RAM per VM 1" [ref=e136]:
+              - cell "RAM per VM" [ref=e137]:
+                - generic [ref=e139]: RAM per VM
+              - cell "1" [ref=e140]:
+                - generic [ref=e142]: "1"
+            - row "Total storage 1 GB" [ref=e143]:
+              - cell "Total storage" [ref=e144]:
+                - generic [ref=e146]: Total storage
+              - cell "1 GB" [ref=e147]:
+                - generic [ref=e149]: 1 GB
+            - row "Cloud Selected cloud regions around the world" [ref=e150]:
+              - cell "Cloud" [ref=e151]:
+                - generic [ref=e153]: Cloud
+              - cell "Selected cloud regions around the world" [ref=e154]:
+                - generic [ref=e156]: Selected cloud regions around the world
+            - row "All networking costs included ✓" [ref=e157]:
+              - cell "All networking costs included" [ref=e158]:
+                - generic [ref=e160]: All networking costs included
+              - cell "✓" [ref=e161]:
+                - generic [ref=e163]: ✓
+            - row "Seamless upgrade to other plans ✓" [ref=e164]:
+              - cell "Seamless upgrade to other plans" [ref=e165]:
+                - generic [ref=e167]: Seamless upgrade to other plans
+              - cell "✓" [ref=e168]:
+                - generic [ref=e170]: ✓
+            - row "One-click version upgrade ✓" [ref=e171]:
+              - cell "One-click version upgrade" [ref=e172]:
+                - generic [ref=e174]: One-click version upgrade
+              - cell "✓" [ref=e175]:
+                - generic [ref=e177]: ✓
+            - row "Performance graphs ✓" [ref=e178]:
+              - cell "Performance graphs" [ref=e179]:
+                - generic [ref=e181]: Performance graphs
+              - cell "✓" [ref=e182]:
+                - generic [ref=e184]: ✓
+            - row "Data encrypted on disk and network ✓" [ref=e185]:
+              - cell "Data encrypted on disk and network" [ref=e186]:
+                - generic [ref=e188]: Data encrypted on disk and network
+              - cell "✓" [ref=e189]:
+                - generic [ref=e191]: ✓
+            - row "Backups for disaster recovery ✓" [ref=e192]:
+              - cell "Backups for disaster recovery" [ref=e193]:
+                - generic [ref=e195]: Backups for disaster recovery
+              - cell "✓" [ref=e196]:
+                - generic [ref=e198]: ✓
+            - row "Support Support via documentation" [ref=e199]:
+              - cell "Support" [ref=e200]:
+                - generic [ref=e202]: Support
+              - cell "Support via documentation" [ref=e203]:
+                - link "Support via documentation" [ref=e206] [cursor=pointer]:
+                  - /url: https://aiven.io/docs
+      - link "Get building" [ref=e209] [cursor=pointer]:
+        - /url: https://console.aiven.io/signup
+        - generic [ref=e211]: Get building
+    - generic [ref=e215]:
+      - heading "Benefits of your free Aiven for MySQL service" [level=2] [ref=e219]
+      - generic [ref=e222]:
+        - generic [ref=e223]:
+          - img [ref=e225]
+          - generic [ref=e226]:
+            - paragraph [ref=e227]: Covers everything
+            - paragraph [ref=e228]: Save time with Aiven's free managed plan that covers all the essentials, including virtual machine, backup, and networking costs. No extra charges popping up.
+        - generic [ref=e229]:
+          - img [ref=e231]
+          - generic [ref=e232]:
+            - paragraph [ref=e233]: Aiven's dedicated MySQL instances
+            - paragraph [ref=e234]: Aiven's dedicated MySQL as a service instances offer maximum security and privacy for your data, consistent performance levels, and the ability to fine-tune for optimal performance.
+        - generic [ref=e235]:
+          - img [ref=e237]
+          - generic [ref=e238]:
+            - paragraph [ref=e239]: Monitoring and log access
+            - paragraph [ref=e240]: With access to monitoring and logs, you can identify and resolve issues before they become critical, and gain insight into how your database is performing over time.
+        - generic [ref=e241]:
+          - img [ref=e243]
+          - generic [ref=e244]:
+            - paragraph [ref=e245]: Terraform integration
+            - paragraph [ref=e246]:
+              - text: Manage your service using
+              - link "the Aiven Terraform provider" [ref=e247] [cursor=pointer]:
+                - /url: https://aiven.io/docs/tools/terraform
+              - text: ", and automate the provisioning and management of your managed MySQL database. Easily deploy, manage and scale your database infrastructure with the most popular infrastructure-as-code tool."
+        - generic [ref=e248]:
+          - img [ref=e250]
+          - generic [ref=e251]:
+            - paragraph [ref=e252]: Secure and compliant
+            - paragraph [ref=e253]:
+              - text: All Aiven services have
+              - link "certifications" [ref=e254] [cursor=pointer]:
+                - /url: https://aiven.io/security-compliance
+              - text: like SOC2, ISO27001, PCI-DSS and GDPR. You can also set up easy and secure authentication with SSO.
+        - generic [ref=e255]:
+          - img [ref=e257]
+          - paragraph [ref=e259]: Backups for disaster recovery
+    - generic [ref=e263]:
+      - generic [ref=e266]:
+        - heading "Create your free Aiven for MySQL service" [level=2] [ref=e267]
+        - paragraph [ref=e269]:
+          - text: Ready to take Aiven for MySQL for a spin? Set up your MySQL database in less than 10 minutes. It's easy and quick - simply access our web console or use our API, CLI, or Terraform. Check out
+          - link "our docs" [ref=e270] [cursor=pointer]:
+            - /url: https://docs.aiven.io/docs/products/mysql/get-started
+          - text: and sign up with your Github or Google account!
+      - generic [ref=e273]:
+        - generic [ref=e274]:
+          - img [ref=e276]
+          - generic [ref=e277]:
+            - paragraph [ref=e278]: Connect to your service
+            - paragraph [ref=e279]:
+              - text: Via command line (
+              - link "mysql" [ref=e280] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/connect-from-cli.html#using-mysql
+              - text: ","
+              - link "mysqlsh" [ref=e281] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/connect-from-cli.html#using-mysqlsh
+              - text: ","
+              - link "Aiven’s command line tool" [ref=e282] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/connect-from-cli.html
+              - text: ) or your application (
+              - link "Python" [ref=e283] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/connect-with-python.html
+              - text: ","
+              - link "Java" [ref=e284] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/connect-with-java.html
+              - text: ","
+              - link "PHP" [ref=e285] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/connect-with-php.html
+              - text: )
+        - generic [ref=e286]:
+          - img [ref=e288]
+          - generic [ref=e289]:
+            - paragraph [ref=e290]: Migrate your own database
+            - paragraph [ref=e291]:
+              - text: Test it on Aiven platform from an external MySQL with
+              - link "this migration process" [ref=e292] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/migrate-from-external-mysql
+              - text: .
+        - generic [ref=e293]:
+          - img [ref=e295]
+          - generic [ref=e296]:
+            - paragraph [ref=e297]: Back up and restore
+            - paragraph [ref=e298]:
+              - text: Back up and restore your MySQL data to another storage service by
+              - link "using mysqldump" [ref=e299] [cursor=pointer]:
+                - /url: https://docs.aiven.io/docs/products/mysql/howto/migrate-database-mysqldump
+              - text: to ensure access to your data in case a failure occurs.
+      - link "Get building" [ref=e303] [cursor=pointer]:
+        - /url: https://console.aiven.io/signup
+        - generic [ref=e305]: Get building
+    - generic [ref=e309]:
+      - heading "Aiven is all about open source" [level=2] [ref=e313]
+      - generic [ref=e316]:
+        - generic [ref=e317]:
+          - img [ref=e319]
+          - generic [ref=e320]:
+            - paragraph [ref=e321]: Standard Open Source Technology
+            - paragraph [ref=e322]: By using MySQL as a service, you can transfer your data seamlessly to other services or platforms with no additional costs or complexity. This also means it's easy to switch to Aiven from another service or platform.
+            - paragraph [ref=e323]
+        - generic [ref=e324]:
+          - img [ref=e326]
+          - generic [ref=e327]:
+            - paragraph [ref=e328]: Same robust Aiven services
+            - paragraph [ref=e329]: Aiven’s free MySQL hosting is built on the same robust platform that our enterprise customers trust. You can be confident that your database is in good hands, and that it's backed by the same powerful tools and technology that all our customers rely on.
+            - paragraph [ref=e330]
+        - generic [ref=e331]:
+          - img [ref=e333]
+          - generic [ref=e334]:
+            - paragraph [ref=e335]: Add more services
+            - paragraph [ref=e336]:
+              - text: You can expand your MySQL database with other
+              - link "free services like Aiven for Redis®*" [ref=e337] [cursor=pointer]:
+                - /url: /free-redis-database
+              - text: or
+              - link "Aiven for PostgreSQL®" [ref=e338] [cursor=pointer]:
+                - /url: /free-postgresql-database
+              - text: . Redis, for instance, can be used as a cache to speed up queries and reduce latency, which can be particularly useful for applications that require real-time data processing or handling large volumes of data.
+    - generic [ref=e342]:
+      - heading "FAQ" [level=2] [ref=e345]
+      - generic [ref=e346]:
+        - generic [ref=e347]:
+          - button "Is MySQL® free?" [ref=e348] [cursor=pointer]:
+            - paragraph [ref=e352]: Is MySQL® free?
+            - img [ref=e354]
+          - region "Is MySQL® free?":
+            - generic [ref=e357]:
+              - paragraph [ref=e358]: MySQL® is free as an open-source software, but if you opt for managed services or choose to use it in conjunction with specific platforms, there might be associated costs.
+              - paragraph [ref=e359]:
+                - text: Aiven offers free managed MySQL® service and also a
+                - link "paid version" [ref=e360] [cursor=pointer]:
+                  - /url: https://aiven.io/mysql
+                - text: with full capabilities, support and features of the Aiven data platform.
+        - generic [ref=e361]:
+          - button "How to deploy a free MySQL® database in the cloud?" [ref=e362] [cursor=pointer]:
+            - paragraph [ref=e366]: How to deploy a free MySQL® database in the cloud?
+            - img [ref=e368]
+          - region "How to deploy a free MySQL® database in the cloud?":
+            - generic [ref=e371]:
+              - paragraph [ref=e372]:
+                - link "Sign up with Aiven" [ref=e373] [cursor=pointer]:
+                  - /url: https://console.aiven.io/signup
+                - text: to deploy your initial PostgreSQL® database is quick and easy through our web UI. No credit card needed.
+              - paragraph [ref=e374]: First, choose your preferred region, then click 'Create Service.' Then connect to your database using provided connection details for popular tools. Lastly secure your connection and load data with available workflows for migrating from an existing database or importing sample data.
+              - paragraph [ref=e375]:
+                - text: Alternatively, manage your free service using the
+                - link "Aiven CLI" [ref=e376] [cursor=pointer]:
+                  - /url: https://docs.aiven.io/docs/tools/cli
+                - text: or our
+                - link "Terraform provider." [ref=e377] [cursor=pointer]:
+                  - /url: https://docs.aiven.io/docs/tools/terraform
+        - generic [ref=e378]:
+          - button "What limitations does Aiven's free MySQL® plan have?" [ref=e379] [cursor=pointer]:
+            - paragraph [ref=e383]: What limitations does Aiven's free MySQL® plan have?
+            - img [ref=e385]
+          - region "What limitations does Aiven's free MySQL® plan have?":
+            - generic [ref=e388]:
+              - paragraph [ref=e389]:
+                - text: While
+                - link "free plans come with certain restrictions" [ref=e390] [cursor=pointer]:
+                  - /url: https://docs.aiven.io/docs/platform/concepts/free-plan
+                - text: ", they are available at no cost indefinitely. If you require additional memory or access to the complete set of features, opting for the free trial might be a more suitable choice."
+              - paragraph [ref=e391]: Aiven free plans don't have any time constraints. However, free plans will be automatically powered off if they aren't actively used. You will be notified in advance about any free plans that are scheduled to be powered off, via email and notification in the Aiven platform.
+              - paragraph [ref=e392]:
+                - text: Aiven also reserves the right to terminate services if they are deemed to violate the
+                - link "acceptable use policy" [ref=e393] [cursor=pointer]:
+                  - /url: https://aiven.io/terms
+                - text: .
+              - paragraph [ref=e394]:
+                - link "See the detailed list of features and limitations here" [ref=e395] [cursor=pointer]:
+                  - /url: https://docs.aiven.io/docs/platform/concepts/free-plan#free-plan-features-and-limitations
+    - generic [ref=e399]:
+      - heading "You might be interested in" [level=2] [ref=e402]
+      - generic [ref=e404]:
+        - article [ref=e405]:
+          - 'link "Scale up: a MySQL bug story, or why Aiven works Why use Aiven for MySQL service when you could just roll your own? The simple answer: managed services make economies of scale work for you. Blog Read more" [ref=e407] [cursor=pointer]':
+            - /url: /blog/mysql-bug-story-or-why-aiven-works
+            - generic [ref=e408]:
+              - paragraph [ref=e410]: "Scale up: a MySQL bug story, or why Aiven works"
+              - paragraph [ref=e412]: "Why use Aiven for MySQL service when you could just roll your own? The simple answer: managed services make economies of scale work for you."
+              - list [ref=e413]:
+                - generic [ref=e414]: Blog
+            - generic [ref=e416]:
+              - img [ref=e417]
+              - text: Read more
+        - article [ref=e419]:
+          - 'link "SQL query optimization: a comprehensive developer''s guide An SQL optimization guide for developers. With best practices, warnings, and pro tips to speed up your SQL query optimization. Developer Center Read more" [ref=e421] [cursor=pointer]':
+            - /url: /developer/sql-query-optimization-guide
+            - generic [ref=e422]:
+              - paragraph [ref=e424]: "SQL query optimization: a comprehensive developer's guide"
+              - paragraph [ref=e426]: An SQL optimization guide for developers. With best practices, warnings, and pro tips to speed up your SQL query optimization.
+              - list [ref=e427]:
+                - generic [ref=e428]: Developer Center
+            - generic [ref=e430]:
+              - img [ref=e431]
+              - text: Read more
+        - article [ref=e433]:
+          - link "Upgrade your skills with online developer workshops Learn online how to store, stream, or process your data with our developer advocates in these free workshops. Workshops Read more" [ref=e435] [cursor=pointer]:
+            - /url: /developer-workshops
+            - img [ref=e437]
+            - generic [ref=e438]:
+              - paragraph [ref=e440]: Upgrade your skills with online developer workshops
+              - paragraph [ref=e442]: Learn online how to store, stream, or process your data with our developer advocates in these free workshops.
+              - list [ref=e443]:
+                - generic [ref=e444]: Workshops
+            - generic [ref=e446]:
+              - img [ref=e447]
+              - text: Read more
+  - contentinfo [ref=e449]:
+    - generic [ref=e451]:
+      - generic [ref=e452]:
+        - img [ref=e453]
+        - list [ref=e454]:
+          - listitem [ref=e455]:
+            - link "Reach out on GitHub" [ref=e456] [cursor=pointer]:
+              - /url: https://github.com/aiven
+          - listitem [ref=e457]:
+            - link "Reach out on Facebook" [ref=e458] [cursor=pointer]:
+              - /url: https://www.facebook.com/aivencloud
+          - listitem [ref=e459]:
+            - link "Reach out on LinkedIn" [ref=e460] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/aiven/
+          - listitem [ref=e461]:
+            - link "Reach out on Twitter" [ref=e462] [cursor=pointer]:
+              - /url: https://twitter.com/aiven_io
+          - listitem [ref=e463]:
+            - link "Reach out on YouTube" [ref=e464] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UC4cZf5RyAD5EL0fQf5u8c1g
+      - generic [ref=e465]:
+        - generic [ref=e466]:
+          - paragraph [ref=e467]: Company
+          - list [ref=e468]:
+            - listitem [ref=e469]:
+              - link "About" [ref=e470] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e471]:
+              - link "Open source" [ref=e472] [cursor=pointer]:
+                - /url: /open-source
+            - listitem [ref=e473]:
+              - link "Partners" [ref=e474] [cursor=pointer]:
+                - /url: /partners
+            - listitem [ref=e475]:
+              - link "Careers" [ref=e476] [cursor=pointer]:
+                - /url: /careers
+            - listitem [ref=e477]:
+              - link "Sustainability" [ref=e478] [cursor=pointer]:
+                - /url: /sustainability
+            - listitem [ref=e479]:
+              - link "Modern slavery statement" [ref=e480] [cursor=pointer]:
+                - /url: /aiven-modern-slavery-statement
+            - listitem [ref=e481]:
+              - link "Press" [ref=e482] [cursor=pointer]:
+                - /url: /press
+            - listitem [ref=e483]:
+              - link "Blog" [ref=e484] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=e485]:
+          - paragraph [ref=e486]: Legal
+          - list [ref=e487]:
+            - listitem [ref=e488]:
+              - link "Terms" [ref=e489] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e490]:
+              - link "SLA" [ref=e491] [cursor=pointer]:
+                - /url: /sla
+            - listitem [ref=e492]:
+              - link "AUP" [ref=e493] [cursor=pointer]:
+                - /url: /aup
+            - listitem [ref=e494]:
+              - link "Data processing" [ref=e495] [cursor=pointer]:
+                - /url: /dpa
+            - listitem [ref=e496]:
+              - link "Privacy" [ref=e497] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e498]:
+              - link "DSA contact" [ref=e499] [cursor=pointer]:
+                - /url: /dsa-point-of-contact
+            - listitem [ref=e500]:
+              - link "Cookie policy" [ref=e501] [cursor=pointer]:
+                - /url: /cookies
+            - listitem [ref=e502]:
+              - link "Website terms of use" [ref=e503] [cursor=pointer]:
+                - /url: /website-terms
+            - listitem [ref=e504]:
+              - link "Privacy Notice for California Residents" [ref=e505] [cursor=pointer]:
+                - /url: /privacy/california
+            - listitem [ref=e506]:
+              - button "Click here to change cookie settings" [ref=e507] [cursor=pointer]: Cookie settings
+        - generic [ref=e508]:
+          - paragraph [ref=e509]: Platform
+          - list [ref=e510]:
+            - listitem [ref=e511]:
+              - link "Responsibility matrix" [ref=e512] [cursor=pointer]:
+                - /url: /responsibility-matrix
+            - listitem [ref=e513]:
+              - link "Subprocessors" [ref=e514] [cursor=pointer]:
+                - /url: /subprocessors
+            - listitem [ref=e515]:
+              - link "Security and compliance" [ref=e516] [cursor=pointer]:
+                - /url: /security-compliance
+            - listitem [ref=e517]:
+              - link "Resource library" [ref=e518] [cursor=pointer]:
+                - /url: /resources
+            - listitem [ref=e519]:
+              - link "Support services" [ref=e520] [cursor=pointer]:
+                - /url: /support-services
+            - listitem [ref=e521]:
+              - link "Changelog" [ref=e522] [cursor=pointer]:
+                - /url: /changelog
+            - listitem [ref=e523]:
+              - link "Aiven status" [ref=e524] [cursor=pointer]:
+                - /url: https://status.aiven.io/
+        - generic [ref=e525]:
+          - paragraph [ref=e526]: Contact
+          - list [ref=e527]:
+            - listitem [ref=e528]:
+              - link "Contact us" [ref=e529] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e530]:
+              - link "Book a demo" [ref=e531] [cursor=pointer]:
+                - /url: /book-demo
+            - listitem [ref=e532]:
+              - link "Support" [ref=e533] [cursor=pointer]:
+                - /url: https://aiven.io/docs/platform/howto/support
+            - listitem [ref=e534]:
+              - link "Invoice address" [ref=e535] [cursor=pointer]:
+                - /url: /invoice
+            - listitem [ref=e536]:
+              - link "Events calendar" [ref=e537] [cursor=pointer]:
+                - /url: /events
+        - iframe [ref=e541]:
+          - generic [ref=f1e3]:
+            - generic [ref=f1e4]:
+              - generic [ref=f1e7]:
+                - textbox "Your email *" [ref=f1e8]:
+                  - /placeholder: Your email
+                - text: "*"
+              - button "Subscribe" [ref=f1e10] [cursor=pointer]
+            - paragraph [ref=f1e12]:
+              - text: By submitting your information, you agree to our
+              - link "privacy policy" [ref=f1e13] [cursor=pointer]:
+                - /url: https://aiven.io/privacy
+              - text: .
+      - paragraph [ref=e543]: Copyright © Aiven 2016-2026. Apache, Apache Kafka, Kafka, Apache Flink, and Flink are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. ClickHouse is a registered trademark of ClickHouse, Inc. https://clickhouse.com. OpenSearch, PostgreSQL, MySQL, Grafana, Dragonfly, Valkey, Thanos, Terraform, and Kubernetes are trademarks and property of their respective owners. All product and service names used in this website are for identification purposes only and do not imply endorsement.
+  - generic:
+    - region "Cookie banner" [ref=e545]:
+      - dialog "Privacy" [ref=e546]:
+        - generic [ref=e548]:
+          - generic [ref=e551]:
+            - text: We use cookies to offer you a better browsing experience, analyze site traffic, personalize content, and serve targeted advertisements. Read about how we use cookies and how you can control them by clicking “Cookie Policy.” By clicking “Accept All Cookies”, you consent to our use of cookies. Read our
+            - link "Link to our Cookie policy page, opens in a new tab" [active] [ref=e552] [cursor=pointer]:
+              - /url: https://aiven.io/cookies
+              - text: Cookie Policy
+            - link "Link to our Privacy Policy page, opens in a new tab" [ref=e553] [cursor=pointer]:
+              - /url: https://aiven.io/privacy
+              - text: and Privacy Policy
+          - generic [ref=e555]:
+            - button "Customize settings" [ref=e556] [cursor=pointer]
+            - button "Accept All Cookies" [ref=e557] [cursor=pointer]
+    - text: inactive inactive inactive inactive inactive
+  - generic [ref=e558]:
+    - note "AI assistant" [ref=e559]
+    - note "After AI assistant" [ref=e560]
