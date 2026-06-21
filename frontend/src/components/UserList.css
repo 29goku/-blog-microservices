@@ -1,0 +1,119 @@
+.user-list {
+  margin-top: 0;
+}
+
+.empty {
+  text-align: center;
+  color: #8b8b8b;
+  padding: 64px 32px;
+  border: 2px dashed #e8e8e8;
+  border-radius: 16px;
+  background: rgba(91, 91, 255, 0.02);
+}
+
+.empty p {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.empty small {
+  font-size: 13px;
+  color: #8b8b8b;
+}
+
+.user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.user-card {
+  background: white;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.user-card:hover {
+  border-color: #5b5bff;
+  box-shadow: 0 12px 32px rgba(91, 91, 255, 0.15);
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.user-header h3 {
+  margin: 0;
+  color: #1a1a1a;
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.btn-delete:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.username {
+  margin: 0 0 8px 0;
+  color: #5b5bff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.email {
+  margin: 8px 0;
+  color: #8b8b8b;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.bio {
+  margin: 12px 0 0 0;
+  color: #5a5a5a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.created {
+  margin: 12px 0 0 0;
+  color: #8b8b8b;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .user-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-card {
+    padding: 16px;
+  }
+
+  .empty {
+    padding: 48px 24px;
+  }
+}

@@ -1,0 +1,371 @@
+{
+  "info": {
+    "_postman_id": "blog-microservices-collection",
+    "name": "Blog Microservices",
+    "description": "Collection for testing Blog Microservices (User, Post, Comment services)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Service",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"secure123\",\n  \"fullName\": \"John Doe\",\n  \"bio\": \"Software Engineer\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8081/api/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8081/api/users/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "users", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by Username",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8081/api/users/username/john_doe",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "users", "username", "john_doe"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Smith\",\n  \"bio\": \"Senior Software Engineer\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/users/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "users", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8081/api/users/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "users", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Post Service",
+      "item": [
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"title\": \"Introduction to Microservices\",\n  \"content\": \"Microservices architecture allows independent deployment and scaling of services...\",\n  \"tags\": \"microservices,architecture,spring\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/api/posts",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8082/api/posts",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8082/api/posts/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Posts by User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8082/api/posts/user/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts", "user", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8082/api/posts/search?title=Microservices",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts", "search"],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "Microservices"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Advanced Microservices Architecture\",\n  \"content\": \"Deep dive into microservices with service discovery and API gateway...\",\n  \"tags\": \"microservices,architecture,spring,kubernetes\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/api/posts/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8082/api/posts/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "posts", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comment Service",
+      "item": [
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": 1,\n  \"userId\": 1,\n  \"content\": \"Great post! Very informative.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8083/api/comments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Comments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8083/api/comments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8083/api/comments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments on Post",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8083/api/comments/post/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments", "post", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments by User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8083/api/comments/user/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments", "user", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Excellent post! Very informative and well-structured.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8083/api/comments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8083/api/comments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "comments", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
