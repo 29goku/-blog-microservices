@@ -62,7 +62,7 @@ services:
       - key: DB_URL
         fromDatabase:
           name: blog-user-db
-          property: jdbcUrl
+          property: connectionString
       - key: DB_USERNAME
         fromDatabase:
           name: blog-user-db
@@ -90,7 +90,7 @@ services:
       - key: DB_URL
         fromDatabase:
           name: blog-post-db
-          property: jdbcUrl
+          property: connectionString
       - key: DB_USERNAME
         fromDatabase:
           name: blog-post-db
@@ -118,7 +118,7 @@ services:
       - key: DB_URL
         fromDatabase:
           name: blog-comment-db
-          property: jdbcUrl
+          property: connectionString
       - key: DB_USERNAME
         fromDatabase:
           name: blog-comment-db
@@ -146,7 +146,7 @@ services:
       - key: DB_URL
         fromDatabase:
           name: like-dislike-db
-          property: jdbcUrl
+          property: connectionString
       - key: DB_USERNAME
         fromDatabase:
           name: like-dislike-db
