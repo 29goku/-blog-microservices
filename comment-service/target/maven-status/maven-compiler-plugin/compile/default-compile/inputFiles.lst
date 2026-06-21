@@ -1,0 +1,17 @@
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/CommentServiceApplication.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/client/PostServiceClient.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/client/UserServiceClient.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/config/CorsConfig.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/controller/CommentController.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/dto/CommentDTO.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/dto/PostDTO.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/dto/UserDTO.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/entity/Comment.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/event/UserCreatedEvent.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/exception/CommentNotFoundException.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/exception/ErrorResponse.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/exception/GlobalExceptionHandler.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/exception/InvalidCommentException.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/kafka/UserEventConsumer.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/repository/CommentRepository.java
+/Users/shosingh_1/blog-microservices/comment-service/src/main/java/com/blog/comment/service/CommentService.java
