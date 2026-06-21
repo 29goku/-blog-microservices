@@ -1,0 +1,435 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link "Render" [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "Render" [ref=e8]
+          - button "S Shobhit's workspace" [ref=e12] [cursor=pointer]:
+            - generic [ref=e13]:
+              - generic [ref=e14]: S
+              - generic "Shobhit's workspace" [ref=e15]
+              - img [ref=e16]
+        - generic [ref=e20]:
+          - navigation [ref=e21]:
+            - list [ref=e22]:
+              - listitem [ref=e23]:
+                - link "Blueprints" [ref=e24] [cursor=pointer]:
+                  - /url: /blueprints
+                  - img [ref=e25]
+                  - generic [ref=e30]: Blueprints
+                - text: /
+              - listitem [ref=e31]:
+                - link "blog-microservices" [ref=e32] [cursor=pointer]:
+                  - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                  - generic [ref=e33]: blog-microservices
+                - button [ref=e36] [cursor=pointer]:
+                  - img [ref=e37]
+          - button "Search Command + K" [ref=e40] [cursor=pointer]:
+            - img [ref=e42]
+            - text: Search
+            - generic [ref=e44]:
+              - img [ref=e45]
+              - generic [ref=e47]: Command
+              - generic [ref=e48]: +
+              - generic [ref=e49]: K
+              - generic [ref=e50]: K
+        - generic [ref=e51]:
+          - button "New" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]:
+              - img [ref=e55]
+              - generic [ref=e57]: New
+          - button "Upgrade" [ref=e59] [cursor=pointer]:
+            - generic [ref=e60]:
+              - img [ref=e61]
+              - generic [ref=e63]: Upgrade
+          - button "Help" [ref=e65] [cursor=pointer]:
+            - img "Help" [ref=e66]
+          - button "2" [ref=e71] [cursor=pointer]:
+            - generic [ref=e73]: "2"
+      - generic [ref=e74]:
+        - navigation [ref=e75]:
+          - separator [ref=e76]
+          - generic [ref=e77]:
+            - generic [ref=e78]:
+              - link "Blueprints" [ref=e79] [cursor=pointer]:
+                - /url: /blueprints
+                - img [ref=e80]
+                - generic [ref=e82]: Blueprints
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e89]: blog-microservices
+            - list [ref=e91]:
+              - listitem [ref=e92]:
+                - link "Resources" [ref=e93] [cursor=pointer]:
+                  - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg/resources
+                  - img [ref=e94]
+                  - generic [ref=e96]: Resources
+              - listitem [ref=e97]:
+                - link "Syncs" [ref=e98] [cursor=pointer]:
+                  - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg/syncs
+                  - img [ref=e99]
+                  - generic [ref=e102]: Syncs
+              - listitem [ref=e103]:
+                - link "Settings" [ref=e104] [cursor=pointer]:
+                  - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg/settings
+                  - img [ref=e105]
+                  - generic [ref=e108]: Settings
+          - generic [ref=e110]:
+            - button "Collapse items" [expanded] [ref=e111] [cursor=pointer]:
+              - img [ref=e112]
+            - list "Footer navigation" [ref=e114]:
+              - listitem [ref=e115]:
+                - link "Changelog" [ref=e116] [cursor=pointer]:
+                  - /url: https://render.com/changelog
+                  - img [ref=e117]
+                  - generic [ref=e122]: Changelog
+              - listitem [ref=e123]:
+                - link "Invite a friend" [ref=e124] [cursor=pointer]:
+                  - /url: /invites
+                  - img [ref=e125]
+                  - generic [ref=e127]: Invite a friend
+              - listitem [ref=e128]:
+                - button "Contact support" [ref=e129] [cursor=pointer]:
+                  - img [ref=e130]
+                  - generic [ref=e134]: Contact support
+            - link "Render Status" [ref=e136] [cursor=pointer]:
+              - /url: https://status.render.com
+              - img [ref=e137]
+              - generic [ref=e139]: Render Status
+        - generic [ref=e141]:
+          - banner [ref=e143]:
+            - generic [ref=e144]:
+              - generic [ref=e145]:
+                - img [ref=e146]
+                - generic [ref=e151]: Blueprint
+              - generic [ref=e152]:
+                - heading "blog-microservices" [level=1] [ref=e154]:
+                  - generic [ref=e155]: blog-microservices
+                - button "Manual sync" [ref=e157] [cursor=pointer]:
+                  - text: Manual sync
+                  - img [ref=e159]
+            - generic [ref=e164]:
+              - generic [ref=e166]:
+                - generic [ref=e167]: "Blueprint ID:"
+                - generic "Blueprint ID:" [ref=e168]:
+                  - generic [ref=e169]: exs-d8rv1rnlk1mc73cdgltg
+                  - button "Copy" [ref=e172] [cursor=pointer]:
+                    - img [ref=e173]
+              - generic [ref=e177]:
+                - img "GitHub" [ref=e179]
+                - link "29goku / -blog-microservices master" [ref=e181] [cursor=pointer]:
+                  - /url: https://github.com/29goku/-blog-microservices/tree/master
+                  - generic [ref=e182]:
+                    - generic [ref=e183]: 29goku / -blog-microservices
+                    - img [ref=e184]
+                    - generic [ref=e186]: master
+          - main [ref=e187]:
+            - table [ref=e190]:
+              - rowgroup [ref=e191]:
+                - row "Select all rows id Service Name 10 total rows Status Runtime Region Updated" [ref=e192]:
+                  - columnheader "Select all rows":
+                    - generic [ref=e195] [cursor=pointer]:
+                      - checkbox "Select all rows" [ref=e196]
+                      - generic [ref=e198]: Select all rows
+                  - columnheader "id" [ref=e199]:
+                    - button "id" [ref=e200] [cursor=pointer]:
+                      - generic [ref=e201]: id
+                  - columnheader "Service Name 10 total rows" [ref=e202]:
+                    - button "Service Name 10 total rows" [ref=e203] [cursor=pointer]:
+                      - generic [ref=e204]:
+                        - generic [ref=e205]: Service Name
+                        - generic "10 total rows" [ref=e206]: "10"
+                  - columnheader "Status" [ref=e207]:
+                    - button "Status" [ref=e208] [cursor=pointer]:
+                      - generic [ref=e209]: Status
+                  - columnheader "Runtime" [ref=e210]:
+                    - button "Runtime" [ref=e211] [cursor=pointer]:
+                      - generic [ref=e212]: Runtime
+                  - columnheader "Region" [ref=e213]:
+                    - button "Region" [ref=e214] [cursor=pointer]:
+                      - generic [ref=e215]: Region
+                  - columnheader "Updated" [ref=e216]:
+                    - button "Updated" [ref=e217] [cursor=pointer]:
+                      - generic [ref=e218]: Updated
+                      - img [ref=e219]
+                  - columnheader [ref=e221]
+              - rowgroup [ref=e222]:
+                - row "Select row like-dislike-service Docker oregon <1m Options" [ref=e223]:
+                  - cell "Select row":
+                    - generic [ref=e226] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e227]
+                      - generic [ref=e229]: Select row
+                  - cell [ref=e230]:
+                    - img [ref=e233]
+                  - cell "like-dislike-service" [ref=e235]:
+                    - generic [ref=e236]:
+                      - link "like-dislike-service" [ref=e237] [cursor=pointer]:
+                        - /url: /web/srv-d8rv48svikkc7391uum0
+                        - generic [ref=e238]: like-dislike-service
+                      - link [ref=e241] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e242]
+                  - cell [ref=e247]
+                  - cell "Docker" [ref=e248]:
+                    - generic "Docker" [ref=e250]
+                  - cell "oregon" [ref=e251]
+                  - cell "<1m" [ref=e252]:
+                    - time [ref=e253]: <1m
+                  - cell "Options" [ref=e254]:
+                    - button "Options" [ref=e256] [cursor=pointer]:
+                      - generic [ref=e257]: Options
+                      - img [ref=e258]
+                - row "Select row api-gateway Docker oregon <1m Options" [ref=e262]:
+                  - cell "Select row":
+                    - generic [ref=e265] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e266]
+                      - generic [ref=e268]: Select row
+                  - cell [ref=e269]:
+                    - img [ref=e272]
+                  - cell "api-gateway" [ref=e274]:
+                    - generic [ref=e275]:
+                      - link "api-gateway" [ref=e276] [cursor=pointer]:
+                        - /url: /web/srv-d8rv3ukvikkc7391uhd0
+                        - generic [ref=e277]: api-gateway
+                      - link [ref=e280] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e281]
+                  - cell [ref=e286]
+                  - cell "Docker" [ref=e287]:
+                    - generic "Docker" [ref=e289]
+                  - cell "oregon" [ref=e290]
+                  - cell "<1m" [ref=e291]:
+                    - time [ref=e292]: <1m
+                  - cell "Options" [ref=e293]:
+                    - button "Options" [ref=e295] [cursor=pointer]:
+                      - generic [ref=e296]: Options
+                      - img [ref=e297]
+                - row "Select row post-service Docker oregon <1m Options" [ref=e301]:
+                  - cell "Select row":
+                    - generic [ref=e304] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e305]
+                      - generic [ref=e307]: Select row
+                  - cell [ref=e308]:
+                    - img [ref=e311]
+                  - cell "post-service" [ref=e313]:
+                    - generic [ref=e314]:
+                      - link "post-service" [ref=e315] [cursor=pointer]:
+                        - /url: /web/srv-d8rv47kvikkc7391uspg
+                        - generic [ref=e316]: post-service
+                      - link [ref=e319] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e320]
+                  - cell [ref=e325]
+                  - cell "Docker" [ref=e326]:
+                    - generic "Docker" [ref=e328]
+                  - cell "oregon" [ref=e329]
+                  - cell "<1m" [ref=e330]:
+                    - time [ref=e331]: <1m
+                  - cell "Options" [ref=e332]:
+                    - button "Options" [ref=e334] [cursor=pointer]:
+                      - generic [ref=e335]: Options
+                      - img [ref=e336]
+                - row "Select row eureka-server Docker oregon <1m Options" [ref=e340]:
+                  - cell "Select row":
+                    - generic [ref=e343] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e344]
+                      - generic [ref=e346]: Select row
+                  - cell [ref=e347]:
+                    - img [ref=e350]
+                  - cell "eureka-server" [ref=e352]:
+                    - generic [ref=e353]:
+                      - link "eureka-server" [ref=e354] [cursor=pointer]:
+                        - /url: /web/srv-d8rv3ukvikkc7391uhcg
+                        - generic [ref=e355]: eureka-server
+                      - link [ref=e358] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e359]
+                  - cell [ref=e364]
+                  - cell "Docker" [ref=e365]:
+                    - generic "Docker" [ref=e367]
+                  - cell "oregon" [ref=e368]
+                  - cell "<1m" [ref=e369]:
+                    - time [ref=e370]: <1m
+                  - cell "Options" [ref=e371]:
+                    - button "Options" [ref=e373] [cursor=pointer]:
+                      - generic [ref=e374]: Options
+                      - img [ref=e375]
+                - row "Select row user-service Docker oregon <1m Options" [ref=e379]:
+                  - cell "Select row":
+                    - generic [ref=e382] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e383]
+                      - generic [ref=e385]: Select row
+                  - cell [ref=e386]:
+                    - img [ref=e389]
+                  - cell "user-service" [ref=e391]:
+                    - generic [ref=e392]:
+                      - link "user-service" [ref=e393] [cursor=pointer]:
+                        - /url: /web/srv-d8rv48svikkc7391uusg
+                        - generic [ref=e394]: user-service
+                      - link [ref=e397] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e398]
+                  - cell [ref=e403]
+                  - cell "Docker" [ref=e404]:
+                    - generic "Docker" [ref=e406]
+                  - cell "oregon" [ref=e407]
+                  - cell "<1m" [ref=e408]:
+                    - time [ref=e409]: <1m
+                  - cell "Options" [ref=e410]:
+                    - button "Options" [ref=e412] [cursor=pointer]:
+                      - generic [ref=e413]: Options
+                      - img [ref=e414]
+                - row "Select row comment-service Docker oregon <1m Options" [ref=e418]:
+                  - cell "Select row":
+                    - generic [ref=e421] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e422]
+                      - generic [ref=e424]: Select row
+                  - cell [ref=e425]:
+                    - img [ref=e428]
+                  - cell "comment-service" [ref=e430]:
+                    - generic [ref=e431]:
+                      - link "comment-service" [ref=e432] [cursor=pointer]:
+                        - /url: /web/srv-d8rv4a4vikkc7391v13g
+                        - generic [ref=e433]: comment-service
+                      - link [ref=e436] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e437]
+                  - cell [ref=e442]
+                  - cell "Docker" [ref=e443]:
+                    - generic "Docker" [ref=e445]
+                  - cell "oregon" [ref=e446]
+                  - cell "<1m" [ref=e447]:
+                    - time [ref=e448]: <1m
+                  - cell "Options" [ref=e449]:
+                    - button "Options" [ref=e451] [cursor=pointer]:
+                      - generic [ref=e452]: Options
+                      - img [ref=e453]
+                - row "Select row blog-post-db PostgreSQL 18 oregon 20min Options" [ref=e457]:
+                  - cell "Select row":
+                    - generic [ref=e460] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e461]
+                      - generic [ref=e463]: Select row
+                  - cell [ref=e464]:
+                    - img [ref=e467]
+                  - cell "blog-post-db" [ref=e469]:
+                    - generic [ref=e470]:
+                      - link "blog-post-db" [ref=e471] [cursor=pointer]:
+                        - /url: /d/dpg-d8rv3ukvikkc7391uhj0-a
+                        - generic [ref=e472]: blog-post-db
+                      - link [ref=e475] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e476]
+                  - cell [ref=e481]
+                  - cell "PostgreSQL 18" [ref=e482]:
+                    - generic "PostgreSQL 18" [ref=e484]
+                  - cell "oregon" [ref=e485]
+                  - cell "20min" [ref=e486]:
+                    - time [ref=e487]: 20min
+                  - cell "Options" [ref=e488]:
+                    - button "Options" [ref=e490] [cursor=pointer]:
+                      - generic [ref=e491]: Options
+                      - img [ref=e492]
+                - row "Select row blog-user-db PostgreSQL 18 oregon 20min Options" [ref=e496]:
+                  - cell "Select row":
+                    - generic [ref=e499] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e500]
+                      - generic [ref=e502]: Select row
+                  - cell [ref=e503]:
+                    - img [ref=e506]
+                  - cell "blog-user-db" [ref=e508]:
+                    - generic [ref=e509]:
+                      - link "blog-user-db" [ref=e510] [cursor=pointer]:
+                        - /url: /d/dpg-d8rv3ukvikkc7391uhk0-a
+                        - generic [ref=e511]: blog-user-db
+                      - link [ref=e514] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e515]
+                  - cell [ref=e520]
+                  - cell "PostgreSQL 18" [ref=e521]:
+                    - generic "PostgreSQL 18" [ref=e523]
+                  - cell "oregon" [ref=e524]
+                  - cell "20min" [ref=e525]:
+                    - time [ref=e526]: 20min
+                  - cell "Options" [ref=e527]:
+                    - button "Options" [ref=e529] [cursor=pointer]:
+                      - generic [ref=e530]: Options
+                      - img [ref=e531]
+                - row "Select row blog-comment-db PostgreSQL 18 oregon 20min Options" [ref=e535]:
+                  - cell "Select row":
+                    - generic [ref=e538] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e539]
+                      - generic [ref=e541]: Select row
+                  - cell [ref=e542]:
+                    - img [ref=e545]
+                  - cell "blog-comment-db" [ref=e547]:
+                    - generic [ref=e548]:
+                      - link "blog-comment-db" [ref=e549] [cursor=pointer]:
+                        - /url: /d/dpg-d8rv3ukvikkc7391uheg-a
+                        - generic [ref=e550]: blog-comment-db
+                      - link [ref=e553] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e554]
+                  - cell [ref=e559]
+                  - cell "PostgreSQL 18" [ref=e560]:
+                    - generic "PostgreSQL 18" [ref=e562]
+                  - cell "oregon" [ref=e563]
+                  - cell "20min" [ref=e564]:
+                    - time [ref=e565]: 20min
+                  - cell "Options" [ref=e566]:
+                    - button "Options" [ref=e568] [cursor=pointer]:
+                      - generic [ref=e569]: Options
+                      - img [ref=e570]
+                - row "Select row like-dislike-db PostgreSQL 18 oregon 20min Options" [ref=e574]:
+                  - cell "Select row":
+                    - generic [ref=e577] [cursor=pointer]:
+                      - checkbox "Select row" [ref=e578]
+                      - generic [ref=e580]: Select row
+                  - cell [ref=e581]:
+                    - img [ref=e584]
+                  - cell "like-dislike-db" [ref=e586]:
+                    - generic [ref=e587]:
+                      - link "like-dislike-db" [ref=e588] [cursor=pointer]:
+                        - /url: /d/dpg-d8rv3ukvikkc7391uhdg-a
+                        - generic [ref=e589]: like-dislike-db
+                      - link [ref=e592] [cursor=pointer]:
+                        - /url: /blueprint/exs-d8rv1rnlk1mc73cdgltg
+                        - img [ref=e593]
+                  - cell [ref=e598]
+                  - cell "PostgreSQL 18" [ref=e599]:
+                    - generic "PostgreSQL 18" [ref=e601]
+                  - cell "oregon" [ref=e602]
+                  - cell "20min" [ref=e603]:
+                    - time [ref=e604]: 20min
+                  - cell "Options" [ref=e605]:
+                    - button "Options" [ref=e607] [cursor=pointer]:
+                      - generic [ref=e608]: Options
+                      - img [ref=e609]
+            - generic:
+              - generic:
+                - generic: "0 services selected:"
+              - generic:
+                - separator
+                - generic:
+                  - generic:
+                    - button:
+                      - img
+    - generic:
+      - generic:
+        - generic: "0 services selected:"
+        - generic:
+          - generic:
+            - button:
+              - generic:
+                - img
+              - generic: Move
+              - img
+      - generic:
+        - separator
+        - generic:
+          - generic:
+            - button:
+              - img
+  - iframe [ref=e613]:
+    
