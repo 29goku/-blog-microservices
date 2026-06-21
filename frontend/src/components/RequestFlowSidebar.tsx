@@ -37,7 +37,7 @@ export function RequestFlowSidebar() {
 
   useEffect(() => {
     if (!autoRefresh) return;
-    const interval = setInterval(fetchRequests, 1500);
+    const interval = setInterval(fetchRequests, 10000);
     return () => clearInterval(interval);
   }, [autoRefresh]);
 
