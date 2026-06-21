@@ -49,10 +49,10 @@ export default function CreateUserForm({ onUserCreated, onCancel, compact = fals
       await userAPI.create({
         username,
         email,
-        password,
         fullName,
         bio: formData.bio,
-      });
+        ...(password ? { password } : {}),
+      } as Omit<import('../api/client').User, 'id' | 'createdAt'>);
       setFormData({
         username: '',
         email: '',
