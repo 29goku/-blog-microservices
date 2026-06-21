@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://api-gateway.onrender.com/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://api-gateway-3qmy.onrender.com/api/:path*" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
