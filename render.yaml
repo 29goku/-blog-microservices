@@ -55,11 +55,11 @@ services:
       - key: GATEWAY_DISCOVERY_ENABLED
         value: "false"
       - key: USER_SERVICE_URL
-        value: https://user-service.onrender.com
+        value: https://user-service-gntw.onrender.com
       - key: POST_SERVICE_URL
-        value: https://post-service.onrender.com
+        value: https://post-service-7g3r.onrender.com
       - key: COMMENT_SERVICE_URL
-        value: https://comment-service.onrender.com
+        value: https://comment-service-edye.onrender.com
       - key: LIKE_DISLIKE_SERVICE_URL
         value: https://like-dislike-service.onrender.com
 
@@ -143,7 +143,7 @@ services:
       - key: EUREKA_FETCH
         value: "false"
       - key: USER_SERVICE_URL
-        value: https://user-service.onrender.com
+        value: https://user-service-gntw.onrender.com
 
   # ─────────────────────────────────────────
   # Comment Service
@@ -185,9 +185,9 @@ services:
       - key: EUREKA_FETCH
         value: "false"
       - key: USER_SERVICE_URL
-        value: https://user-service.onrender.com
+        value: https://user-service-gntw.onrender.com
       - key: POST_SERVICE_URL
-        value: https://post-service.onrender.com
+        value: https://post-service-7g3r.onrender.com
 
   # ─────────────────────────────────────────
   # Like-Dislike Service
@@ -229,6 +229,6 @@ services:
       - key: EUREKA_FETCH
         value: "false"
       - key: USER_SERVICE_URL
-        value: https://user-service.onrender.com
+        value: https://user-service-gntw.onrender.com
       - key: POST_SERVICE_URL
-        value: https://post-service.onrender.com
+        value: https://post-service-7g3r.onrender.com
