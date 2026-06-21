@@ -35,7 +35,7 @@ export default function PostList({
     const allComments: { [key: number]: BlogComment[] } = {};
     for (const post of posts) {
       try {
-        const postComments = await commentAPI.getByPostId(post.id);
+        const postComments: BlogComment[] = await commentAPI.getByPostId(post.id);
         allComments[post.id] = postComments;
       } catch (err) {
         console.warn(`Failed to load comments for post ${post.id}`);
