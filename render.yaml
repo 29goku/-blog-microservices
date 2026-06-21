@@ -1,0 +1,129 @@
+services:
+  # ─────────────────────────────────────────
+  # Eureka Service Discovery
+  # Deploy first; copy its public URL into EUREKA_URI for all other services.
+  # ─────────────────────────────────────────
+  - type: web
+    name: eureka-server
+    runtime: docker
+    dockerfilePath: ./eureka-server/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8761
+
+  # ─────────────────────────────────────────
+  # API Gateway  (public entry point)
+  # ─────────────────────────────────────────
+  - type: web
+    name: api-gateway
+    runtime: docker
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8080
+      # Set to: https://<eureka-server>.onrender.com/eureka/
+      - key: EUREKA_URI
+        sync: false
+
+  # ─────────────────────────────────────────
+  # User Service
+  # ─────────────────────────────────────────
+  - type: web
+    name: user-service
+    runtime: docker
+    dockerfilePath: ./user-service/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8081
+      # jdbc:mysql://<host>:<port>/blog_user_db?createDatabaseIfNotExist=true&useSSL=true
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: EUREKA_URI
+        sync: false
+
+  # ─────────────────────────────────────────
+  # Post Service
+  # ─────────────────────────────────────────
+  - type: web
+    name: post-service
+    runtime: docker
+    dockerfilePath: ./post-service/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8082
+      # jdbc:mysql://<host>:<port>/blog_post_db?createDatabaseIfNotExist=true&useSSL=true
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: EUREKA_URI
+        sync: false
+      # Upstash Kafka broker, e.g. <id>.upstash.io:9092
+      - key: KAFKA_BROKERS
+        sync: false
+
+  # ─────────────────────────────────────────
+  # Comment Service
+  # ─────────────────────────────────────────
+  - type: web
+    name: comment-service
+    runtime: docker
+    dockerfilePath: ./comment-service/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8083
+      # jdbc:mysql://<host>:<port>/blog_comment_db?createDatabaseIfNotExist=true&useSSL=true
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: EUREKA_URI
+        sync: false
+      - key: KAFKA_BROKERS
+        sync: false
+
+  # ─────────────────────────────────────────
+  # Like-Dislike Service
+  # ─────────────────────────────────────────
+  - type: web
+    name: like-dislike-service
+    runtime: docker
+    dockerfilePath: ./like-dislike-service/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8084
+      # jdbc:mysql://<host>:<port>/like_dislike_db?createDatabaseIfNotExist=true&useSSL=true
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: EUREKA_URI
+        sync: false
