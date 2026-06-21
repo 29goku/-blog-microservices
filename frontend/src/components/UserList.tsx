@@ -13,7 +13,7 @@ interface UserListProps {
 export default function UserList({
   users,
   onUserDeleted,
-  onRefresh,
+  onRefresh: _onRefresh,
 }: UserListProps) {
   const [dialog, setDialog] = useState<{ title: string; message: string; type: 'error' | 'success' | 'warning' | 'info' } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);

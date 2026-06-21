@@ -175,7 +175,7 @@ export function RequestFlowDashboard() {
             <option value="all">All Requests</option>
             <option value="success">Successful Only</option>
             <option value="errors">Errors Only</option>
-            <option value="slow">Slow (>50ms)</option>
+            <option value="slow">{'Slow (>50ms)'}</option>
           </select>
         </div>
         <div className={styles.filterGroup}>

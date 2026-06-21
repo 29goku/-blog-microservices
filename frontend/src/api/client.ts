@@ -6,15 +6,11 @@ const API_BASE = {
   comments: `${BASE}/api`,
 };
 
-const defaultHeaders = {
-  'Content-Type': 'application/json',
-  'Accept': 'application/json',
-};
-
 export interface User {
   id: number;
   username: string;
   email: string;
+  password?: string;
   fullName: string;
   bio: string;
   createdAt: number;

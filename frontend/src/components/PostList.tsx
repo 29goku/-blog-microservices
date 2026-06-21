@@ -1,4 +1,4 @@
-import { postAPI, commentAPI } from '../api/client';
+import { postAPI, commentAPI, type Comment as BlogComment } from '../api/client';
 import { useState, useEffect } from 'react';
 import CommentSection from './CommentSection';
 import LikeDislikeButton from './LikeDislikeButton';
@@ -18,11 +18,11 @@ export default function PostList({
   posts,
   users,
   onPostDeleted,
-  onRefresh,
+  onRefresh: _onRefresh,
   currentUserId,
 }: PostListProps) {
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
-  const [comments, setComments] = useState<{ [key: number]: Comment[] }>({});
+  const [comments, setComments] = useState<{ [key: number]: BlogComment[] }>({});
   const [dialog, setDialog] = useState<{ title: string; message: string; type: 'error' | 'success' | 'warning' | 'info' } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
@@ -32,7 +32,7 @@ export default function PostList({
 
   const preloadComments = async () => {
     if (posts.length === 0) return;
-    const allComments: { [key: number]: Comment[] } = {};
+    const allComments: { [key: number]: BlogComment[] } = {};
     for (const post of posts) {
       try {
         const postComments = await commentAPI.getByPostId(post.id);
@@ -105,7 +105,7 @@ export default function PostList({
             <p className="post-content">{post.content}</p>
             {post.tags && (
               <div className="post-tags">
-                {post.tags.split(',').map((tag) => (
+                {post.tags.split(',').map((tag: string) => (
                   <span key={tag} className="tag">
                     {tag.trim()}
                   </span>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './Dialog.css';
 
 interface DialogProps {
