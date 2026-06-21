@@ -1,0 +1,355 @@
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║                    BLOG MICROSERVICES - ARCHITECTURE DIAGRAM                           ║
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           CLIENT REQUEST FLOW                                        │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+CLIENT (Browser/Postman/curl)
+   │
+   ├─────────────────────────────────────────────────────────────────────────────────┐
+   │                                                                                 │
+   ▼                                                                                 ▼
+┌──────────────────┐                                              ┌──────────────────┐
+│  USER SERVICE    │                                              │  POST SERVICE    │
+│  (Port 8081)     │ ─Feign─────────────────────────────────────► │  (Port 8082)     │
+├──────────────────┤                                              ├──────────────────┤
+│ POST /api/users  │                                              │ POST /api/posts  │
+│ GET /api/users   │                                              │ GET /api/posts   │
+│ GET /api/users/1 │ ◄────────────────────────────────────────────│ GET /api/posts/1 │
+│ etc.             │  (returns User object for enrichment)        │ etc.             │
+└──────────────────┘                                              └──────────────────┘
+   │                                                                   │
+   │ REST API                                                        │ Feign (Calls User Service)
+   │                                                                   │
+   │                                                                   │
+   │                                    ┌─────────────────┐            │
+   │                                    │ COMMENT SERVICE │◄───────────┘
+   │                                    │ (Port 8083)     │
+   │                                    ├─────────────────┤
+   │                                    │ POST /api/...   │
+   │                                    │ GET /api/...    │
+   └───────────────────────────────────►│ PUT /api/...    │
+        (Create, update, delete)        │ DELETE /api/...│
+                                        └─────────────────┘
+                                           │
+                                           │ Feign calls
+                                           ├──► User Service
+                                           └──► Post Service
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           DATABASE LAYER (Independent)                               │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│  blog_user_db       │    │  blog_post_db       │    │ blog_comment_db     │
+├─────────────────────┤    ├─────────────────────┤    ├─────────────────────┤
+│  USERS TABLE        │    │  POSTS TABLE        │    │  COMMENTS TABLE     │
+├─────────────────────┤    ├─────────────────────┤    ├─────────────────────┤
+│  id (PK)            │    │  id (PK)            │    │  id (PK)            │
+│  username (UNIQUE)  │    │  userId (FK)        │    │  postId (FK)        │
+│  email (UNIQUE)     │    │  title              │    │  userId (FK)        │
+│  password           │    │  content            │    │  content            │
+│  fullName           │    │  tags               │    │  createdAt          │
+│  bio                │    │  createdAt          │    │  updatedAt          │
+│  createdAt          │    │  updatedAt          │    │                     │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+         │ JPA                    │ JPA                      │ JPA
+         │                        │                          │
+┌────────▼──────────┐    ┌────────▼──────────┐    ┌────────▼──────────┐
+│ UserRepository     │    │ PostRepository     │    │ CommentRepository │
+└────────────────────┘    └────────────────────┘    └────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           SERVICE COMMUNICATION                                      │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+SCENARIO 1: Get Post with User Details
+────────────────────────────────────────
+
+  GET /api/posts/1
+         │
+         ▼
+  ┌──────────────────────────┐
+  │ PostController           │
+  │ getPostById(id=1)        │
+  └────────────┬─────────────┘
+               │
+               ▼
+  ┌──────────────────────────┐
+  │ PostService              │
+  │ getPostById(id=1)        │
+  └────────────┬─────────────┘
+               │
+               ├─► 1. Fetch Post from PostRepository
+               │      Result: Post(id=1, userId=5, title="...", content="...")
+               │
+               ├─► 2. Call UserServiceClient.getUserById(5)
+               │      │
+               │      ├─► HTTP GET http://localhost:8081/api/users/5
+               │      │
+               │      └─ Result: User(id=5, username="john", email="...")
+               │
+               ▼
+  ┌──────────────────────────────────────────┐
+  │ PostDTO enriched with User object        │
+  ├──────────────────────────────────────────┤
+  │ {                                        │
+  │   "id": 1,                               │
+  │   "userId": 5,                           │
+  │   "title": "...",                        │
+  │   "content": "...",                      │
+  │   "user": {                              │ ◄── ENRICHED by Feign
+  │     "id": 5,                             │
+  │     "username": "john",                  │
+  │     "email": "..."                       │
+  │   }                                      │
+  │ }                                        │
+  └──────────────────────────────────────────┘
+
+SCENARIO 2: Create Comment (Multiple Validations)
+──────────────────────────────────────────────────
+
+  POST /api/comments {postId: 1, userId: 5, content: "..."}
+         │
+         ▼
+  ┌──────────────────────────┐
+  │ CommentController        │
+  │ createComment()          │
+  └────────────┬─────────────┘
+               │
+               ▼
+  ┌──────────────────────────────────┐
+  │ CommentService                   │
+  │ createComment()                  │
+  └────────────┬──────────────────────┘
+               │
+               ├─► Validation 1: UserServiceClient.getUserById(5)
+               │        ├─► HTTP GET http://localhost:8081/api/users/5
+               │        └─► If fails: throw UserNotValidException
+               │
+               ├─► Validation 2: PostServiceClient.getPostById(1)
+               │        ├─► HTTP GET http://localhost:8082/api/posts/1
+               │        └─► If fails: throw InvalidCommentException
+               │
+               ├─► Save Comment to Database
+               │
+               ▼
+  ┌──────────────────────────────────────────┐
+  │ Enriched CommentDTO returned             │
+  │ {                                        │
+  │   "id": 123,                             │
+  │   "postId": 1,                           │
+  │   "userId": 5,                           │
+  │   "content": "...",                      │
+  │   "user": { ... },        ◄─ From User Service Feign call
+  │   "post": { ... }         ◄─ From Post Service Feign call
+  │ }                                        │
+  └──────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           LAYERED ARCHITECTURE                                       │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+Example: User Service Layer Structure
+
+┌────────────────────────────────────────────────────┐
+│                    Layer 0: API                    │
+│              (HTTP Request/Response)               │
+└────────────────────────────────────────────────────┘
+                           │
+                           │ Receives HTTP Request
+                           ▼
+┌────────────────────────────────────────────────────┐
+│              Layer 1: Controller                   │
+│         UserController                             │
+│  ├─ @PostMapping("/")                             │
+│  ├─ @GetMapping("/{id}")                          │
+│  ├─ @GetMapping("/username/{username}")           │
+│  ├─ @PutMapping("/{id}")                          │
+│  └─ @DeleteMapping("/{id}")                       │
+└────────────────────────────────────────────────────┘
+                           │
+                           │ Delegates business logic
+                           ▼
+┌────────────────────────────────────────────────────┐
+│              Layer 2: Service                      │
+│          UserService                               │
+│  ├─ createUser(UserDTO)                           │
+│  ├─ getUserById(Long)                             │
+│  ├─ updateUser(Long, UserDTO)                     │
+│  ├─ deleteUser(Long)                              │
+│  └─ Validation & Business Logic                   │
+└────────────────────────────────────────────────────┘
+                           │
+                           │ Uses repository for data
+                           ▼
+┌────────────────────────────────────────────────────┐
+│            Layer 3: Repository                     │
+│         UserRepository                             │
+│  ├─ findById(Long)                                │
+│  ├─ findByUsername(String)                        │
+│  ├─ existsByEmail(String)                         │
+│  ├─ save(User)                                    │
+│  └─ deleteById(Long)                              │
+└────────────────────────────────────────────────────┘
+                           │
+                           │ Database operations
+                           ▼
+┌────────────────────────────────────────────────────┐
+│              Layer 4: Database                     │
+│           blog_user_db.users                       │
+│         (MySQL 8.0 Table)                          │
+└────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           FEIGN CLIENT PATTERN                                       │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+Post Service needs User data from User Service
+
+Post Service Code:
+──────────────────
+
+@FeignClient(name = "user-service", url = "http://localhost:8081/api/users")
+public interface UserServiceClient {
+    @GetMapping("/{id}")
+    UserDTO getUserById(@PathVariable Long id);
+}
+
+Usage in PostService:
+─────────────────────
+
+@Service
+public class PostService {
+    @Autowired
+    private UserServiceClient userServiceClient;
+    
+    public PostDTO getPostById(Long id) {
+        Post post = postRepository.findById(id).orElseThrow();
+        
+        // Feign automatically makes HTTP call
+        UserDTO user = userServiceClient.getUserById(post.getUserId());
+        
+        return mapToDTO(post, user);
+    }
+}
+
+What Happens Behind the Scenes:
+────────────────────────────────
+
+    PostService.getPostById(1)
+            │
+            ├─► userServiceClient.getUserById(5)
+            │        │
+            │        ├─► Feign intercepts the call
+            │        │
+            │        ├─► Constructs HTTP GET request to:
+            │        │    http://localhost:8081/api/users/5
+            │        │
+            │        ├─► Sends request to User Service
+            │        │
+            │        ├─► User Service processes request
+            │        │    UserController → UserService → UserRepository
+            │        │
+            │        ├─► User Service returns JSON response:
+            │        │    {
+            │        │      "id": 5,
+            │        │      "username": "john",
+            │        │      "email": "john@example.com",
+            │        │      ...
+            │        │    }
+            │        │
+            │        └─ Feign deserializes to UserDTO object
+            │
+            └─► Returns enriched PostDTO
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           ERROR HANDLING FLOW                                        │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+Example: Create user with duplicate email
+
+Client Request:
+  POST /api/users
+  { "username": "alice", "email": "existing@example.com", ... }
+
+        │
+        ▼
+UserController.createUser()
+        │
+        ▼
+UserService.createUser()
+        ├─► Check: userRepository.existsByEmail("existing@example.com")
+        │           Returns: true (email already exists)
+        │
+        └─► throw new UserAlreadyExistsException(
+                "Email already exists: existing@example.com"
+            )
+        │
+        ▼
+GlobalExceptionHandler
+        ├─► @ExceptionHandler(UserAlreadyExistsException.class)
+        │
+        ├─► Return ResponseEntity with:
+        │   HTTP Status: 409 CONFLICT
+        │   Body: {
+        │     "status": 409,
+        │     "message": "Email already exists: existing@example.com",
+        │     "timestamp": "2024-04-03T10:15:30"
+        │   }
+        │
+        ▼
+Client receives 409 response with error details
+
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                           DEPLOYMENT OVERVIEW                                        │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+Local Development:
+──────────────────
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │  Developer's Machine                                        │
+    ├─────────────────────────────────────────────────────────────┤
+    │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+    │  │ User Service │  │ Post Service │  │ Comment      │      │
+    │  │   (8081)     │  │   (8082)     │  │ Service      │      │
+    │  │              │  │              │  │  (8083)      │      │
+    │  └──────────────┘  └──────────────┘  └──────────────┘      │
+    │                                                             │
+    │  ┌─────────────────────────────────────────────────────┐   │
+    │  │  MySQL (local)                                      │   │
+    │  │  ├─ blog_user_db                                   │   │
+    │  │  ├─ blog_post_db                                   │   │
+    │  │  └─ blog_comment_db                                │   │
+    │  └─────────────────────────────────────────────────────┘   │
+    └─────────────────────────────────────────────────────────────┘
+
+Production (Future - After Docker/Kubernetes):
+────────────────────────────────────────────────
+
+    ┌────────────────────────────────────────────────────────┐
+    │  Kubernetes Cluster                                    │
+    ├────────────────────────────────────────────────────────┤
+    │  ┌────────────┐  ┌────────────┐  ┌────────────┐       │
+    │  │ Pod: User  │  │ Pod: Post  │  │ Pod: Cmnt  │       │
+    │  │ Service    │  │ Service    │  │ Service    │       │
+    │  │ × 3 Repls  │  │ × 3 Repls  │  │ × 2 Repls  │       │
+    │  └────────────┘  └────────────┘  └────────────┘       │
+    │                                                         │
+    │  ┌──────────────────────────────────────────┐          │
+    │  │  Service Discovery (Eureka)              │          │
+    │  │  LoadBalancer                            │          │
+    │  └──────────────────────────────────────────┘          │
+    │                                                         │
+    │  ┌──────────────────────────────────────────┐          │
+    │  │  Cloud Databases (RDS)                   │          │
+    │  │  ├─ blog_user_db                         │          │
+    │  │  ├─ blog_post_db                         │          │
+    │  │  └─ blog_comment_db                      │          │
+    │  └──────────────────────────────────────────┘          │
+    └────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════════════
