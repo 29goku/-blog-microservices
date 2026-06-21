@@ -52,7 +52,6 @@ export default function CreateUserForm({ onUserCreated, onCancel, compact = fals
         password,
         fullName,
         bio: formData.bio,
-        createdAt: Date.now(),
       });
       setFormData({
         username: '',
