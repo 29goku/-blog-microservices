@@ -2,9 +2,9 @@ spring:
   application:
     name: comment-service
   datasource:
-    url: jdbc:mysql://mysql:3306/blog_comment_db?createDatabaseIfNotExist=true
-    username: root
-    password: root
+    url: ${DB_URL:jdbc:mysql://mysql:3306/blog_comment_db?createDatabaseIfNotExist=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -18,7 +18,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: kafka:29092
+          brokers: ${KAFKA_BROKERS:kafka:29092}
       bindings:
         userCreatedEventConsumer-in-0:
           destination: user-created-topic
@@ -26,7 +26,7 @@ spring:
           contentType: application/json
 
 server:
-  port: 8083
+  port: ${PORT:8083}
 
 logging:
   level:
@@ -78,6 +78,6 @@ resilience4j:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: ${EUREKA_URI:http://eureka-server:8761/eureka/}
   instance:
     prefer-ip-address: true
