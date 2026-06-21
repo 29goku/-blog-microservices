@@ -44,7 +44,7 @@ services:
       - key: PORT
         value: 8080
       - key: EUREKA_URI
-        sync: false
+        value: https://eureka-server.onrender.com/eureka/
 
   # ─────────────────────────────────────────
   # User Service
@@ -72,7 +72,7 @@ services:
           name: blog-user-db
           property: password
       - key: EUREKA_URI
-        sync: false
+        value: https://eureka-server.onrender.com/eureka/
 
   # ─────────────────────────────────────────
   # Post Service
@@ -100,7 +100,7 @@ services:
           name: blog-post-db
           property: password
       - key: EUREKA_URI
-        sync: false
+        value: https://eureka-server.onrender.com/eureka/
 
   # ─────────────────────────────────────────
   # Comment Service
@@ -128,7 +128,7 @@ services:
           name: blog-comment-db
           property: password
       - key: EUREKA_URI
-        sync: false
+        value: https://eureka-server.onrender.com/eureka/
 
   # ─────────────────────────────────────────
   # Like-Dislike Service
@@ -156,4 +156,4 @@ services:
           name: like-dislike-db
           property: password
       - key: EUREKA_URI
-        sync: false
+        value: https://eureka-server.onrender.com/eureka/
