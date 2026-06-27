@@ -7,17 +7,8 @@
 .empty {
   text-align: center;
   padding: 64px 32px;
-  color: #8b8b8b;
-  border: 2px dashed #e8e8e8;
-  border-radius: 16px;
-  background: rgba(91, 91, 255, 0.02);
-}
-
-.empty {
-  text-align: center;
-  padding: 64px 32px;
-  color: #8b8b8b;
-  border: 2px dashed #e8e8e8;
+  color: var(--text-secondary);
+  border: 2px dashed var(--border);
   border-radius: 16px;
   background: rgba(91, 91, 255, 0.02);
 }
@@ -33,19 +24,19 @@
   margin: 0 0 8px 0;
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 .empty small {
   font-size: 13px;
-  color: #8b8b8b;
+  color: var(--text-secondary);
 }
 
 .post-card {
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 24px;
-  background: white;
+  background: var(--bg);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
@@ -66,7 +57,7 @@
 }
 
 .post-card:hover {
-  border-color: #5b5bff;
+  border-color: var(--accent);
   box-shadow: 0 12px 32px rgba(91, 91, 255, 0.15);
   transform: translateY(-4px);
 }
@@ -86,7 +77,7 @@
 .post-header h2 {
   margin: 0;
   font-size: 18px;
-  color: #1a1a1a;
+  color: var(--text-h);
   flex: 1;
   word-break: break-word;
   font-weight: 700;
@@ -118,14 +109,14 @@
 .post-meta {
   margin: 0 0 14px 0;
   font-size: 12px;
-  color: #8b8b8b;
+  color: var(--text-secondary);
   display: flex;
   gap: 12px;
   align-items: center;
 }
 
 .post-meta strong {
-  color: #5b5bff;
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -139,7 +130,7 @@
   margin: 16px 0;
   font-size: 14px;
   line-height: 1.7;
-  color: #5a5a5a;
+  color: var(--text);
   word-break: break-word;
 }
 
@@ -157,13 +148,13 @@
   border: 1px solid rgba(91, 91, 255, 0.15);
   border-radius: 6px;
   font-size: 12px;
-  color: #5b5bff;
+  color: var(--accent);
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .tag:hover {
-  border-color: #5b5bff;
+  border-color: var(--accent);
   background: rgba(91, 91, 255, 0.12);
 }
 
@@ -172,13 +163,13 @@
   gap: 12px;
   margin-top: 18px;
   padding-top: 18px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
 
 .btn-comments {
   padding: 10px 16px;
-  background: linear-gradient(135deg, #5b5bff 0%, #4a4aff 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   border: none;
   border-radius: 8px;
   color: white;

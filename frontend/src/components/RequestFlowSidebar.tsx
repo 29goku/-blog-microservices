@@ -13,11 +13,15 @@ interface RequestMetadata {
   filesInvolved: string[];
 }
 
-export function RequestFlowSidebar() {
+interface RequestFlowSidebarProps {
+  isVisible: boolean;
+  onHide: () => void;
+}
+
+export function RequestFlowSidebar({ isVisible, onHide }: RequestFlowSidebarProps) {
   const [requests, setRequests] = useState<RequestMetadata[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [isVisible, setIsVisible] = useState(true);
 
   const fetchRequests = async () => {
     try {
@@ -64,19 +68,7 @@ export function RequestFlowSidebar() {
     setExpandedId(null);
   };
 
-  if (!isVisible) {
-    return (
-      <div className={styles.sidebar}>
-        <button
-          className={styles.toggleVisibilityBtn}
-          onClick={() => setIsVisible(true)}
-          title="Show requests panel"
-        >
-          📊
-        </button>
-      </div>
-    );
-  }
+  if (!isVisible) return null;
 
   return (
     <div className={styles.sidebar}>
@@ -106,7 +98,7 @@ export function RequestFlowSidebar() {
           </button>
           <button
             className={styles.hideBtn}
-            onClick={() => setIsVisible(false)}
+            onClick={onHide}
             title="Hide requests panel"
           >
             ✕

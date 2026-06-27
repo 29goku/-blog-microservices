@@ -4,9 +4,9 @@
 
 .empty {
   text-align: center;
-  color: #8b8b8b;
+  color: var(--text-secondary);
   padding: 64px 32px;
-  border: 2px dashed #e8e8e8;
+  border: 2px dashed var(--border);
   border-radius: 16px;
   background: rgba(91, 91, 255, 0.02);
 }
@@ -15,12 +15,12 @@
   margin: 0 0 8px 0;
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-h);
 }
 
 .empty small {
   font-size: 13px;
-  color: #8b8b8b;
+  color: var(--text-secondary);
 }
 
 .user-grid {
@@ -30,17 +30,17 @@
 }
 
 .user-card {
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
   cursor: default;
 }
 
 .user-card:hover {
-  border-color: #5b5bff;
+  border-color: var(--accent);
   box-shadow: 0 12px 32px rgba(91, 91, 255, 0.15);
 }
 
@@ -54,7 +54,7 @@
 
 .user-header h3 {
   margin: 0;
-  color: #1a1a1a;
+  color: var(--text-h);
   flex: 1;
   font-size: 16px;
   font-weight: 700;
@@ -79,28 +79,28 @@
 
 .username {
   margin: 0 0 8px 0;
-  color: #5b5bff;
+  color: var(--accent);
   font-weight: 700;
   font-size: 14px;
 }
 
 .email {
   margin: 8px 0;
-  color: #8b8b8b;
+  color: var(--text-secondary);
   font-size: 13px;
   word-break: break-all;
 }
 
 .bio {
   margin: 12px 0 0 0;
-  color: #5a5a5a;
+  color: var(--text);
   font-size: 13px;
   line-height: 1.6;
 }
 
 .created {
   margin: 12px 0 0 0;
-  color: #8b8b8b;
+  color: var(--text-secondary);
   font-size: 12px;
 }
 

@@ -14,6 +14,17 @@ function App() {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string | null>(null);
   const [view, setView] = useState<View>('posts');
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? 'dark' : 'light';
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
   const [posts, setPosts] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -98,6 +109,13 @@ function App() {
         </div>
         <div className="header-right">
           <span className="user-badge">👤 {currentUsername}</span>
+          <button
+            className="btn-theme-toggle"
+            onClick={() => setDarkMode(d => !d)}
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
           <button className="btn-logout" onClick={handleLogout}>
             Logout
           </button>
@@ -137,8 +155,18 @@ function App() {
           )}
         </main>
 
-        <RequestFlowSidebar />
+        <RequestFlowSidebar isVisible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
       </div>
+
+      {!sidebarVisible && (
+        <button
+          className="sidebar-reveal-btn"
+          onClick={() => setSidebarVisible(true)}
+          title="Show requests panel"
+        >
+          📊
+        </button>
+      )}
     </div>
   );
 }
