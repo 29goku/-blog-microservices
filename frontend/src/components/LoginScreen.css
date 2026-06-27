@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
   padding: 16px;
   position: relative;
   overflow: hidden;
@@ -39,15 +39,15 @@
 }
 
 .login-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  background: var(--bg);
   backdrop-filter: blur(20px);
   padding: 48px;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 440px;
   animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border);
   position: relative;
   z-index: 10;
 }
@@ -67,13 +67,13 @@
   text-align: center;
   margin: 0 0 12px 0;
   font-size: 32px;
-  color: #0d0d0d;
+  color: var(--text-h);
   letter-spacing: -0.5px;
 }
 
 .welcome-text {
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 32px;
   font-size: 15px;
   font-weight: 400;
@@ -87,7 +87,7 @@
   display: block;
   margin-bottom: 10px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-h);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -96,12 +96,12 @@
 .login-card select {
   width: 100%;
   padding: 14px 16px;
-  border: 2px solid #e8e8e8;
+  border: 2px solid var(--border);
   border-radius: 12px;
   font-size: 14px;
-  background-color: white;
+  background-color: var(--bg);
   cursor: pointer;
-  color: #1a1a1a;
+  color: var(--text-h);
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   appearance: none;
@@ -112,28 +112,28 @@
 }
 
 .login-card select:hover {
-  border-color: #5b5bff;
-  background-color: #f9f9f9;
+  border-color: var(--accent);
+  background-color: var(--bg-secondary);
   box-shadow: 0 4px 12px rgba(91, 91, 255, 0.08);
 }
 
 .login-card select:focus {
   outline: none;
-  border-color: #5b5bff;
-  background-color: white;
+  border-color: var(--accent);
+  background-color: var(--bg);
   box-shadow: 0 0 0 4px rgba(91, 91, 255, 0.1), 0 4px 12px rgba(91, 91, 255, 0.15);
 }
 
 .login-card select option {
   padding: 8px;
-  background-color: white;
-  color: #1a1a1a;
+  background-color: var(--bg);
+  color: var(--text-h);
 }
 
 .btn-login {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #5b5bff 0%, #4a4aff 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -175,18 +175,18 @@
   text-align: center;
   margin-top: 28px;
   padding-top: 28px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid var(--border);
 }
 
 .no-users {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
   margin: 0 0 14px 0;
   font-weight: 500;
 }
 
 .btn-create-link {
-  background: linear-gradient(135deg, #5b5bff 0%, #4a4aff 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   color: white;
   border: none;
   cursor: pointer;
@@ -217,9 +217,9 @@
 
 .btn-back {
   padding: 14px;
-  background: #f0f0f0;
-  color: #1a1a1a;
-  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-h);
+  border: 1px solid var(--border);
   border-radius: 12px;
   font-size: 14px;
   font-weight: 700;
@@ -228,9 +228,9 @@
 }
 
 .btn-back:hover {
-  background: #e0e0e0;
+  background: var(--border);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .create-user-wrapper h1 {
