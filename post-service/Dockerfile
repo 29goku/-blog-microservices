@@ -8,9 +8,10 @@ COPY post-service/pom.xml ./post-service/pom.xml
 COPY comment-service/pom.xml ./comment-service/pom.xml
 COPY like-dislike-service/pom.xml ./like-dislike-service/pom.xml
 COPY tag-service/pom.xml ./tag-service/pom.xml
-RUN mvn dependency:go-offline -pl post-service -B 2>/dev/null || true
+RUN mvn dependency:go-offline -pl post-service --also-make -B 2>/dev/null || true
+COPY tag-service/src ./tag-service/src
 COPY post-service/src ./post-service/src
-RUN mvn package -pl post-service -DskipTests -B
+RUN mvn package -pl post-service -DskipTests -B --also-make
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
