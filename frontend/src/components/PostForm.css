@@ -131,6 +131,46 @@
   font-weight: 600;
 }
 
+.tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--tag-color, var(--border));
+  background: transparent;
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tag-pill:hover {
+  background: color-mix(in srgb, var(--tag-color, var(--accent)) 12%, transparent);
+}
+
+.tag-pill.selected {
+  background: color-mix(in srgb, var(--tag-color, var(--accent)) 18%, transparent);
+  border-color: var(--tag-color, var(--accent));
+  color: var(--tag-color, var(--accent));
+  font-weight: 700;
+}
+
+.tag-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tag-color, var(--accent));
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .post-form {
     padding: 20px;

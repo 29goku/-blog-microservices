@@ -231,7 +231,7 @@ export const tagAPI = {
     if (!res.ok) throw new Error('Failed to assign tag to post');
   },
   removeFromPost: async (postId: number, tagId: number): Promise<void> => {
-    const res = await fetch(`${API_BASE.tags}/tags/unassign?postId=${postId}&tagId=${tagId}`, { method: 'DELETE' });
+    const res = await fetch(`${API_BASE.tags}/tags/unassign?postId=${postId}&id=${tagId}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Failed to remove tag from post');
   },
 };

@@ -1,4 +1,4 @@
-import { postAPI, commentAPI, type Comment as BlogComment } from '../api/client';
+import { postAPI, commentAPI, tagAPI, type Comment as BlogComment } from '../api/client';
 import { useState, useEffect } from 'react';
 import CommentSection from './CommentSection';
 import LikeDislikeButton from './LikeDislikeButton';
@@ -71,6 +71,15 @@ export default function PostList({
     setExpandedPostId(postId);
   };
 
+  const handleRemoveTag = async (postId: number, tagId: number) => {
+    try {
+      await tagAPI.removeFromPost(postId, tagId);
+      onPostDeleted(); // reloads posts
+    } catch (err) {
+      setDialog({ title: 'Error', message: 'Failed to remove tag', type: 'error' });
+    }
+  };
+
   const handleCommentAdded = async (postId: number) => {
     try {
       const updated = await commentAPI.getByPostId(postId);
@@ -103,13 +112,30 @@ export default function PostList({
               {new Date(post.createdAt).toLocaleDateString()}
             </p>
             <p className="post-content">{post.content}</p>
-            {post.tags && (
+            {(post.tagList?.length > 0 || post.tags) && (
               <div className="post-tags">
-                {post.tags.split(',').map((tag: string) => (
-                  <span key={tag} className="tag">
-                    {tag.trim()}
-                  </span>
-                ))}
+                {post.tagList?.length > 0
+                  ? post.tagList.map((tag: { id: number; name: string; color: string }) => (
+                      <span
+                        key={tag.id}
+                        className="tag tag-colored"
+                        style={{ '--tag-color': tag.color } as React.CSSProperties}
+                      >
+                        <span className="tag-dot" />
+                        {tag.name}
+                        <button
+                          className="tag-remove"
+                          onClick={() => handleRemoveTag(post.id, tag.id)}
+                          title="Remove tag"
+                        >×</button>
+                      </span>
+                    ))
+                  : post.tags.split(',').map((tag: string) => (
+                      <span key={tag} className="tag">
+                        {tag.trim()}
+                      </span>
+                    ))
+                }
               </div>
             )}
             <div className="post-actions">

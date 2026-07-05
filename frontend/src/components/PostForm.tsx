@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { postAPI } from '../api/client';
+import { useState, useEffect } from 'react';
+import { postAPI, tagAPI, type Tag } from '../api/client';
 import './PostForm.css';
 
 interface PostFormProps {
@@ -17,14 +17,24 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    tagAPI.getAll().then(setAvailableTags).catch(() => {});
+  }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const toggleTag = (id: number) => {
+    setSelectedTagIds(prev =>
+      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,13 +48,17 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
     setError(null);
 
     try {
-      await postAPI.create({
+      const post = await postAPI.create({
         userId: Number(formData.userId),
         title: formData.title,
         content: formData.content,
         tags: formData.tags,
       });
+      await Promise.all(
+        selectedTagIds.map(tagId => tagAPI.assignToPost(post.id, tagId).catch(() => {}))
+      );
       setFormData({ userId: '', title: '', content: '', tags: '' });
+      setSelectedTagIds([]);
       onPostCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create post');
@@ -91,17 +105,25 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="tags">Tags (comma-separated)</label>
-        <input
-          id="tags"
-          type="text"
-          name="tags"
-          value={formData.tags}
-          onChange={handleChange}
-          placeholder="e.g., react, typescript, web"
-        />
-      </div>
+      {availableTags.length > 0 && (
+        <div className="form-group">
+          <label>Tags</label>
+          <div className="tag-picker">
+            {availableTags.map(tag => (
+              <button
+                key={tag.id}
+                type="button"
+                className={`tag-pill${selectedTagIds.includes(tag.id) ? ' selected' : ''}`}
+                style={{ '--tag-color': tag.color } as React.CSSProperties}
+                onClick={() => toggleTag(tag.id)}
+              >
+                <span className="tag-pill-dot" />
+                {tag.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <button type="submit" disabled={loading} className="btn-primary">
         {loading ? 'Publishing...' : 'Publish Post'}
