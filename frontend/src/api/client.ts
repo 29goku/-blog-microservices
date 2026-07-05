@@ -8,7 +8,7 @@ const API_BASE = {
   users: `${BASE}/api`,
   posts: `${BASE}/api`,
   comments: `${BASE}/api`,
-  tags: `http://localhost:8085/api`,
+  tags: `${BASE}/api`,
 };
 
 export interface User {
