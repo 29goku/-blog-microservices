@@ -64,7 +64,7 @@ services:
       - key: LIKE_DISLIKE_SERVICE_URL
         value: https://like-dislike-service.onrender.com
       - key: TAG_SERVICE_URL
-        value: https://tag-service.onrender.com
+        value: https://tag-service-d5s9.onrender.com
 
   # ─────────────────────────────────────────
   # User Service
