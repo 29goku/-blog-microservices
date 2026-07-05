@@ -8,6 +8,7 @@ const API_BASE = {
   users: `${BASE}/api`,
   posts: `${BASE}/api`,
   comments: `${BASE}/api`,
+  tags: `http://localhost:8085/api`,
 };
 
 export interface User {
@@ -185,6 +186,53 @@ export const commentAPI = {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error('Failed to delete comment');
+  },
+};
+
+export interface Tag {
+  id: number;
+  name: string;
+  description: string;
+  color: string;
+}
+
+// Tag API
+export const tagAPI = {
+  getAll: async (): Promise<Tag[]> => {
+    const res = await fetch(`${API_BASE.tags}/tags`);
+    if (!res.ok) throw new Error('Failed to fetch tags');
+    return res.json();
+  },
+  getById: async (id: number): Promise<Tag> => {
+    const res = await fetch(`${API_BASE.tags}/tags/${id}`);
+    if (!res.ok) throw new Error('Tag not found');
+    return res.json();
+  },
+  getByPostId: async (postId: number): Promise<Tag[]> => {
+    const res = await fetch(`${API_BASE.tags}/tags/post/${postId}`);
+    if (!res.ok) throw new Error('Failed to fetch tags for post');
+    return res.json();
+  },
+  create: async (tag: Omit<Tag, 'id'>): Promise<Tag> => {
+    const res = await fetch(`${API_BASE.tags}/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tag),
+    });
+    if (!res.ok) throw new Error('Failed to create tag');
+    return res.json();
+  },
+  delete: async (id: number): Promise<void> => {
+    const res = await fetch(`${API_BASE.tags}/tags/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete tag');
+  },
+  assignToPost: async (postId: number, tagId: number): Promise<void> => {
+    const res = await fetch(`${API_BASE.tags}/tags/assign?postId=${postId}&tagId=${tagId}`, { method: 'POST' });
+    if (!res.ok) throw new Error('Failed to assign tag to post');
+  },
+  removeFromPost: async (postId: number, tagId: number): Promise<void> => {
+    const res = await fetch(`${API_BASE.tags}/tags/unassign?postId=${postId}&tagId=${tagId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to remove tag from post');
   },
 };
 

@@ -6,6 +6,7 @@ import com.blog.post.entity.Post;
 import com.blog.post.exception.PostNotFoundException;
 import com.blog.post.exception.UserNotValidException;
 import com.blog.post.repository.PostRepository;
+import com.blog.post.client.TagServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,13 @@ public class PostService {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
     private final PostRepository postRepository;
     private final UserServiceClient userServiceClient;
+    private final TagServiceClient tagServiceClient;
 
     // Constructor
-    public PostService(PostRepository postRepository, UserServiceClient userServiceClient) {
+    public PostService(PostRepository postRepository, UserServiceClient userServiceClient, TagServiceClient tagServiceClient) {
         this.postRepository = postRepository;
         this.userServiceClient = userServiceClient;
+        this.tagServiceClient = tagServiceClient;
     }
 
     public PostDTO createPost(PostDTO postDTO) {
@@ -123,6 +126,7 @@ public class PostService {
 
     private PostDTO mapToDTO(Post post, com.blog.post.dto.UserDTO user) {
         PostDTO dto = new PostDTO();
+        dto.setTagList(tagServiceClient.getTagByPostId(post.getId()));
         dto.setId(post.getId());
         dto.setUserId(post.getUserId());
         dto.setTitle(post.getTitle());

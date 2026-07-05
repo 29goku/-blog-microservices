@@ -30,6 +30,10 @@ feign:
         connect-timeout: 5000
         read-timeout: 5000
         logger-level: full
+      tag-service:
+        connect-timeout: 5000
+        read-timeout: 5000
+        logger-level: full
 
 resilience4j:
   circuitbreaker:
@@ -48,6 +52,19 @@ resilience4j:
           - java.io.IOException
           - feign.FeignException
       user-service:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        slowCallRateThreshold: 100
+        slowCallDurationThreshold: 2s
+        recordExceptions:
+          - java.io.IOException
+          - feign.FeignException
+      tag-service:
         registerHealthIndicator: true
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
@@ -82,5 +99,6 @@ management:
 
 user-service:
   url: ${USER_SERVICE_URL:}
-
+tag-service:
+  url: ${TAG_SERVICE_URL:}
 

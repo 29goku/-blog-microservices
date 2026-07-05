@@ -3,6 +3,8 @@ package com.blog.post.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public class PostDTO {
     private Long id;
 
@@ -16,6 +18,8 @@ public class PostDTO {
     private String content;
 
     private String tags;
+
+    private List<TagDTO> tagList;
 
     private Long createdAt;
 
@@ -78,6 +82,13 @@ public class PostDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public List<TagDTO> getTagList() {
+        return tagList;
+    }
+    public void setTagList(List<TagDTO> tagList) {
+        this.tagList = tagList;
     }
 
     public void setTitle(String title) {

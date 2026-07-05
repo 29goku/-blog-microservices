@@ -5,10 +5,11 @@ import PostForm from './components/PostForm';
 import UserList from './components/UserList';
 import UserForm from './components/UserForm';
 import LoginScreen from './components/LoginScreen';
+import TagManager from './components/TagManager';
 import { RequestFlowSidebar } from './components/RequestFlowSidebar';
 import './App.css';
 
-type View = 'posts' | 'users';
+type View = 'posts' | 'users' | 'tags';
 
 function App() {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
@@ -105,6 +106,12 @@ function App() {
             >
               Users
             </button>
+            <button
+              className={`nav-btn ${view === 'tags' ? 'active' : ''}`}
+              onClick={() => setView('tags')}
+            >
+              Tags
+            </button>
           </nav>
         </div>
         <div className="header-right">
@@ -151,6 +158,12 @@ function App() {
                 onUserDeleted={handleUserDeleted}
                 onRefresh={loadUsers}
               />
+            </div>
+          )}
+
+          {view === 'tags' && (
+            <div className="section">
+              <TagManager />
             </div>
           )}
         </main>

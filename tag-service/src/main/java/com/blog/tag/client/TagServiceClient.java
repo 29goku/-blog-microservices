@@ -1,12 +1,14 @@
 package com.blog.tag.client;
 
 import com.blog.tag.dto.TagDto;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+@CircuitBreaker(name = "tag-service")
 @FeignClient(name="tag-service", url="${tag-service.url:}", path="/api/tags")
 public interface TagServiceClient {
 

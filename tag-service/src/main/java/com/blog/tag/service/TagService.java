@@ -2,6 +2,9 @@ package com.blog.tag.service;
 
 import com.blog.tag.entity.PostTag;
 import com.blog.tag.entity.Tag;
+import com.blog.tag.exception.TagAlreadyAssignedException;
+import com.blog.tag.exception.TagAlreadyExistsException;
+import com.blog.tag.exception.TagNotFoundException;
 import com.blog.tag.repository.PostTagRepository;
 import com.blog.tag.repository.TagRepository;
 import org.springframework.stereotype.Service;
@@ -23,24 +26,24 @@ public class TagService {
             tagRepository.deleteById(id);
 
         } else {
-            throw new RuntimeException("Tag with id " + id + " does not exist.");
+            throw new TagNotFoundException("Tag with id " + id + " does not exist.");
         }
     }
 
     public Tag findTagById(Long id) {
-        return tagRepository.findById(id).orElseThrow(() -> new RuntimeException("Tag with id " + id + " does not exist."));
+        return tagRepository.findById(id).orElseThrow(() -> new TagNotFoundException("Tag with id " + id + " does not exist."));
     }
 
     public Tag findTagByName(String name) {
-        return tagRepository.findByName(name).orElseThrow(() -> new RuntimeException("Tag with name " + name + " does not exist."));
+        return tagRepository.findByName(name).orElseThrow(() -> new TagNotFoundException("Tag with name " + name + " does not exist."));
     }
 
     public PostTag assignTagToPost(Long postId, Long tagId) {
         if (tagRepository.findById(tagId).isEmpty()) {
-            throw new RuntimeException("Tag with tagId " + tagId + " not exist.");
+            throw new TagNotFoundException("Tag with tagId " + tagId + " not exist.");
         }
         if( postTagRepository.existsByPostIdAndTagId(postId,tagId)) {
-            throw new RuntimeException("Tag with tagId " + tagId + " already assigned to post with postId " + postId);
+            throw new TagAlreadyAssignedException("Tag with tagId " + tagId + " already assigned to post with postId " + postId);
         }
         else {
             PostTag tag = new PostTag();
@@ -49,14 +52,27 @@ public class TagService {
             postTagRepository.save(tag);
             return tag;
         }
-
     }
 
     public Tag createTag(Tag tag) {
         if (tagRepository.findByName(tag.getName()).isPresent()) {
-            throw new RuntimeException("Tag with name " + tag.getName() + " already exist.");
+            throw new TagAlreadyExistsException("Tag with name " + tag.getName() + " already exist.");
         }
         return tagRepository.save(tag);
+    }
+
+    public void removeTagFromPost(Long postId, Long tagId){
+        if(!postTagRepository.existsByPostIdAndTagId(postId, tagId)){
+            throw new TagNotFoundException("Tag with id " + tagId + " does not exist.");
+        }
+        postTagRepository.deleteByPostIdAndTagId(postId, tagId);
+
+    }
+
+    public List<Tag> getTagsByPostId(Long postId) {
+        return postTagRepository.findByPostId(postId).stream()
+                .map(postTag -> findTagById(postTag.getTagId()))
+                .toList();
     }
 
     public List<Tag> getAllTags() {

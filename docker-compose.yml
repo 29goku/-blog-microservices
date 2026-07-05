@@ -94,4 +94,15 @@ services:
       eureka-server:
         condition: service_started
       mysql:
-        condition: service_healthy
+           condition: service_healthy
+  tag-service:
+      build: ./tag-service
+      ports:
+        - "8085:8085"
+      depends_on:
+        eureka-server:
+          condition: service_started
+        mysql:
+          condition: service_healthy
+        kafka:
+          condition: service_started

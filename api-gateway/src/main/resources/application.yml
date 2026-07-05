@@ -1,6 +1,11 @@
 spring:
   application:
     name: api-gateway
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
   cloud:
     gateway:
       discovery:
@@ -24,6 +29,10 @@ spring:
           uri: ${LIKE_DISLIKE_SERVICE_URL:lb://like-dislike-service}
           predicates:
             - Path=/api/likedislike/**
+        - id: tag-service
+          uri: ${TAG_SERVICE_URL:lb://tag-service}
+          predicates:
+            - Path=/api/tags/**
       globalcors:
         cors-configurations:
           '[/**]':
