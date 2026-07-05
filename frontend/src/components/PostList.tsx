@@ -1,4 +1,4 @@
-import { postAPI, commentAPI, tagAPI, type Comment as BlogComment } from '../api/client';
+import { postAPI, commentAPI, tagAPI, type Comment as BlogComment, type Tag } from '../api/client';
 import { useState, useEffect } from 'react';
 import CommentSection from './CommentSection';
 import LikeDislikeButton from './LikeDislikeButton';
@@ -25,6 +25,12 @@ export default function PostList({
   const [comments, setComments] = useState<{ [key: number]: BlogComment[] }>({});
   const [dialog, setDialog] = useState<{ title: string; message: string; type: 'error' | 'success' | 'warning' | 'info' } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [addTagPostId, setAddTagPostId] = useState<number | null>(null);
+
+  useEffect(() => {
+    tagAPI.getAll().then(setAllTags).catch(() => {});
+  }, []);
 
   useEffect(() => {
     preloadComments();
@@ -74,9 +80,19 @@ export default function PostList({
   const handleRemoveTag = async (postId: number, tagId: number) => {
     try {
       await tagAPI.removeFromPost(postId, tagId);
-      onPostDeleted(); // reloads posts
+      onPostDeleted();
     } catch (err) {
       setDialog({ title: 'Error', message: 'Failed to remove tag', type: 'error' });
+    }
+  };
+
+  const handleAddTag = async (postId: number, tagId: number) => {
+    try {
+      await tagAPI.assignToPost(postId, tagId);
+      setAddTagPostId(null);
+      onPostDeleted();
+    } catch (err) {
+      setDialog({ title: 'Error', message: 'Tag already assigned or not found', type: 'error' });
     }
   };
 
@@ -112,32 +128,48 @@ export default function PostList({
               {new Date(post.createdAt).toLocaleDateString()}
             </p>
             <p className="post-content">{post.content}</p>
-            {(post.tagList?.length > 0 || post.tags) && (
-              <div className="post-tags">
-                {post.tagList?.length > 0
-                  ? post.tagList.map((tag: { id: number; name: string; color: string }) => (
-                      <span
+            <div className="post-tags">
+              {post.tagList?.length > 0
+                ? post.tagList.map((tag: { id: number; name: string; color: string }) => (
+                    <span
+                      key={tag.id}
+                      className="tag tag-colored"
+                      style={{ '--tag-color': tag.color } as React.CSSProperties}
+                    >
+                      <span className="tag-dot" />
+                      {tag.name}
+                      <button
+                        className="tag-remove"
+                        onClick={() => handleRemoveTag(post.id, tag.id)}
+                        title="Remove tag"
+                      >×</button>
+                    </span>
+                  ))
+                : post.tags?.split(',').filter((t: string) => t.trim()).map((tag: string) => (
+                    <span key={tag} className="tag">{tag.trim()}</span>
+                  ))
+              }
+              {addTagPostId === post.id ? (
+                <div className="tag-add-picker">
+                  {allTags
+                    .filter(t => !post.tagList?.some((pt: { id: number }) => pt.id === t.id))
+                    .map(tag => (
+                      <button
                         key={tag.id}
-                        className="tag tag-colored"
+                        className="tag-pill-small"
                         style={{ '--tag-color': tag.color } as React.CSSProperties}
+                        onClick={() => handleAddTag(post.id, tag.id)}
                       >
-                        <span className="tag-dot" />
-                        {tag.name}
-                        <button
-                          className="tag-remove"
-                          onClick={() => handleRemoveTag(post.id, tag.id)}
-                          title="Remove tag"
-                        >×</button>
-                      </span>
+                        <span className="tag-dot" />{tag.name}
+                      </button>
                     ))
-                  : post.tags.split(',').map((tag: string) => (
-                      <span key={tag} className="tag">
-                        {tag.trim()}
-                      </span>
-                    ))
-                }
-              </div>
-            )}
+                  }
+                  <button className="tag-add-cancel" onClick={() => setAddTagPostId(null)}>✕</button>
+                </div>
+              ) : (
+                <button className="btn-add-tag" onClick={() => setAddTagPostId(post.id)} title="Add tag">+ Tag</button>
+              )}
+            </div>
             <div className="post-actions">
               <LikeDislikeButton postId={post.id} userId={currentUserId} />
               <button
