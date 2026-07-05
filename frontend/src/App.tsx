@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { postAPI, userAPI } from './api/client';
+import { postAPI, userAPI } from './api/client'; // v2
 import PostList from './components/PostList';
 import PostForm from './components/PostForm';
 import UserList from './components/UserList';
