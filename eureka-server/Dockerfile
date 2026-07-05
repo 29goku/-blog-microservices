@@ -7,6 +7,7 @@ COPY user-service/pom.xml ./user-service/pom.xml
 COPY post-service/pom.xml ./post-service/pom.xml
 COPY comment-service/pom.xml ./comment-service/pom.xml
 COPY like-dislike-service/pom.xml ./like-dislike-service/pom.xml
+COPY tag-service/pom.xml ./tag-service/pom.xml
 RUN mvn dependency:go-offline -pl eureka-server -B 2>/dev/null || true
 COPY eureka-server/src ./eureka-server/src
 RUN mvn package -pl eureka-server -DskipTests -B

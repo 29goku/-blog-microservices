@@ -7,6 +7,7 @@ COPY user-service/pom.xml ./user-service/pom.xml
 COPY post-service/pom.xml ./post-service/pom.xml
 COPY comment-service/pom.xml ./comment-service/pom.xml
 COPY like-dislike-service/pom.xml ./like-dislike-service/pom.xml
+COPY tag-service/pom.xml ./tag-service/pom.xml
 RUN mvn dependency:go-offline -pl user-service -B 2>/dev/null || true
 COPY user-service/src ./user-service/src
 RUN mvn package -pl user-service -DskipTests -B
