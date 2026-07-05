@@ -1,22 +1,6 @@
 databases:
-  - name: blog-user-db
-    databaseName: blog_user_db
-    plan: free
-
-  - name: blog-post-db
-    databaseName: blog_post_db
-    plan: free
-
-  - name: blog-comment-db
-    databaseName: blog_comment_db
-    plan: free
-
-  - name: like-dislike-db
-    databaseName: like_dislike_db
-    plan: free
-
-  - name: tag-db
-    databaseName: tag_db
+  - name: main-db
+    databaseName: main_db
     plan: free
 
 services:
@@ -81,23 +65,23 @@ services:
         value: 8081
       - key: DB_HOST
         fromDatabase:
-          name: blog-user-db
+          name: main-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: blog-user-db
+          name: main-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: blog-user-db
+          name: main-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: blog-user-db
+          name: main-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: blog-user-db
+          name: main-db
           property: password
       - key: EUREKA_CLIENT_ENABLED
         value: "false"
@@ -121,23 +105,23 @@ services:
         value: 8082
       - key: DB_HOST
         fromDatabase:
-          name: blog-post-db
+          name: main-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: blog-post-db
+          name: main-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: blog-post-db
+          name: main-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: blog-post-db
+          name: main-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: blog-post-db
+          name: main-db
           property: password
       - key: EUREKA_CLIENT_ENABLED
         value: "false"
@@ -163,23 +147,23 @@ services:
         value: 8083
       - key: DB_HOST
         fromDatabase:
-          name: blog-comment-db
+          name: main-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: blog-comment-db
+          name: main-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: blog-comment-db
+          name: main-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: blog-comment-db
+          name: main-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: blog-comment-db
+          name: main-db
           property: password
       - key: EUREKA_CLIENT_ENABLED
         value: "false"
@@ -207,23 +191,23 @@ services:
         value: 8084
       - key: DB_HOST
         fromDatabase:
-          name: like-dislike-db
+          name: main-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: like-dislike-db
+          name: main-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: like-dislike-db
+          name: main-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: like-dislike-db
+          name: main-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: like-dislike-db
+          name: main-db
           property: password
       - key: EUREKA_CLIENT_ENABLED
         value: "false"
@@ -251,23 +235,23 @@ services:
         value: 8085
       - key: DB_HOST
         fromDatabase:
-          name: tag-db
+          name: main-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: tag-db
+          name: main-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: tag-db
+          name: main-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: tag-db
+          name: main-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: tag-db
+          name: main-db
           property: password
       - key: EUREKA_CLIENT_ENABLED
         value: "false"
