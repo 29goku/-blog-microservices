@@ -15,6 +15,10 @@ databases:
     databaseName: like_dislike_db
     plan: free
 
+  - name: tag-db
+    databaseName: tag_db
+    plan: free
+
 services:
   # ─────────────────────────────────────────
   # Eureka Service Discovery
@@ -43,9 +47,6 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      # Eureka is unusable across separate Render services (each gets its own
-      # public hostname and Eureka registers internal IPs). Disable it and use
-      # direct service URLs below.
       - key: EUREKA_CLIENT_ENABLED
         value: "false"
       - key: EUREKA_REGISTER
@@ -62,6 +63,8 @@ services:
         value: https://comment-service-edye.onrender.com
       - key: LIKE_DISLIKE_SERVICE_URL
         value: https://like-dislike-service.onrender.com
+      - key: TAG_SERVICE_URL
+        value: https://tag-service.onrender.com
 
   # ─────────────────────────────────────────
   # User Service
@@ -232,3 +235,43 @@ services:
         value: https://user-service-gntw.onrender.com
       - key: POST_SERVICE_URL
         value: https://post-service-7g3r.onrender.com
+
+  # ─────────────────────────────────────────
+  # Tag Service
+  # ─────────────────────────────────────────
+  - type: web
+    name: tag-service
+    runtime: docker
+    dockerfilePath: ./tag-service/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8085
+      - key: DB_HOST
+        fromDatabase:
+          name: tag-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: tag-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: tag-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: tag-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tag-db
+          property: password
+      - key: EUREKA_CLIENT_ENABLED
+        value: "false"
+      - key: EUREKA_REGISTER
+        value: "false"
+      - key: EUREKA_FETCH
+        value: "false"
