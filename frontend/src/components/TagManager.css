@@ -103,7 +103,8 @@
   color: var(--text-secondary);
 }
 
-.btn-delete {
+.btn-delete,
+.btn-edit {
   background: none;
   border: none;
   cursor: pointer;
@@ -112,8 +113,56 @@
   transition: opacity 0.2s;
 }
 
-.btn-delete:hover {
+.btn-delete:hover,
+.btn-edit:hover {
   opacity: 1;
+}
+
+.tag-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.tag-edit-form input[type='text'] {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.tag-edit-form input[type='color'] {
+  width: 36px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.825rem;
+}
+
+.btn-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.825rem;
+  color: var(--text);
+}
+
+.btn-cancel:hover {
+  border-color: var(--text-secondary);
 }
 
 .btn-primary {

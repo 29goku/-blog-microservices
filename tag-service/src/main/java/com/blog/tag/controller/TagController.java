@@ -41,6 +41,10 @@ public class TagController {
     public void deleteTagById(@PathVariable Long id) {
         tagService.deleteTagById(id);
     }
+    @PutMapping("/{id}")
+    public Tag updateTag(@PathVariable Long id, @RequestBody Tag tag) {
+        return tagService.updateTag(id, tag);
+    }
 
     @DeleteMapping("/unassign")
     public void removeTagFromPost(@RequestParam Long id,@RequestParam Long postId) {

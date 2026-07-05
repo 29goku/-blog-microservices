@@ -8,6 +8,9 @@ export default function TagManager() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: '', description: '', color: '#3b82f6' });
   const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', description: '', color: '#3b82f6' });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadTags();
@@ -39,6 +42,26 @@ export default function TagManager() {
       setError(err instanceof Error ? err.message : 'Failed to create tag');
     } finally {
       setCreating(false);
+    }
+  };
+
+  const startEdit = (tag: Tag) => {
+    setEditingId(tag.id);
+    setEditForm({ name: tag.name, description: tag.description || '', color: tag.color || '#3b82f6' });
+  };
+
+  const handleUpdate = async (id: number) => {
+    if (!editForm.name.trim()) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await tagAPI.update(id, editForm);
+      setEditingId(null);
+      await loadTags();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update tag');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -100,14 +123,41 @@ export default function TagManager() {
           <div className="tag-grid">
             {tags.map(tag => (
               <div key={tag.id} className="tag-card">
-                <span className="tag-dot" style={{ backgroundColor: tag.color }} />
-                <div className="tag-info">
-                  <strong>{tag.name}</strong>
-                  {tag.description && <p>{tag.description}</p>}
-                </div>
-                <button className="btn-delete" onClick={() => handleDelete(tag.id)} title="Delete tag">
-                  🗑️
-                </button>
+                {editingId === tag.id ? (
+                  <div className="tag-edit-form">
+                    <input
+                      type="text"
+                      value={editForm.name}
+                      onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                      placeholder="Name"
+                    />
+                    <input
+                      type="text"
+                      value={editForm.description}
+                      onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                      placeholder="Description"
+                    />
+                    <input
+                      type="color"
+                      value={editForm.color}
+                      onChange={e => setEditForm(f => ({ ...f, color: e.target.value }))}
+                    />
+                    <button className="btn-primary btn-sm" onClick={() => handleUpdate(tag.id)} disabled={saving}>
+                      {saving ? '...' : 'Save'}
+                    </button>
+                    <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>
+                  </div>
+                ) : (
+                  <>
+                    <span className="tag-dot" style={{ backgroundColor: tag.color }} />
+                    <div className="tag-info">
+                      <strong>{tag.name}</strong>
+                      {tag.description && <p>{tag.description}</p>}
+                    </div>
+                    <button className="btn-edit" onClick={() => startEdit(tag)} title="Edit tag">✏️</button>
+                    <button className="btn-delete" onClick={() => handleDelete(tag.id)} title="Delete tag">🗑️</button>
+                  </>
+                )}
               </div>
             ))}
           </div>

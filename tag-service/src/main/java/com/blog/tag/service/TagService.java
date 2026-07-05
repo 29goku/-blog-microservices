@@ -75,6 +75,15 @@ public class TagService {
                 .toList();
     }
 
+    public Tag updateTag(Long id, Tag updated) {
+        Tag existing = tagRepository.findById(id)
+                .orElseThrow(() -> new TagNotFoundException("Tag with id " + id + " does not exist."));
+        existing.setName(updated.getName());
+        existing.setDescription(updated.getDescription());
+        existing.setColor(updated.getColor());
+        return tagRepository.save(existing);
+    }
+
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }

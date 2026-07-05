@@ -222,6 +222,15 @@ export const tagAPI = {
     if (!res.ok) throw new Error('Failed to create tag');
     return res.json();
   },
+  update: async (id: number, tag: Omit<Tag, 'id'>): Promise<Tag> => {
+    const res = await fetch(`${API_BASE.tags}/tags/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tag),
+    });
+    if (!res.ok) throw new Error('Failed to update tag');
+    return res.json();
+  },
   delete: async (id: number): Promise<void> => {
     const res = await fetch(`${API_BASE.tags}/tags/${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Failed to delete tag');
