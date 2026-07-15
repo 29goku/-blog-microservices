@@ -283,7 +283,8 @@ blog-microservices/
 
 - **Microservices** — independent services, domain-driven boundaries, single shared PostgreSQL (`main_db`) with per-service tables
 - **API Gateway** — single entry point, path-based routing, global CORS, request tracking
-- **Service Discovery** — Eureka (local/Docker); direct URLs (cloud)- **Feign + Resilience4j** — declarative HTTP clients with circuit breakers and fallbacks
+- **Service Discovery** — Eureka (local/Docker); direct URLs (cloud)
+- **Feign + Resilience4j** — declarative HTTP clients with circuit breakers and fallbacks
 - **Reactive Gateway** — Spring Cloud Gateway over WebFlux (non-blocking)
 - **Live Request Tracking** — gateway records every request (method, path, service, duration, status) in a 100-entry in-memory buffer; frontend sidebar polls and visualizes in real time
 
@@ -312,3 +313,35 @@ curl -X POST http://localhost:8080/api/likedislike \
   -H "Content-Type: application/json" \
   -d '{"userId":1,"postId":1,"likeDislikeType":"LIKE"}'
 ```
+
+---
+
+## Known Gaps & Roadmap
+
+The platform is functional and deployed, but several production-grade concerns are not yet addressed. These are captured here as an honest backlog rather than hidden.
+
+### Known gaps
+
+| Gap | Where it fits | Notes |
+|-----|---------------|-------|
+| Retry + bulkhead | Finishes Phase 4 (resilience) | Circuit breakers exist; retry/bulkhead tuning does not |
+| Real Kafka events | Phase 5 (async) | Kafka/Zookeeper run in Docker Compose but aren't wired to any business event |
+| Schema/DB isolation | Architecture | All services share one PostgreSQL `main_db` — a shared-database coupling; consider schema-per-service or DB-per-service |
+| DB migrations (Flyway/Liquibase) | Data layer | Currently `hibernate ddl-auto=update`, which drifts schema and is risky in production |
+| Automated tests + CI/CD | Quality | Modules build with `-DskipTests`; no real test suite; Docker builds are manual |
+| API docs (OpenAPI/Swagger) | Developer experience | Add `springdoc` per service, aggregate at the gateway |
+| Distributed tracing (Micrometer → OTLP/Zipkin/Jaeger) | Observability | Pairs well with the existing gateway `RequestTrackingFilter` |
+| Auth/security (JWT/OAuth2 at gateway) | Security | Gateway has CORS but no auth enforcement |
+| Metrics aggregation (Prometheus/Grafana) | Observability | Actuator is exposed but nothing scrapes/aggregates it |
+| Centralized config (Spring Cloud Config Server) | Configuration | Each service carries its own `application.yml` |
+| Rate limiting at the gateway | Resilience | Fits alongside a Redis caching layer |
+
+### Suggested order of value
+
+1. **Retry + bulkhead** — finish what Phase 4 already promises
+2. **Flyway migrations + a basic test suite + CI** — biggest correctness/safety gap
+3. **Wire Kafka to a real event** (e.g. `post-created` → notify `comment-service`) — makes Phase 5 real
+4. **Distributed tracing** — high value once multiple services talk
+5. **Auth at the gateway** (JWT/OAuth2), then Prometheus/Grafana and a config server
+
+> Each item is a focused, multi-step change and should be tackled as its own increment.

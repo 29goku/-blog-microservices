@@ -10,37 +10,48 @@ PROJECT INFORMATION
 ═══════════════════════════════════════════════════════════════════════════
 
 Project Name:     Blog Microservices (Project 1)
-Location:         /Users/shosingh_1/blog-microservices/
-Status:           ✅ COMPLETE AND READY TO RUN
-Size:             304 KB (44 files)
+Location:         repo root (-blog-microservices)
+Status:           ✅ DEPLOYED — Render (backend) + Vercel (frontend)
+Size:             7 Maven modules + React frontend
 Created:          April 3, 2026
 
 WHAT'S INCLUDED
 ═══════════════════════════════════════════════════════════════════════════
 
-✅ 3 INDEPENDENT MICROSERVICES
+✅ 5 DOMAIN MICROSERVICES (+ API Gateway + Eureka)
 
 1. User Service (Port 8081)
    ├─ 6 REST endpoints
    ├─ User CRUD operations
    ├─ User validation & authentication
-   └─ 9 Java classes
+   └─ No Feign calls
 
 2. Post Service (Port 8082)
    ├─ 7 REST endpoints
    ├─ Post CRUD operations
-   ├─ Calls User Service via Feign
+   ├─ Calls User Service & Tag Service via Feign
    ├─ Search functionality
-   └─ 10 Java classes
+   └─ Circuit breakers (Resilience4j)
 
 3. Comment Service (Port 8083)
    ├─ 7 REST endpoints
    ├─ Comment CRUD operations
    ├─ Calls User & Post Services via Feign
-   ├─ Multiple validations
-   └─ 13 Java classes
+   └─ Multiple validations
 
-TOTAL: 20 REST Endpoints | 3 Feign Calls | 45 Java Classes
+4. Like-Dislike Service (Port 8084)
+   ├─ /api/likedislike (toggle, counts, per-post reactions)
+   └─ Calls User & Post Services via Feign
+
+5. Tag Service (Port 8085)
+   ├─ /api/tags (CRUD, by-name, by-post, assign, unassign)
+   └─ Feign client with Resilience4j circuit breaker
+
+Infrastructure:
+   ├─ API Gateway (Port 8080) — routing, CORS, live request tracking
+   └─ Eureka Server (Port 8761) — service registry (local/Docker; off on Render)
+
+TOTAL: 30+ REST Endpoints across services
 
 
 ✅ PRODUCTION-GRADE CODE
@@ -58,7 +69,7 @@ Exception Handling:
   └─ Structured error responses
 
 Data Persistence:
-  ├─ 3 independent MySQL databases
+  ├─ Single shared PostgreSQL database (main_db), per-service tables
   ├─ Spring Data JPA
   ├─ Hibernate ORM
   └─ Automatic timestamp management
@@ -126,7 +137,7 @@ TECHNOLOGIES USED
 ✅ Data Layer
    ├─ Spring Data JPA
    ├─ Hibernate ORM
-   ├─ MySQL 8.0
+   ├─ PostgreSQL 15
    └─ JDBC Driver
 
 ✅ Build & Dependencies
@@ -144,23 +155,20 @@ PROJECT STATISTICS
 ═══════════════════════════════════════════════════════════════════════════
 
 Code Metrics:
-  Total Java Classes:        45
-  Total Lines of Code:       3,500+
-  Services:                  3
-  REST Endpoints:            20
-  Feign Calls:               3
-  Database Tables:           3
-  Custom Exceptions:         6
-  Global Exception Handlers: 3
+  Maven Modules:             7 (Eureka, Gateway, 5 domain services)
+  Domain Services:           5 (User, Post, Comment, Like-Dislike, Tag)
+  REST Endpoints:            30+ across services
+  Feign Calls:               Post→User/Tag, Comment→User/Post,
+                             Like-Dislike→User/Post
+  Database:                  1 shared PostgreSQL (main_db)
+  Resilience:                Resilience4j circuit breakers on Feign clients
+  Frontend:                  React 19 SPA (Vite + TypeScript)
 
 File Distribution:
-  Java Classes:              45 files
-  Configuration Files:       3 files (YAML)
-  Maven POMs:                4 files
+  Maven Modules:             7 modules (each with its own POM)
   Documentation:             8 files
   Scripts:                   1 file (test-apis.sh)
   Collections:               1 file (Postman)
-  Total:                     62 files
 
 Project Size:
   Total Size:                304 KB
@@ -178,7 +186,7 @@ ARCHITECTURE HIGHLIGHTS
 
 ✅ Microservices Pattern
    ├─ Independent services
-   ├─ Separate databases (Database per Service)
+   ├─ Single shared PostgreSQL (main_db), per-service tables
    ├─ Autonomous deployment
    └─ Loose coupling, high cohesion
 
@@ -259,10 +267,10 @@ Step 1: Read START_HERE.txt (this will take 2 minutes)
 Step 2: Follow QUICK_START.md (5 minutes)
         → Creates databases and builds project
 
-Step 3: Start Services (3 terminals)
-        → User Service on port 8081
-        → Post Service on port 8082
-        → Comment Service on port 8083
+Step 3: Start Services (or just run: docker-compose up)
+        → Eureka (8761), API Gateway (8080)
+        → User (8081), Post (8082), Comment (8083)
+        → Like-Dislike (8084), Tag (8085)
 
 Step 4: Run Tests
         → $ ./test-apis.sh
@@ -300,44 +308,77 @@ Manual with cURL:
     -d '{"username":"john","email":"john@example.com",...}'
 
 
-NEXT PHASES (NOT INCLUDED IN THIS PROJECT)
+ROADMAP / PHASE STATUS
 ═══════════════════════════════════════════════════════════════════════════
 
-Phase 2: Service Discovery
-  ├─ Add Eureka Server
-  ├─ Remove hardcoded URLs
+Phase 2: Service Discovery ✅ DONE
+  ├─ Eureka Server (local/Docker; disabled on Render)
+  ├─ Removed hardcoded URLs
   └─ Dynamic service registration
 
-Phase 3: API Gateway
+Phase 3: API Gateway ✅ DONE
   ├─ Spring Cloud Gateway
   ├─ Single entry point
-  └─ Cross-cutting concerns
+  └─ CORS + live request tracking
 
-Phase 4: Resilience
+Phase 4: Resilience ✅ DONE
   ├─ Circuit breaker (Resilience4j)
-  ├─ Retry logic
   ├─ Timeout handling
-  └─ Bulkhead pattern
+  └─ 🔜 Retry / bulkhead tuning
 
-Phase 5: Async Communication
-  ├─ Apache Kafka
-  ├─ Event-driven architecture
-  └─ Message publishing/consuming
+Phase 5: Async Communication 🔜 SCAFFOLDED
+  ├─ Kafka/Zookeeper run via Docker Compose
+  ├─ Not yet wired into business events
+  └─ Message publishing/consuming (future)
 
-Phase 6: Caching
+Phase 6: Caching 🔜 FUTURE
   ├─ Redis integration
   ├─ Cache invalidation
   └─ Performance optimization
 
-Phase 7: Containerization
-  ├─ Docker for each service
-  ├─ Docker Compose
-  └─ Multi-stage builds
+Phase 7: Containerization ✅ DONE
+  ├─ Docker for each service (multi-stage builds)
+  ├─ Docker Compose (local full stack)
+  └─ Render (backend) + Vercel (frontend)
 
-Phase 8: Orchestration
+Phase 8: Orchestration 🔜 FUTURE
   ├─ Kubernetes deployment
   ├─ StatefulSets, ConfigMaps
   └─ Helm charts
+
+
+KNOWN GAPS & NEXT ADDITIONS
+═══════════════════════════════════════════════════════════════════════════
+
+The platform is functional and deployed, but several production-grade
+concerns remain open. Captured here as an honest backlog:
+
+  Gap                                        Where it fits
+  ─────────────────────────────────────────  ────────────────────────────────
+  Retry + bulkhead                           Finishes Phase 4 (resilience)
+  Real Kafka events                          Makes Phase 5 real (Kafka runs in
+                                             Docker Compose, not yet wired)
+  Schema/DB isolation                        All services share one main_db —
+                                             a shared-database coupling
+  DB migrations (Flyway/Liquibase)           Replaces hibernate ddl-auto=update
+  Automated tests + CI/CD                    Builds use -DskipTests; no suite;
+                                             Docker builds are manual
+  API docs (OpenAPI/Swagger, springdoc)      Aggregate at the gateway
+  Distributed tracing (Micrometer→OTLP/      Pairs with the gateway's existing
+    Zipkin/Jaeger)                           RequestTrackingFilter
+  Auth/security (JWT/OAuth2 at gateway)      Gateway has CORS but no auth
+  Metrics aggregation (Prometheus/Grafana)   Actuator exposed, nothing scrapes
+  Centralized config (Spring Cloud Config)   Each service has its own YAML
+  Rate limiting at the gateway               Fits alongside a Redis layer
+
+Suggested order of value:
+  1. Retry + bulkhead — finish what Phase 4 already promises
+  2. Flyway migrations + a basic test suite + CI — biggest safety gap
+  3. Wire Kafka to a real event (post-created → notify comment-service)
+  4. Distributed tracing — high value once services talk
+  5. Auth at the gateway, then Prometheus/Grafana and a config server
+
+Each item is a focused, multi-step change — tackle as its own increment.
 
 
 KEY LEARNING OUTCOMES
@@ -434,22 +475,21 @@ Testing Tools:
 FINAL CHECKLIST
 ═══════════════════════════════════════════════════════════════════════════
 
-✅ 3 independent microservices
-✅ 20 REST endpoints
-✅ 3 databases
-✅ Feign client integration
+✅ 5 domain microservices (+ Gateway + Eureka)
+✅ 30+ REST endpoints
+✅ Single shared PostgreSQL (main_db)
+✅ Feign client integration + Resilience4j circuit breakers
 ✅ Global exception handling
 ✅ Request validation
-✅ Structured logging
+✅ Structured logging + live gateway request tracking
 ✅ Production-grade code
-✅ Comprehensive documentation (100+ pages)
+✅ Comprehensive documentation
 ✅ Automated test script
 ✅ Postman collection
 ✅ ASCII architecture diagrams
 ✅ Setup guide with troubleshooting
 ✅ Development workflow guide
-✅ Learning path provided
-✅ Ready to run immediately
+✅ Deployed on Render (backend) + Vercel (frontend)
 
 
 DELIVERY CONFIRMATION
