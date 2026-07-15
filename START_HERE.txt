@@ -45,18 +45,14 @@
 │                                                                            │
 │  Commands:                                                                │
 │                                                                            │
-│  1. Create databases:                                                     │
-│     mysql -u root -p -e "                                                 │
-│       CREATE DATABASE blog_user_db;                                       │
-│       CREATE DATABASE blog_post_db;                                       │
-│       CREATE DATABASE blog_comment_db;                                    │
-│     "                                                                      │
+│  1. Create database (all services share main_db):                         │
+│     psql -U postgres -c "CREATE DATABASE main_db;"                        │
 │                                                                            │
 │  2. Build project:                                                        │
-│     cd /Users/shosingh_1/blog-microservices                               │
+│     cd -blog-microservices   # repo root                                  │
 │     mvn clean package -DskipTests                                         │
 │                                                                            │
-│  3. Start services (open 3 separate terminals):                           │
+│  3. Start services (or just run: docker-compose up):                      │
 │                                                                            │
 │     Terminal 1:                                                           │
 │     cd user-service && mvn spring-boot:run                                │
@@ -66,6 +62,12 @@
 │                                                                            │
 │     Terminal 3:                                                           │
 │     cd comment-service && mvn spring-boot:run                             │
+│                                                                            │
+│     Terminal 4:                                                           │
+│     cd like-dislike-service && mvn spring-boot:run                        │
+│                                                                            │
+│     Terminal 5:                                                           │
+│     cd tag-service && mvn spring-boot:run                                 │
 │                                                                            │
 │  4. Test the APIs:                                                        │
 │     ./test-apis.sh                                                        │
