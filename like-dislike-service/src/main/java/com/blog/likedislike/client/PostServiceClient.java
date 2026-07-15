@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "post-service", url = "${post-service.url:}", path = "/api/posts")
 public interface PostServiceClient {
 
-    @GetMapping("/{id}")
-    Object getPostById(@PathVariable("id") Long id);
-    @CircuitBreaker(name = "post-service", fallbackMethod = "getPostByIdFallback")
-    default Object getPostByIdFallback(Long id) {
-        return null;
-    }
+  @GetMapping("/{id}")
+  Object getPostById(@PathVariable("id") Long id);
+
+  @CircuitBreaker(name = "post-service", fallbackMethod = "getPostByIdFallback")
+  default Object getPostByIdFallback(Long id) {
+    return null;
+  }
 }

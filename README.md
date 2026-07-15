@@ -2,7 +2,7 @@
 
 A production-ready microservices blog platform with a React frontend, Spring Cloud API gateway, service discovery, circuit breakers, and live request tracking.
 
-**Live:** Frontend on Vercel → API Gateway on Render → 4 domain services on Render
+**Live:** Frontend on Vercel → API Gateway on Render → 5 domain services on Render
 
 ---
 
@@ -16,19 +16,21 @@ A production-ready microservices blog platform with a React frontend, Spring Clo
 [API Gateway :8080]  ← Spring Cloud Gateway (WebFlux, reactive)
   + RequestTrackingFilter (logs every request in-memory)
          |
-  ┌──────┼──────────────────┐
-  │      │                  │
-[User   [Post    [Comment   [Like-Dislike
-Service  Service] Service]   Service]
-:8081]   :8082]   :8083]     :8084]
-  │      │        │          │
-PostgreSQL per service (separate databases)
+  ┌──────┼─────────┬──────────┬──────────┐
+  │      │         │          │          │
+[User   [Post    [Comment   [Like-Dislike [Tag
+Service  Service] Service]   Service]      Service]
+:8081]   :8082]   :8083]     :8084]        :8085]
+  │      │        │          │             │
+  └──────┴────────┴──────────┴─────────────┘
+                    │
+        Single shared PostgreSQL (main_db)
 
 [Eureka Server :8761]  ← used locally & Docker; disabled on Render
 [Kafka + Zookeeper]    ← available via Docker Compose (scaffolded)
 ```
 
-Inter-service calls use **OpenFeign** with **Resilience4j** circuit breakers. On Render, Eureka is disabled and services resolve each other via injected HTTPS URLs.
+All domain services share a single PostgreSQL database (`main_db`), each owning its own tables. Inter-service calls use **OpenFeign** with **Resilience4j** circuit breakers. On Render, Eureka is disabled and services resolve each other via injected HTTPS URLs.
 
 ---
 
@@ -42,6 +44,7 @@ Inter-service calls use **OpenFeign** with **Resilience4j** circuit breakers. On
 | `post-service` | 8082 | Blog post CRUD + user enrichment via Feign |
 | `comment-service` | 8083 | Comment CRUD, validates user & post via Feign |
 | `like-dislike-service` | 8084 | Per-user like/dislike toggle on posts |
+| `tag-service` | 8085 | Tag CRUD + assign/unassign tags to posts |
 | `frontend` | — | React 19 SPA (Vite, TypeScript) |
 
 ---
@@ -94,8 +97,21 @@ All endpoints route through the gateway at `http://localhost:8080` (local) or `h
 | `GET` | `/api/likedislike/post/{postId}` | Get all reactions for a post |
 | `DELETE` | `/api/likedislike/{id}` | Remove a reaction |
 
-### Gateway Tracking — `/api/tracking`
+### Tag Service — `/api/tags`
 
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/tags` | Create tag |
+| `GET` | `/api/tags` | List all tags |
+| `GET` | `/api/tags/{id}` | Get tag by ID |
+| `GET` | `/api/tags/name/{name}` | Get tag by name |
+| `GET` | `/api/tags/post/{postId}` | Get tags for a post |
+| `PUT` | `/api/tags/{id}` | Update tag |
+| `DELETE` | `/api/tags/{id}` | Delete tag |
+| `POST` | `/api/tags/assign?postId=&tagId=` | Assign a tag to a post |
+| `DELETE` | `/api/tags/unassign?id=&postId=` | Remove a tag from a post |
+
+### Gateway Tracking — `/api/tracking`
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/api/tracking/requests?limit=20` | Last N requests (in-memory, max 100) |
@@ -120,7 +136,7 @@ All endpoints route through the gateway at `http://localhost:8080` (local) or `h
 docker-compose up
 ```
 
-Starts MySQL, Zookeeper, Kafka, Eureka, API Gateway, and all domain services.
+Starts PostgreSQL, Zookeeper, Kafka, Eureka, API Gateway, and all domain services (including tag-service).
 
 ### Option B — Maven (services individually)
 
@@ -150,15 +166,15 @@ cd comment-service && mvn spring-boot:run
 
 # Terminal 6 — Like-Dislike Service
 cd like-dislike-service && mvn spring-boot:run
+
+# Terminal 7 — Tag Service
+cd tag-service && mvn spring-boot:run
 ```
 
-Local MySQL databases required:
+Local PostgreSQL database required (all services share a single `main_db`):
 
 ```sql
-CREATE DATABASE blog_user_db;
-CREATE DATABASE blog_post_db;
-CREATE DATABASE blog_comment_db;
-CREATE DATABASE like_dislike_db;
+CREATE DATABASE main_db;
 ```
 
 ### Frontend
@@ -176,7 +192,7 @@ npm run build     # production build → dist/
 
 ### Backend — Render
 
-Defined in `render.yaml` (Render Blueprint). Deploys 6 Docker-based web services and 4 managed PostgreSQL databases.
+Defined in `render.yaml` (Render Blueprint). Deploys 7 Docker-based web services (Eureka, API Gateway, and 5 domain services) and a single managed PostgreSQL database (`main-db`).
 
 ```
 render blueprint launch render.yaml
@@ -191,6 +207,7 @@ On Render, `EUREKA_CLIENT_ENABLED=false` is injected automatically. Services res
 | Post Service | `https://post-service-7g3r.onrender.com` |
 | Comment Service | `https://comment-service-edye.onrender.com` |
 | Like-Dislike Service | `https://like-dislike-service.onrender.com` |
+| Tag Service | `https://tag-service-d5s9.onrender.com` |
 
 All services expose `/actuator/health` for health checks.
 
@@ -214,13 +231,14 @@ Each backend service reads the following env vars (with local defaults shown):
 | `PORT` | `808x` | Service port |
 | `DB_HOST` | `localhost` | Database host |
 | `DB_PORT` | `5432` | Database port |
-| `DB_NAME` | `blog_*_db` | Database name |
-| `DB_USERNAME` | `root` | DB username |
-| `DB_PASSWORD` | `password` | DB password |
+| `DB_NAME` | `main_db` | Database name (shared across services) |
+| `DB_USERNAME` | `postgres` | DB username |
+| `DB_PASSWORD` | `postgres` | DB password |
 | `DATABASE_URL` | — | Full Render postgres:// URL (auto-parsed) |
 | `EUREKA_CLIENT_ENABLED` | `true` | Set `false` on Render/cloud |
 | `USER_SERVICE_URL` | `lb://user-service` | Feign target (use HTTPS URL on cloud) |
 | `POST_SERVICE_URL` | `lb://post-service` | Feign target |
+| `TAG_SERVICE_URL` | `lb://tag-service` | Feign target |
 
 ---
 
@@ -229,9 +247,10 @@ Each backend service reads the following env vars (with local defaults shown):
 ```
 blog-microservices/
 ├── pom.xml                        # Maven parent POM (Spring Boot 3.3, Java 17)
-├── docker-compose.yml             # Local full-stack (MySQL, Kafka, all services)
+├── docker-compose.yml             # Local full-stack (PostgreSQL, Kafka, all services)
 ├── render.yaml                    # Render IaC blueprint
 ├── railway.toml                   # Railway.com backend config
+├── architecture-explorer.html     # Standalone interactive architecture diagram
 ├── eureka-server/
 ├── api-gateway/
 │   └── .../filter/RequestTrackingFilter.java
@@ -243,6 +262,8 @@ blog-microservices/
 │   └── .../client/UserServiceClient.java
 │   └── .../client/PostServiceClient.java
 ├── like-dislike-service/
+├── tag-service/
+│   └── .../client/TagServiceClient.java     # Feign + circuit breaker
 └── frontend/
     ├── vercel.json                # Vercel proxy rewrite
     ├── railway.json
@@ -260,10 +281,9 @@ blog-microservices/
 
 ## Key Concepts
 
-- **Microservices** — independent services, database per service, domain-driven boundaries
+- **Microservices** — independent services, domain-driven boundaries, single shared PostgreSQL (`main_db`) with per-service tables
 - **API Gateway** — single entry point, path-based routing, global CORS, request tracking
-- **Service Discovery** — Eureka (local/Docker); direct URLs (cloud)
-- **Feign + Resilience4j** — declarative HTTP clients with circuit breakers and fallbacks
+- **Service Discovery** — Eureka (local/Docker); direct URLs (cloud)- **Feign + Resilience4j** — declarative HTTP clients with circuit breakers and fallbacks
 - **Reactive Gateway** — Spring Cloud Gateway over WebFlux (non-blocking)
 - **Live Request Tracking** — gateway records every request (method, path, service, duration, status) in a 100-entry in-memory buffer; frontend sidebar polls and visualizes in real time
 

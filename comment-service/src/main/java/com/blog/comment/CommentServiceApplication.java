@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableDiscoveryClient
 public class CommentServiceApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(CommentServiceApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(CommentServiceApplication.class, args);
+  }
 }

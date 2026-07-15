@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Blog Microservices — Architecture Explorer</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-2: #0f1630;
+    --panel: rgba(255,255,255,0.04);
+    --panel-strong: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.10);
+    --text: #e8ecf5;
+    --muted: #9aa6c4;
+    --accent: #6ea8ff;
+    --accent-2: #b98bff;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --pink: #f472b6;
+    --cyan: #22d3ee;
+    --radius: 16px;
+    --shadow: 0 12px 40px rgba(0,0,0,0.45);
+  }
+  html[data-theme="light"] {
+    --bg: #f4f6fc;
+    --bg-2: #eaeefb;
+    --panel: rgba(20,30,60,0.04);
+    --panel-strong: rgba(20,30,60,0.06);
+    --border: rgba(20,30,60,0.12);
+    --text: #1a2138;
+    --muted: #55617d;
+    --shadow: 0 12px 40px rgba(30,50,90,0.15);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 15% -5%, rgba(110,168,255,0.16), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(185,139,255,0.14), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  code {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    background: var(--panel-strong);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.86em;
+    border: 1px solid var(--border);
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
+  header.topbar {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner { display: flex; align-items: center; gap: 18px; height: 62px; }
+  .brand { font-weight: 800; font-size: 1.05rem; letter-spacing: .2px; display:flex; align-items:center; gap:10px; }
+  .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow: 0 0 14px var(--accent); }
+  nav.tabs { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+  nav.tabs button {
+    background: transparent; color: var(--muted); border: 1px solid transparent;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: .9rem; font-weight: 600;
+    transition: all .18s ease;
+  }
+  nav.tabs button:hover { color: var(--text); background: var(--panel); }
+  nav.tabs button.active { color: var(--text); background: var(--panel-strong); border-color: var(--border); }
+  .theme-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 1.1rem; }
+
+  section.view { display: none; padding: 46px 0 90px; animation: fade .4s ease; }
+  section.view.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform:none;} }
+
+  h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.5px; }
+  h2 { font-size: 1.6rem; margin: 40px 0 8px; letter-spacing: -0.3px; }
+  h3 { font-size: 1.15rem; margin: 0 0 6px; }
+  .lead { font-size: 1.15rem; color: var(--muted); max-width: 760px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 2px; font-size: .72rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+  .muted { color: var(--muted); }
+
+  .grid { display: grid; gap: 16px; }
+  .cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cols-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 880px){ .cols-2,.cols-3,.cols-4{ grid-template-columns: 1fr; } nav.tabs{ display:none; } }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; transition: transform .18s ease, border-color .18s;
+  }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+  .card .ico { font-size: 1.6rem; margin-bottom: 8px; display:block; }
+  .pill { display:inline-block; font-size:.72rem; font-weight:700; padding:3px 9px; border-radius:999px; border:1px solid var(--border); background: var(--panel-strong); color: var(--muted); }
+  .tag-method { font-family: monospace; font-weight: 700; font-size:.72rem; padding: 2px 8px; border-radius: 6px; }
+  .m-get{ background: rgba(74,222,128,.15); color: var(--green); }
+  .m-post{ background: rgba(110,168,255,.15); color: var(--accent); }
+  .m-put{ background: rgba(251,191,36,.15); color: var(--amber); }
+  .m-delete{ background: rgba(248,113,113,.15); color: var(--red); }
+
+  /* ---------- Hero stack diagram ---------- */
+  .stack { display: flex; flex-direction: column; gap: 14px; margin: 30px 0; }
+  .layer {
+    position: relative; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px;
+    background: var(--panel); display:flex; align-items:center; gap:16px;
+  }
+  .layer .badge { font-size: 1.5rem; }
+  .layer .layer-body h4 { margin:0; font-size:1rem; }
+  .layer .layer-body p { margin:2px 0 0; color: var(--muted); font-size:.9rem; }
+  .layer .port { margin-left:auto; font-family: monospace; font-size:.8rem; color: var(--accent); background: var(--panel-strong); padding:4px 10px; border-radius:8px; border:1px solid var(--border); }
+  .connector { height: 22px; display:flex; justify-content:center; }
+  .connector::before { content:""; width:2px; background: linear-gradient(var(--accent),transparent); }
+  .layer-services { display:grid; grid-template-columns: repeat(5,1fr); gap:10px; }
+  @media (max-width:880px){ .layer-services{ grid-template-columns: repeat(2,1fr);} }
+  .svc-chip {
+    border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center; background: var(--panel);
+    cursor:pointer; transition: all .18s;
+  }
+  .svc-chip:hover{ transform: translateY(-3px); border-color: var(--accent); }
+  .svc-chip .n { font-weight:700; font-size:.9rem; }
+  .svc-chip .p { font-family:monospace; font-size:.74rem; color: var(--muted); }
+
+  /* ---------- Request simulator ---------- */
+  .sim-controls { display:flex; flex-wrap:wrap; gap:10px; margin: 18px 0; }
+  .sim-controls button {
+    border:1px solid var(--border); background: var(--panel); color: var(--text);
+    padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:600; font-size:.9rem; transition: all .18s;
+  }
+  .sim-controls button:hover{ border-color: var(--accent); }
+  .sim-controls button.active{ background: linear-gradient(135deg, color-mix(in srgb,var(--accent) 30%,transparent), color-mix(in srgb,var(--accent-2) 30%,transparent)); border-color: var(--accent); }
+  .sim-stage { display:flex; flex-direction:column; gap:0; margin-top:8px; }
+  .sim-node {
+    display:flex; align-items:center; gap:14px; padding:14px 18px; border:1px solid var(--border);
+    border-radius:12px; background: var(--panel); opacity:.4; transform: scale(.99);
+    transition: all .35s ease;
+  }
+  .sim-node.lit { opacity:1; border-color: var(--accent); background: var(--panel-strong); box-shadow: 0 0 0 1px var(--accent), 0 8px 30px rgba(110,168,255,.15); transform: scale(1); }
+  .sim-node .n-ico { font-size:1.4rem; width:34px; text-align:center; }
+  .sim-node .n-title { font-weight:700; }
+  .sim-node .n-desc { color: var(--muted); font-size:.86rem; }
+  .sim-node .n-tag { margin-left:auto; font-family:monospace; font-size:.74rem; color: var(--accent); }
+  .sim-arrow { height:20px; display:flex; justify-content:center; color: var(--muted); font-size:.9rem; }
+  .sim-arrow.lit { color: var(--accent); }
+
+  /* ---------- Service explorer ---------- */
+  .svc-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .svc-tabs button { border:1px solid var(--border); background:var(--panel); color:var(--muted); padding:9px 15px; border-radius:10px; cursor:pointer; font-weight:600; font-size:.88rem; }
+  .svc-tabs button.active { color:var(--text); background:var(--panel-strong); border-color:var(--accent); }
+  .layer-flow { display:flex; flex-direction:column; gap:2px; }
+  .lf-node { border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:10px; padding:12px 16px; background:var(--panel); }
+  .lf-node .lf-h { display:flex; align-items:center; gap:10px; }
+  .lf-node .lf-h .k { font-family:monospace; font-size:.72rem; color:var(--accent); background:var(--panel-strong); padding:2px 8px; border-radius:6px; }
+  .lf-node .lf-file { font-family:monospace; font-size:.78rem; color:var(--muted); margin-left:auto; }
+  .lf-node p { margin:6px 0 0; color:var(--muted); font-size:.9rem; }
+  .lf-conn { height:14px; display:flex; justify-content:center; }
+  .lf-conn::before{ content:"↓"; color:var(--muted); font-size:.85rem; }
+
+  .ep-row { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px dashed var(--border); }
+  .ep-row:last-child{ border-bottom:none; }
+  .ep-row code { flex:1; }
+  .ep-row .desc { color:var(--muted); font-size:.85rem; flex: 2; }
+  @media(max-width:880px){ .ep-row{ flex-wrap:wrap;} .ep-row .desc{ flex-basis:100%; } }
+
+  .concept-note { border-left:3px solid var(--accent); background: var(--panel); padding:12px 16px; border-radius:0 10px 10px 0; margin:10px 0; }
+  .concept-note b{ color: var(--text); }
+
+  .kbd-list { list-style:none; padding:0; margin:0; }
+  .kbd-list li { padding:10px 0; border-bottom:1px solid var(--border); }
+  .kbd-list li:last-child{ border:none; }
+
+  footer { border-top:1px solid var(--border); padding:26px 0; color:var(--muted); font-size:.86rem; text-align:center; }
+
+  /* code blocks */
+  pre.code {
+    background: #0a0e1c; border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    overflow-x:auto; font-family:"SF Mono","JetBrains Mono",Menlo,Consolas,monospace; font-size:.82rem;
+    line-height:1.55; margin:10px 0 0; color:#cdd6f4;
+  }
+  html[data-theme="light"] pre.code { background:#0e1424; color:#dfe6f5; }
+  pre.code .cm { color:#6b7699; font-style:italic; }
+  pre.code .an { color:#f9c74f; }
+  pre.code .kw { color:#c792ea; }
+  pre.code .st { color:#a5d6a7; }
+  pre.code .ty { color:#82aaff; }
+  .filebar { display:flex; align-items:center; gap:8px; font-family:monospace; font-size:.78rem; color:var(--muted); }
+  .filebar .fdot { width:10px;height:10px;border-radius:50%; }
+  .accordion { border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--panel); }
+  .accordion > summary { list-style:none; cursor:pointer; padding:14px 18px; display:flex; align-items:center; gap:12px; font-weight:700; }
+  .accordion > summary::-webkit-details-marker{ display:none; }
+  .accordion > summary .chev { margin-left:auto; color:var(--muted); transition:transform .2s; }
+  .accordion[open] > summary .chev{ transform:rotate(90deg); }
+  .accordion > summary .k { font-family:monospace; font-size:.72rem; color:var(--accent); background:var(--panel-strong); padding:2px 8px; border-radius:6px; }
+  .accordion .body { padding:0 18px 18px; }
+  .accordion .body p { color:var(--muted); font-size:.9rem; margin:8px 0; }
+
+  /* dependency graph */
+  .depgraph { width:100%; height:auto; }
+  .dep-edge { stroke:var(--border); stroke-width:2; fill:none; marker-end:url(#arrow); }
+  .dep-edge.feign { stroke:var(--accent); stroke-dasharray:0; }
+  .dep-node text { fill:var(--text); font-size:12px; font-weight:600; }
+  .dep-node .sub { fill:var(--muted); font-size:9px; }
+  .legend-line{ display:inline-block; width:26px; height:0; border-top:2px solid var(--accent); vertical-align:middle; margin-right:6px; }
+  .legend-line.build{ border-top-style:dashed; border-color:var(--amber); }
+  .hint { font-size:.82rem; color:var(--muted); }
+  .analogy { background: linear-gradient(135deg, color-mix(in srgb,var(--accent) 10%,transparent), color-mix(in srgb,var(--accent-2) 10%,transparent)); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-top:10px; }
+  .analogy b { color: var(--pink); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand"><span class="dot"></span> Blog Microservices · Architecture Explorer</div>
+    <nav class="tabs" id="tabs">
+      <button data-view="overview" class="active">Overview</button>
+      <button data-view="flow">Request Flow</button>
+      <button data-view="services">Services</button>
+      <button data-view="layers">Inside a Service</button>
+      <button data-view="files">Project Files</button>
+      <button data-view="build">Build &amp; Deploy</button>
+      <button data-view="connections">Connections</button>
+      <button data-view="concepts">BE Concepts</button>
+      <button data-view="frontend">Frontend</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ==================== OVERVIEW ==================== -->
+<section class="view active" id="overview">
+  <div class="eyebrow">The big picture</div>
+  <h1>Your blog, built as many small apps working together</h1>
+  <p class="lead">Instead of one giant program, this project is split into several small, independent
+    <b>services</b>. Each one owns a single job and its own database. They talk to each other over the network,
+    and a single front door (the <b>API Gateway</b>) sits in front of them all. Here's the whole thing, top to bottom.</p>
+
+  <div class="analogy">🏢 <b>Analogy:</b> Think of a big office building. The <b>reception desk</b> (API Gateway) greets every
+    visitor and directs them to the right <b>department</b> (a service). Each department has its own <b>filing cabinet</b>
+    (database) and never rummages through another department's files — it just calls them on the phone (an API call).</div>
+
+  <div class="stack">
+    <div class="layer">
+      <span class="badge">💻</span>
+      <div class="layer-body"><h4>React Single-Page App (the Frontend)</h4>
+        <p>What the user sees & clicks. Runs in the browser, hosted on Vercel.</p></div>
+      <span class="port">React 19 · Vite</span>
+    </div>
+    <div class="connector"></div>
+    <div class="layer">
+      <span class="badge">🚪</span>
+      <div class="layer-body"><h4>API Gateway — the single front door</h4>
+        <p>Every request goes here first. It routes to the right service, handles CORS, and logs each request live.</p></div>
+      <span class="port">:8080</span>
+    </div>
+    <div class="connector"></div>
+    <div class="layer" style="flex-direction:column; align-items:stretch; gap:12px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="badge">⚙️</span>
+        <div class="layer-body"><h4>Domain Services — one per job</h4>
+          <p>Each is a standalone Spring Boot app. Click one to explore it.</p></div>
+      </div>
+      <div class="layer-services" id="ovServices"></div>
+    </div>
+    <div class="connector"></div>
+    <div class="layer">
+      <span class="badge">🗄️</span>
+      <div class="layer-body"><h4>PostgreSQL — a database per service</h4>
+        <p>Each service keeps its own data separate. No service reads another's tables directly.</p></div>
+      <span class="port">:5432</span>
+    </div>
+  </div>
+
+  <h2>Supporting cast</h2>
+  <div class="grid cols-2">
+    <div class="card"><span class="ico">🧭</span><h3>Eureka — the phone book</h3>
+      <p class="muted">Service registry used locally & in Docker. Services register here so they can find each
+      other by name instead of hard-coded addresses. (Disabled in cloud, where direct URLs are used.)</p>
+      <span class="pill">:8761</span></div>
+    <div class="card"><span class="ico">🔌</span><h3>OpenFeign + Resilience4j</h3>
+      <p class="muted">How services call each other. Feign makes an HTTP call look like a normal method call.
+      A <b>circuit breaker</b> returns a safe fallback if the other service is down, so one failure doesn't cascade.</p>
+      <span class="pill">inter-service calls</span></div>
+  </div>
+
+  <h2>Why build it this way?</h2>
+  <div class="grid cols-3">
+    <div class="card"><span class="ico">🧩</span><h3>Independent</h3><p class="muted">Each service can be built, deployed, and scaled on its own. A bug in comments won't take down posts.</p></div>
+    <div class="card"><span class="ico">🎯</span><h3>Focused</h3><p class="muted">Every service has one clear responsibility, so the code stays small and easy to reason about.</p></div>
+    <div class="card"><span class="ico">📈</span><h3>Scalable</h3><p class="muted">Busy services (like posts) can run more copies without touching the rest of the system.</p></div>
+  </div>
+</section>
+
+<!-- ==================== REQUEST FLOW ==================== -->
+<section class="view" id="flow">
+  <div class="eyebrow">Follow a click</div>
+  <h1>What actually happens when you do something?</h1>
+  <p class="lead">Pick an action below and watch the request travel through the system — from your browser,
+    through the gateway, into a service, maybe out to <i>another</i> service, and down to the database.</p>
+
+  <div class="sim-controls" id="simControls"></div>
+  <div class="card">
+    <div id="simTitle" style="font-weight:700; margin-bottom:4px;"></div>
+    <div id="simDesc" class="muted" style="margin-bottom:16px;"></div>
+    <div class="sim-stage" id="simStage"></div>
+    <div style="margin-top:16px; display:flex; gap:10px;">
+      <button id="simPlay" class="theme-btn" style="width:auto; padding:0 18px; font-size:.9rem; font-weight:700;">▶ Play flow</button>
+      <span class="hint" id="simStatus" style="align-self:center;"></span>
+    </div>
+  </div>
+
+  <div class="concept-note" style="margin-top:20px;">
+    💡 Notice how <b>Create Post</b> and <b>Create Comment</b> reach out to <i>other</i> services to
+    <b>validate</b> data before saving. That's the <code>@FeignClient</code> in action — one service politely
+    asking another "does this user really exist?" before trusting the request.
+  </div>
+</section>
+
+<!-- ==================== SERVICES ==================== -->
+<section class="view" id="services">
+  <div class="eyebrow">Meet the team</div>
+  <h1>The services, one by one</h1>
+  <p class="lead">Each card is an independent Spring Boot application. Click a tab to see what it does,
+    the endpoints it exposes, and who it talks to.</p>
+
+  <div class="svc-tabs" id="svcTabs"></div>
+  <div class="card" id="svcDetail"></div>
+</section>
+
+<!-- ==================== INSIDE A SERVICE ==================== -->
+<section class="view" id="layers">
+  <div class="eyebrow">The pattern that repeats everywhere</div>
+  <h1>Inside one service: the layers</h1>
+  <p class="lead">Here's the part that feels complicated at first — but it's the <b>same shape in every service</b>.
+    Once you understand one, you understand them all. A request falls through these layers like water down steps.</p>
+
+  <div class="analogy">🍔 <b>Analogy:</b> A restaurant. The <b>Controller</b> is the waiter (takes your order, brings the food).
+    The <b>Service</b> is the chef (does the actual cooking / business rules). The <b>Repository</b> is the pantry clerk
+    (fetches & stores ingredients). The <b>Database</b> is the pantry itself. The <b>DTO</b> is the plate the food is served on —
+    a clean shape for handing data around.</div>
+
+  <h2>Follow a request down the layers</h2>
+  <p class="muted">Example: <code>POST /api/posts</code> to create a new blog post.</p>
+  <div class="layer-flow" id="layerFlow"></div>
+
+  <h2>What each layer is for</h2>
+  <div class="grid cols-2" id="layerCards"></div>
+</section>
+
+<!-- ==================== PROJECT FILES ==================== -->
+<section class="view" id="files">
+  <div class="eyebrow">Every file, decoded</div>
+  <h1>The files in a service — and what each one does</h1>
+  <p class="lead">Open any service folder and you'll see the <b>same set of files</b>. Here's every kind, with a
+    real snippet from <code>post-service</code> and a plain-English explanation. Click to expand.</p>
+  <div id="fileAccordions" style="margin-top:20px;"></div>
+</section>
+
+<!-- ==================== BUILD & DEPLOY ==================== -->
+<section class="view" id="build">
+  <div class="eyebrow">From source to running in the cloud</div>
+  <h1>Build &amp; deploy: pom, YAML, Docker</h1>
+  <p class="lead">These files aren't Java — they describe <b>how to build, configure, and run</b> the whole system.
+    They're what turns a folder of code into live services.</p>
+  <div id="buildAccordions" style="margin-top:20px;"></div>
+</section>
+
+<!-- ==================== CONNECTIONS ==================== -->
+<section class="view" id="connections">
+  <div class="eyebrow">How everything wires together</div>
+  <h1>Interconnectivity &amp; dependencies</h1>
+  <p class="lead">Three kinds of "depends on" exist here. Understanding which is which clears up most of the confusion.</p>
+
+  <h2>1 · Runtime service graph (who calls whom)</h2>
+  <p class="muted">Solid blue arrows = live HTTP calls via <code>@FeignClient</code> at runtime. This is the map of
+    inter-service communication.</p>
+  <div class="card">
+    <svg class="depgraph" viewBox="0 0 720 360" id="depSvg" role="img" aria-label="Service dependency graph">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <!-- edges drawn first -->
+      <g id="depEdges"></g>
+      <g id="depNodes"></g>
+    </svg>
+    <div class="hint" style="margin-top:8px"><span class="legend-line"></span> Feign HTTP call (validation / enrichment)</div>
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;" id="edgeList"></div>
+
+  <h2>2 · Build-time dependencies (Maven)</h2>
+  <div class="grid cols-2">
+    <div class="card"><span class="ico">🏗️</span><h3>Parent POM aggregates modules</h3>
+      <p class="muted">The root <code>pom.xml</code> is <code>&lt;packaging&gt;pom&lt;/packaging&gt;</code> and lists all
+      7 modules. It centralises the Spring Boot <b>3.3.0</b> parent, Java <b>17</b>, and Spring Cloud <b>2023.0.3</b> via
+      <code>dependencyManagement</code>, so every service uses matching versions.</p></div>
+    <div class="card"><span class="ico">🔗</span><h3>A real module→module dependency</h3>
+      <p class="muted"><code>post-service</code> declares a <b>compile</b> dependency on the
+      <code>tag-service</code> module (to reuse its tag DTO/types). This is the one place a service depends on
+      another's <i>code</i> at build time — everything else is loose HTTP coupling.</p></div>
+  </div>
+
+  <h2>3 · Configuration dependencies (env vars)</h2>
+  <p class="muted">Nothing is hard-coded. Services find their database and each other through environment variables,
+    with sensible local defaults. Same code runs locally, in Docker, and on Render.</p>
+  <div class="card" id="envTable"></div>
+
+  <div class="concept-note" style="margin-top:18px;">
+    🧠 <b>The golden rule:</b> services are <b>loosely coupled</b> at runtime (HTTP + circuit breakers) but
+    <b>version-aligned</b> at build time (one parent POM). Change one service's internals freely — as long as its
+    HTTP contract stays the same, nobody else breaks.
+  </div>
+</section>
+
+<!-- ==================== CONCEPTS ==================== -->
+<section class="view" id="concepts">
+  <div class="eyebrow">Plain-English glossary</div>
+  <h1>Backend concepts, explained simply</h1>
+  <p class="lead">Every buzzword in this project, translated. No prior backend knowledge assumed.</p>
+  <div class="grid cols-2" id="conceptCards"></div>
+</section>
+
+<!-- ==================== FRONTEND ==================== -->
+<section class="view" id="frontend">
+  <div class="eyebrow">The part users touch</div>
+  <h1>The Frontend (React SPA)</h1>
+  <p class="lead">A single-page app built with React 19 + TypeScript + Vite. It never talks to services directly —
+    it only ever calls <code>/api/*</code>, which the gateway routes onward.</p>
+
+  <h2>How data gets in and out</h2>
+  <div class="layer-flow">
+    <div class="lf-node"><div class="lf-h"><span class="k">1 · Component</span><h3>UI Components</h3><span class="lf-file">src/components/*.tsx</span></div>
+      <p>Screens like <code>PostList</code>, <code>PostForm</code>, <code>UserList</code>, <code>CommentSection</code>.
+      When you click "Create Post", the component calls the API client.</p></div>
+    <div class="lf-conn"></div>
+    <div class="lf-node"><div class="lf-h"><span class="k">2 · API client</span><h3>api/client.ts</h3><span class="lf-file">src/api/client.ts</span></div>
+      <p>A thin <code>fetch</code> wrapper (<code>postAPI</code>, <code>userAPI</code>, ...). It builds the request to
+      <code>/api/posts</code> — never a hard-coded backend URL — so the same code works locally and in production.</p></div>
+    <div class="lf-conn"></div>
+    <div class="lf-node"><div class="lf-h"><span class="k">3 · Proxy</span><h3>vercel.json rewrite</h3><span class="lf-file">frontend/vercel.json</span></div>
+      <p>Vercel forwards <code>/api/*</code> to the Render-hosted gateway. Same-origin, so <b>no CORS headaches</b>.</p></div>
+    <div class="lf-conn"></div>
+    <div class="lf-node"><div class="lf-h"><span class="k">4 · Gateway</span><h3>→ off to the backend</h3><span class="lf-file">:8080</span></div>
+      <p>From here it's the backend flow you saw in the other tabs.</p></div>
+  </div>
+
+  <h2>The cool bit: live request tracking</h2>
+  <div class="grid cols-2">
+    <div class="card"><span class="ico">📊</span><h3>RequestFlowSidebar</h3>
+      <p class="muted">Polls <code>/api/tracking/requests</code> every ~1.5s and shows the last requests that hit the
+      gateway in real time — method, path, target service, duration, status. Great for <i>seeing</i> the architecture work.</p></div>
+    <div class="card"><span class="ico">🗺️</span><h3>fileMapping.ts</h3>
+      <p class="muted">Maps each request to the backend files involved, so the dashboard can teach you which
+      Controller/Service/Repository handled it. A learning tool baked right into the UI.</p></div>
+  </div>
+
+  <div class="concept-note" style="margin-top:18px;">
+    🧠 <b>Key idea:</b> The frontend stays "dumb" about the backend's shape. It knows one address (<code>/api</code>)
+    and lets the gateway hide all the complexity of which service lives where.
+  </div>
+</section>
+
+</div>
+
+<footer>
+  Blog Microservices · Interactive architecture guide · Open this file in any browser — no build needed.
+</footer>
+
+<script>
+/* ---------------- Data ---------------- */
+const SERVICES = [
+  { id:'user', name:'User Service', port:8081, ico:'👤', color:'var(--accent)',
+    tag:'/api/users',
+    what:'Owns user accounts. The source of truth for "does this user exist?" — other services ask it before trusting a userId.',
+    calls:[], calledBy:['Post Service','Comment Service','Like-Dislike Service'],
+    endpoints:[
+      ['POST','/api/users','Create a user'],
+      ['GET','/api/users','List all users'],
+      ['GET','/api/users/{id}','Get user by ID'],
+      ['GET','/api/users/username/{username}','Get user by username'],
+      ['PUT','/api/users/{id}','Update user'],
+      ['DELETE','/api/users/{id}','Delete user'],
+    ]},
+  { id:'post', name:'Post Service', port:8082, ico:'📝', color:'var(--green)',
+    tag:'/api/posts',
+    what:'Owns blog posts. When creating a post it calls User Service to confirm the author exists, and Tag Service to attach tags.',
+    calls:['User Service','Tag Service'], calledBy:['Comment Service','Like-Dislike Service'],
+    endpoints:[
+      ['POST','/api/posts','Create post (validates userId via Feign)'],
+      ['GET','/api/posts','List all posts (with embedded user)'],
+      ['GET','/api/posts/{id}','Get post by ID'],
+      ['GET','/api/posts/user/{userId}','Get posts by user'],
+      ['GET','/api/posts/search?title=','Search by title'],
+      ['PUT','/api/posts/{id}','Update post'],
+      ['DELETE','/api/posts/{id}','Delete post'],
+    ]},
+  { id:'comment', name:'Comment Service', port:8083, ico:'💬', color:'var(--amber)',
+    tag:'/api/comments',
+    what:'Owns comments. Before saving a comment it validates BOTH the user and the post exist — calling two other services.',
+    calls:['User Service','Post Service'], calledBy:[],
+    endpoints:[
+      ['POST','/api/comments','Create comment (validates userId & postId)'],
+      ['GET','/api/comments','List all comments'],
+      ['GET','/api/comments/{id}','Get comment by ID'],
+      ['GET','/api/comments/post/{postId}','Comments for a post'],
+      ['GET','/api/comments/user/{userId}','Comments by a user'],
+      ['PUT','/api/comments/{id}','Update comment'],
+      ['DELETE','/api/comments/{id}','Delete comment'],
+    ]},
+  { id:'like', name:'Like-Dislike Service', port:8084, ico:'👍', color:'var(--pink)',
+    tag:'/api/likedislike',
+    what:'Owns reactions. Toggling logic: same type removes the reaction, the opposite type switches it.',
+    calls:['User Service','Post Service'], calledBy:[],
+    endpoints:[
+      ['POST','/api/likedislike','Like/dislike a post (toggle)'],
+      ['GET','/api/likedislike/count/{postId}','Get like/dislike counts'],
+      ['GET','/api/likedislike/post/{postId}','All reactions for a post'],
+      ['DELETE','/api/likedislike/{id}','Remove a reaction'],
+    ]},
+  { id:'tag', name:'Tag Service', port:8085, ico:'🏷️', color:'var(--cyan)',
+    tag:'/api/tags',
+    what:'Owns tags and the links between tags and posts. Post Service calls it to attach and fetch a post\'s tags.',
+    calls:[], calledBy:['Post Service'],
+    endpoints:[
+      ['POST','/api/tags','Create a tag'],
+      ['GET','/api/tags','List tags'],
+      ['POST','/api/tags/assign','Assign a tag to a post'],
+      ['GET','/api/tags/post/{postId}','Tags for a post'],
+    ]},
+];
+
+const GATEWAY_ENDPOINTS = [
+  ['GET','/api/tracking/requests?limit=20','Last N requests (in-memory, max 100)'],
+  ['GET','/api/tracking/requests/all','All tracked requests'],
+  ['DELETE','/api/tracking/history','Clear request history'],
+  ['GET','/api/tracking/health','Tracking health'],
+];
+
+const FLOWS = {
+  createPost: {
+    title:'Create a blog post  ·  POST /api/posts',
+    desc:'The richest example — the Post Service checks with two OTHER services before saving.',
+    steps:[
+      {ico:'💻', t:'Browser (React)', d:'PostForm calls postAPI.create(...)', tag:'POST /api/posts'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes /api/posts → post-service, logs the request', tag:'route'},
+      {ico:'📝', t:'Post Controller', d:'Receives JSON, hands it to the service layer', tag:'@RestController'},
+      {ico:'⚙️', t:'Post Service (logic)', d:'"Before I save, is this a real user?"', tag:'business rules'},
+      {ico:'👤', t:'→ User Service :8081', d:'Feign call validates the author exists', tag:'@FeignClient'},
+      {ico:'🏷️', t:'→ Tag Service :8085', d:'Feign call attaches tags to the post', tag:'@FeignClient'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the post row', tag:'INSERT'},
+      {ico:'💻', t:'Back to Browser', d:'New post returned as JSON, UI updates', tag:'201 Created'},
+    ]},
+  getPosts: {
+    title:'Load the feed  ·  GET /api/posts',
+    desc:'A read that enriches each post with its author before returning.',
+    steps:[
+      {ico:'💻', t:'Browser (React)', d:'App loads → postAPI.getAll()', tag:'GET /api/posts'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to post-service', tag:'route'},
+      {ico:'📝', t:'Post Controller', d:'Handles GET /api/posts', tag:'@GetMapping'},
+      {ico:'⚙️', t:'Post Service', d:'Fetches posts, then looks up each author', tag:'logic'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository reads all post rows', tag:'SELECT'},
+      {ico:'👤', t:'→ User Service :8081', d:'Feign call to embed the user in each post', tag:'@FeignClient'},
+      {ico:'💻', t:'Back to Browser', d:'List of posts (with authors) rendered', tag:'200 OK'},
+    ]},
+  createComment: {
+    title:'Comment on a post  ·  POST /api/comments',
+    desc:'Validates TWO things: the user is real AND the post is real.',
+    steps:[
+      {ico:'💻', t:'Browser (React)', d:'CommentSection submits a comment', tag:'POST /api/comments'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to comment-service', tag:'route'},
+      {ico:'💬', t:'Comment Controller', d:'Receives the comment JSON', tag:'@RestController'},
+      {ico:'⚙️', t:'Comment Service', d:'"Is the user real? Is the post real?"', tag:'validation'},
+      {ico:'👤', t:'→ User Service :8081', d:'Feign: does this user exist?', tag:'@FeignClient'},
+      {ico:'📝', t:'→ Post Service :8082', d:'Feign: does this post exist?', tag:'@FeignClient'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the comment', tag:'INSERT'},
+      {ico:'💻', t:'Back to Browser', d:'Comment appears under the post', tag:'201 Created'},
+    ]},
+  likePost: {
+    title:'Like a post  ·  POST /api/likedislike',
+    desc:'A toggle: same reaction removes it, opposite reaction switches it.',
+    steps:[
+      {ico:'💻', t:'Browser (React)', d:'LikeDislikeButton clicked', tag:'POST /api/likedislike'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to like-dislike-service', tag:'route'},
+      {ico:'👍', t:'LikeDislike Controller', d:'Receives {userId, postId, type}', tag:'@RestController'},
+      {ico:'⚙️', t:'LikeDislike Service', d:'Applies toggle logic', tag:'business rules'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Insert / update / delete the reaction', tag:'UPSERT'},
+      {ico:'💻', t:'Back to Browser', d:'Counts refresh instantly', tag:'200 OK'},
+    ]},
+};
+
+const LAYER_FLOW = [
+  {k:'HTTP in', n:'PostController', file:'controller/PostController.java',
+   d:'The <b>waiter</b>. A <code>@RestController</code> that maps the URL <code>POST /api/posts</code> to a Java method, reads the JSON body, and calls the service. It contains NO business logic — just receiving and responding.'},
+  {k:'logic', n:'PostService', file:'service/PostService.java',
+   d:'The <b>chef</b>. A <code>@Service</code> that holds the real rules: validate the user via Feign, build the entity, save it, map the result. This is where "what should happen" lives.'},
+  {k:'phone call', n:'UserServiceClient', file:'client/UserServiceClient.java',
+   d:'A <code>@FeignClient</code> — a fake interface that turns "call the User Service over HTTP" into a simple method call. Wrapped in a <code>@CircuitBreaker</code> with a fallback for when User Service is down.'},
+  {k:'data access', n:'PostRepository', file:'repository/PostRepository.java',
+   d:'The <b>pantry clerk</b>. Extends <code>JpaRepository</code>, so Spring writes the SQL for you — <code>save()</code>, <code>findById()</code>, <code>findByUserId()</code>. You just declare methods.'},
+  {k:'the row', n:'Post (Entity)', file:'entity/Post.java',
+   d:'A <code>@Entity</code> — a Java class mapped to a database table. One object = one row. Fields = columns.'},
+  {k:'storage', n:'PostgreSQL', file:'blog_post_db',
+   d:'The actual database. This service is the ONLY one allowed to touch this database directly.'},
+];
+
+const LAYER_CARDS = [
+  ['🎫','Controller','The entry point. Maps URLs to methods, parses input, returns responses & status codes. Thin by design.'],
+  ['🧠','Service','The brain. All business rules and orchestration (including calling other services) live here.'],
+  ['🗃️','Repository','Talks to the database. You declare method names; Spring Data JPA generates the SQL.'],
+  ['🧱','Entity','A class that mirrors a database table. Managed by JPA/Hibernate.'],
+  ['📦','DTO','Data Transfer Object — the clean shape sent over the wire, so you never leak internal DB fields.'],
+  ['🛡️','Exception handler','A <code>@RestControllerAdvice</code> that turns errors into tidy JSON responses (e.g. 404 + message).'],
+];
+
+const CONCEPTS = [
+  ['🧩','Microservice','A small app that does ONE job and owns its own data. Many of them together form the system. The opposite of a "monolith" (one big app that does everything).'],
+  ['🚪','API Gateway','A single front door for all requests. It routes each request to the right service, handles cross-cutting stuff (CORS, logging) once, and hides the internal layout from the client.'],
+  ['🧭','Service Discovery (Eureka)','A live phone book. Services register their address; others look them up by name. Means you don\'t hard-code IPs. Used locally/Docker; in the cloud, direct HTTPS URLs are used instead.'],
+  ['🔌','OpenFeign','A way to call another service\'s API by just writing a Java interface. Feign generates the HTTP code, so a remote call looks like a normal method call.'],
+  ['🛡️','Circuit Breaker (Resilience4j)','Safety valve. If a service keeps failing, the breaker "trips" and instantly returns a fallback instead of hanging. Stops one broken service from dragging down the rest.'],
+  ['🗄️','Database per Service','Each service has its OWN database and is the only one allowed to touch it. Others must ask via the API. Keeps services truly independent.'],
+  ['🥞','Layered Architecture','Inside each service: Controller → Service → Repository → Database. Each layer has one responsibility and only talks to the next. Easy to test and reason about.'],
+  ['📦','DTO vs Entity','Entity = the database shape (internal). DTO = the shape you send over the network (external). Keeping them separate lets you change the DB without breaking your API.'],
+  ['⚡','Spring Cloud Gateway','A reactive (non-blocking) gateway built on WebFlux. Handles lots of concurrent requests efficiently — ideal for a front door.'],
+  ['🐳','Docker Compose','A recipe (<code>docker-compose.yml</code>) that boots the whole stack — Postgres, Eureka, gateway, every service — with one command for local dev.'],
+];
+
+/* ---------------- Tab switching ---------------- */
+const tabs = document.getElementById('tabs');
+tabs.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const v = e.target.dataset.view;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b===e.target));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('active', s.id===v));
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+function goto(view){ [...tabs.children].find(b=>b.dataset.view===view)?.click(); }
+
+/* ---------------- Theme ---------------- */
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', ()=>{
+  const html = document.documentElement;
+  const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = next;
+  themeBtn.textContent = next === 'dark' ? '🌙' : '☀️';
+});
+
+/* ---------------- Overview service chips ---------------- */
+const ov = document.getElementById('ovServices');
+SERVICES.forEach(s=>{
+  const el = document.createElement('div');
+  el.className = 'svc-chip';
+  el.innerHTML = `<div style="font-size:1.4rem">${s.ico}</div><div class="n">${s.name}</div><div class="p">:${s.port}</div>`;
+  el.onclick = ()=>{ goto('services'); selectService(s.id); };
+  ov.appendChild(el);
+});
+
+/* ---------------- Request simulator ---------------- */
+const simControls = document.getElementById('simControls');
+const flowKeys = Object.keys(FLOWS);
+const flowLabels = { createPost:'📝 Create Post', getPosts:'📰 Load Feed', createComment:'💬 Add Comment', likePost:'👍 Like Post' };
+let currentFlow = flowKeys[0];
+let playTimer = null;
+
+flowKeys.forEach(k=>{
+  const b = document.createElement('button');
+  b.textContent = flowLabels[k];
+  b.dataset.flow = k;
+  if (k===currentFlow) b.classList.add('active');
+  b.onclick = ()=>{ currentFlow=k; renderFlow(); playFlow(); };
+  simControls.appendChild(b);
+});
+
+function renderFlow(){
+  const f = FLOWS[currentFlow];
+  document.querySelectorAll('#simControls button').forEach(b=>b.classList.toggle('active', b.dataset.flow===currentFlow));
+  document.getElementById('simTitle').textContent = f.title;
+  document.getElementById('simDesc').textContent = f.desc;
+  const stage = document.getElementById('simStage');
+  stage.innerHTML = '';
+  f.steps.forEach((s,i)=>{
+    if (i>0){ const a=document.createElement('div'); a.className='sim-arrow'; a.dataset.arrow=i; a.textContent='↓'; stage.appendChild(a); }
+    const n = document.createElement('div');
+    n.className='sim-node'; n.dataset.step=i;
+    n.innerHTML = `<span class="n-ico">${s.ico}</span>
+      <div><div class="n-title">${s.t}</div><div class="n-desc">${s.d}</div></div>
+      <span class="n-tag">${s.tag}</span>`;
+    stage.appendChild(n);
+  });
+  document.getElementById('simStatus').textContent = '';
+}
+function playFlow(){
+  clearTimeout(playTimer);
+  const nodes = [...document.querySelectorAll('#simStage .sim-node')];
+  const arrows = [...document.querySelectorAll('#simStage .sim-arrow')];
+  nodes.forEach(n=>n.classList.remove('lit')); arrows.forEach(a=>a.classList.remove('lit'));
+  const status = document.getElementById('simStatus');
+  let i=0;
+  const step = ()=>{
+    if (i>0) arrows[i-1] && arrows[i-1].classList.add('lit');
+    if (i<nodes.length){
+      nodes[i].classList.add('lit');
+      status.textContent = `Step ${i+1} of ${nodes.length}`;
+      i++; playTimer = setTimeout(step, 750);
+    } else { status.textContent = '✅ Done — request complete'; }
+  };
+  step();
+}
+document.getElementById('simPlay').onclick = playFlow;
+renderFlow();
+
+/* ---------------- Service explorer ---------------- */
+const svcTabs = document.getElementById('svcTabs');
+const svcDetail = document.getElementById('svcDetail');
+SERVICES.forEach(s=>{
+  const b=document.createElement('button'); b.textContent=`${s.ico} ${s.name}`; b.dataset.svc=s.id;
+  b.onclick=()=>selectService(s.id); svcTabs.appendChild(b);
+});
+// gateway tab
+const gb=document.createElement('button'); gb.textContent='🚪 API Gateway'; gb.dataset.svc='gateway';
+gb.onclick=()=>selectService('gateway'); svcTabs.appendChild(gb);
+
+function methodClass(m){ return 'm-'+m.toLowerCase(); }
+function epRows(list){
+  return list.map(([m,p,d])=>`<div class="ep-row">
+    <span class="tag-method ${methodClass(m)}">${m}</span>
+    <code>${p}</code><span class="desc">${d}</span></div>`).join('');
+}
+function selectService(id){
+  document.querySelectorAll('#svcTabs button').forEach(b=>b.classList.toggle('active', b.dataset.svc===id));
+  if (id==='gateway'){
+    svcDetail.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
+        <span style="font-size:2rem">🚪</span>
+        <div><h3 style="margin:0">API Gateway <span class="pill">:8080</span></h3>
+        <div class="muted">Spring Cloud Gateway (reactive / WebFlux)</div></div></div>
+      <p class="muted">The single entry point. Routes <code>/api/*</code> to the right service, applies global CORS,
+      and runs a <b>RequestTrackingFilter</b> that records every request in a 100-entry in-memory buffer — which the
+      frontend sidebar polls to visualise traffic live.</p>
+      <h3 style="margin-top:18px">Tracking endpoints</h3>${epRows(GATEWAY_ENDPOINTS)}
+      <div class="concept-note" style="margin-top:16px;">Routes live in <code>application.yml</code> so they can be
+      overridden by env vars per environment. <code>GatewayConfig.java</code> only wires cross-cutting concerns.</div>`;
+    return;
+  }
+  const s = SERVICES.find(x=>x.id===id);
+  const callsHtml = s.calls.length ? s.calls.map(c=>`<span class="pill" style="border-color:var(--accent);color:var(--accent)">→ ${c}</span>`).join(' ') : '<span class="muted">none — it\'s self-contained</span>';
+  const calledHtml = s.calledBy.length ? s.calledBy.map(c=>`<span class="pill">${c} →</span>`).join(' ') : '<span class="muted">none</span>';
+  svcDetail.innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
+      <span style="font-size:2rem">${s.ico}</span>
+      <div><h3 style="margin:0">${s.name} <span class="pill">:${s.port}</span></h3>
+      <div class="muted"><code>${s.tag}</code></div></div></div>
+    <p class="muted">${s.what}</p>
+    <div class="grid cols-2" style="margin:14px 0;">
+      <div><div class="hint">Calls out to (Feign):</div><div style="margin-top:6px">${callsHtml}</div></div>
+      <div><div class="hint">Called by:</div><div style="margin-top:6px">${calledHtml}</div></div>
+    </div>
+    <h3 style="margin-top:18px">Endpoints</h3>${epRows(s.endpoints)}`;
+}
+selectService('user');
+
+/* ---------------- Inside a service (layers) ---------------- */
+const lf = document.getElementById('layerFlow');
+LAYER_FLOW.forEach((n,i)=>{
+  if (i>0){ const c=document.createElement('div'); c.className='lf-conn'; lf.appendChild(c); }
+  const el=document.createElement('div'); el.className='lf-node';
+  el.innerHTML = `<div class="lf-h"><span class="k">${n.k}</span><h3>${n.n}</h3><span class="lf-file">${n.file}</span></div><p>${n.d}</p>`;
+  lf.appendChild(el);
+});
+const lc = document.getElementById('layerCards');
+LAYER_CARDS.forEach(([i,t,d])=>{
+  const el=document.createElement('div'); el.className='card';
+  el.innerHTML=`<span class="ico">${i}</span><h3>${t}</h3><p class="muted">${d}</p>`;
+  lc.appendChild(el);
+});
+
+/* ---------------- Concepts ---------------- */
+const cc = document.getElementById('conceptCards');
+CONCEPTS.forEach(([i,t,d])=>{
+  const el=document.createElement('div'); el.className='card';
+  el.innerHTML=`<span class="ico">${i}</span><h3>${t}</h3><p class="muted">${d}</p>`;
+  cc.appendChild(el);
+});
+
+/* ---------------- Project Files ---------------- */
+// code snippets are pre-escaped; highlight spans added inline.
+const FILE_DOCS = [
+  { ico:'🧱', k:'@Entity', title:'Entity — the database table as a Java class',
+    file:'post-service/.../entity/Post.java',
+    why:'One <b>Entity</b> = one database table. Each field is a column. JPA/Hibernate reads these annotations and creates & maps the table for you. <code>@PrePersist</code>/<code>@PreUpdate</code> auto-fill timestamps so you never set them by hand.',
+    code:
+`<span class="an">@Entity</span>
+<span class="an">@Table</span>(name = <span class="st">"posts"</span>)
+<span class="kw">public class</span> <span class="ty">Post</span> {
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)
+    <span class="kw">private</span> <span class="ty">Long</span> id;
+
+    <span class="an">@Column</span>(nullable = false)
+    <span class="kw">private</span> <span class="ty">Long</span> userId;      <span class="cm">// links to a user (by id, not FK)</span>
+
+    <span class="an">@Column</span>(nullable = false, columnDefinition = <span class="st">"TEXT"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> content;
+
+    <span class="an">@PrePersist</span>                    <span class="cm">// runs right before first save</span>
+    <span class="kw">protected void</span> onCreate() { createdAt = System.currentTimeMillis(); }
+}` },
+  { ico:'📦', k:'DTO', title:'DTO — the shape sent over the network',
+    file:'post-service/.../dto/PostDTO.java',
+    why:'A <b>Data Transfer Object</b> is what travels in/out over HTTP. It carries validation rules (<code>@NotBlank</code>, <code>@NotNull</code>) and can hold enriched data the entity doesn\'t — like the embedded <code>UserDTO</code> and <code>List&lt;TagDTO&gt;</code> that the service fetches from other services. Keeping DTO ≠ Entity means you can change the DB without breaking your API.',
+    code:
+`<span class="kw">public class</span> <span class="ty">PostDTO</span> {
+    <span class="kw">private</span> <span class="ty">Long</span> id;
+
+    <span class="an">@NotNull</span>(message = <span class="st">"User ID is required"</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> userId;
+
+    <span class="an">@NotBlank</span>(message = <span class="st">"Title is required"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> title;
+
+    <span class="kw">private</span> <span class="ty">UserDTO</span> user;          <span class="cm">// filled from User Service</span>
+    <span class="kw">private</span> <span class="ty">List</span>&lt;<span class="ty">TagDTO</span>&gt; tagList;  <span class="cm">// filled from Tag Service</span>
+}` },
+  { ico:'🗃️', k:'Repository', title:'Repository — database access with zero SQL',
+    file:'post-service/.../repository/PostRepository.java',
+    why:'Extend <code>JpaRepository&lt;Post, Long&gt;</code> and you instantly get <code>save()</code>, <code>findById()</code>, <code>findAll()</code>, <code>deleteById()</code>. Better still: just <b>declare a method name</b> and Spring writes the SQL — <code>findByUserId</code> becomes <code>WHERE user_id = ?</code>. No implementation needed.',
+    code:
+`<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="ty">PostRepository</span> <span class="kw">extends</span> <span class="ty">JpaRepository</span>&lt;<span class="ty">Post</span>, <span class="ty">Long</span>&gt; {
+    <span class="ty">List</span>&lt;<span class="ty">Post</span>&gt; findByUserId(<span class="ty">Long</span> userId);
+    <span class="ty">List</span>&lt;<span class="ty">Post</span>&gt; findByTitleContainingIgnoreCase(<span class="ty">String</span> title);
+}` },
+  { ico:'🛡️', k:'@RestControllerAdvice', title:'Exceptions — turning errors into clean JSON',
+    file:'post-service/.../exception/*.java',
+    why:'Custom exceptions like <code>PostNotFoundException</code> are just <code>RuntimeException</code>s you throw in the service. A single <b>GlobalExceptionHandler</b> (<code>@RestControllerAdvice</code>) catches them app-wide and returns a tidy <code>ErrorResponse</code> (status + message + timestamp) — so the frontend always gets consistent, friendly errors instead of ugly stack traces.',
+    code:
+`<span class="an">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="ty">GlobalExceptionHandler</span> {
+
+    <span class="an">@ExceptionHandler</span>(PostNotFoundException.class)
+    <span class="kw">public</span> ResponseEntity&lt;ErrorResponse&gt; handle(<span class="ty">PostNotFoundException</span> ex) {
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(<span class="kw">new</span> <span class="ty">ErrorResponse</span>(404, ex.getMessage(), LocalDateTime.now()));
+    }
+    <span class="cm">// + validation (400) and catch-all (500) handlers</span>
+}` },
+  { ico:'🚀', k:'main()', title:'Main class — the ignition switch',
+    file:'post-service/.../PostServiceApplication.java',
+    why:'The entry point. <code>@SpringBootApplication</code> boots the whole app. <code>@EnableFeignClients</code> switches on the Feign HTTP clients. <code>@EnableDiscoveryClient</code> registers the service with Eureka so others can find it. Three annotations wire up huge amounts of behaviour.',
+    code:
+`<span class="an">@SpringBootApplication</span>
+<span class="an">@EnableFeignClients</span>       <span class="cm">// activate @FeignClient interfaces</span>
+<span class="an">@EnableDiscoveryClient</span>   <span class="cm">// register with Eureka</span>
+<span class="kw">public class</span> <span class="ty">PostServiceApplication</span> {
+    <span class="kw">public static void</span> main(<span class="ty">String</span>[] args) {
+        SpringApplication.run(PostServiceApplication.class, args);
+    }
+}` },
+  { ico:'⚙️', k:'@Configuration', title:'Config — cross-cutting setup',
+    file:'post-service/.../config/*.java',
+    why:'<b>CorsConfig</b> is intentionally empty here — CORS is handled once at the gateway, so services don\'t double-add headers. <b>RenderDatabaseUrlEnvironmentPostProcessor</b> is clever: cloud platforms hand you a single <code>postgres://user:pass@host/db</code> URL, and this class parses it into the JDBC url + username + password Spring expects — <i>before</i> the app starts. It\'s registered in a special <code>META-INF/spring/...EnvironmentPostProcessor.imports</code> file.',
+    code:
+`<span class="cm">// Splits a Render-style DATABASE_URL into Spring datasource props,</span>
+<span class="cm">// running BEFORE the context starts.</span>
+<span class="kw">public class</span> <span class="ty">RenderDatabaseUrlEnvironmentPostProcessor</span>
+        <span class="kw">implements</span> <span class="ty">EnvironmentPostProcessor</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> postProcessEnvironment(ConfigurableEnvironment env, ...) {
+        <span class="ty">String</span> raw = env.getProperty(<span class="st">"DATABASE_URL"</span>);   <span class="cm">// postgres://...</span>
+        <span class="cm">// → jdbc:postgresql://host:5432/db  (+ username, password)</span>
+    }
+}` },
+];
+
+const fa = document.getElementById('fileAccordions');
+FILE_DOCS.forEach(f=>{
+  const d=document.createElement('details'); d.className='accordion';
+  d.innerHTML = `<summary><span class="ico" style="margin:0;font-size:1.2rem">${f.ico}</span>
+      <span>${f.title}</span><span class="k">${f.k}</span><span class="chev">▶</span></summary>
+    <div class="body">
+      <div class="filebar"><span class="fdot" style="background:var(--red)"></span><span class="fdot" style="background:var(--amber)"></span><span class="fdot" style="background:var(--green)"></span> ${f.file}</div>
+      <pre class="code">${f.code}</pre>
+      <p>${f.why}</p>
+    </div>`;
+  fa.appendChild(d);
+});
+
+/* ---------------- Build & Deploy ---------------- */
+const BUILD_DOCS = [
+  { ico:'📜', k:'pom.xml (parent)', title:'Parent POM — one source of truth for versions',
+    file:'./pom.xml',
+    why:'Type <code>pom</code> packaging, lists all 7 <b>modules</b>, and pins Spring Boot <b>3.3.0</b> / Java <b>17</b> / Spring Cloud <b>2023.0.3</b>. Shared deps (actuator for <code>/actuator/health</code>, slf4j) live here so every service inherits them.',
+    code:
+`&lt;<span class="ty">packaging</span>&gt;pom&lt;/<span class="ty">packaging</span>&gt;
+&lt;<span class="ty">modules</span>&gt;
+  &lt;module&gt;eureka-server&lt;/module&gt;
+  &lt;module&gt;api-gateway&lt;/module&gt;
+  &lt;module&gt;user-service&lt;/module&gt;
+  &lt;module&gt;post-service&lt;/module&gt;
+  &lt;module&gt;comment-service&lt;/module&gt;
+  &lt;module&gt;like-dislike-service&lt;/module&gt;
+  &lt;module&gt;tag-service&lt;/module&gt;
+&lt;/<span class="ty">modules</span>&gt;
+&lt;<span class="ty">parent</span>&gt; spring-boot-starter-parent : <span class="st">3.3.0</span> &lt;/<span class="ty">parent</span>&gt;
+&lt;<span class="ty">spring-cloud.version</span>&gt;<span class="st">2023.0.3</span>&lt;/<span class="ty">spring-cloud.version</span>&gt;` },
+  { ico:'📦', k:'pom.xml (service)', title:'Service POM — what each service pulls in',
+    file:'post-service/pom.xml',
+    why:'Declares this service\'s libraries: <b>web</b> (REST), <b>data-jpa</b> (DB), <b>openfeign</b> (call others), <b>eureka-client</b> + <b>loadbalancer</b> (discovery), <b>postgresql</b> driver, <b>validation</b>, and <b>resilience4j</b> (circuit breaker). Note the <code>tag-service</code> module dep — a build-time link to another module.',
+    code:
+`&lt;dependency&gt; spring-boot-starter-<span class="st">web</span> &lt;/dependency&gt;
+&lt;dependency&gt; spring-boot-starter-<span class="st">data-jpa</span> &lt;/dependency&gt;
+&lt;dependency&gt; spring-cloud-starter-<span class="st">openfeign</span> &lt;/dependency&gt;
+&lt;dependency&gt; spring-cloud-starter-netflix-<span class="st">eureka-client</span> &lt;/dependency&gt;
+&lt;dependency&gt; <span class="st">resilience4j</span>-spring-boot3 &lt;/dependency&gt;
+&lt;dependency&gt; <span class="ty">com.blog</span>:<span class="st">tag-service</span> (compile) &lt;/dependency&gt;` },
+  { ico:'🔧', k:'application.yml', title:'application.yml — runtime configuration',
+    file:'post-service/src/main/resources/application.yml',
+    why:'The knobs for a running service. <b>datasource</b> uses <code>${DB_HOST:localhost}</code>-style env vars with defaults. <b>jpa.ddl-auto: update</b> auto-syncs tables. <b>feign</b> sets timeouts. <b>resilience4j.circuitbreaker</b> defines when the breaker trips (50% failure rate, 10-call window). <b>eureka</b> can be toggled off with one env var for the cloud.',
+    code:
+`spring:
+  datasource:
+    url: jdbc:postgresql://\${DB_HOST:localhost}:\${DB_PORT:5432}/\${DB_NAME:main_db}
+  jpa:
+    hibernate: { ddl-auto: update }        <span class="cm"># auto create/update tables</span>
+server:
+  port: \${PORT:8082}
+resilience4j.circuitbreaker.instances.user-service:
+  slidingWindowSize: 10
+  failureRateThreshold: 50                 <span class="cm"># trip at 50% failures</span>
+  waitDurationInOpenState: 5s
+eureka.client.enabled: \${EUREKA_CLIENT_ENABLED:true}
+user-service.url: \${USER_SERVICE_URL:}     <span class="cm"># Feign target (cloud)</span>` },
+  { ico:'🐳', k:'Dockerfile', title:'Dockerfile — packaging a service into an image',
+    file:'post-service/Dockerfile',
+    why:'A <b>multi-stage build</b>. Stage 1 uses a Maven+JDK image to compile the jar (copying POMs first for cached dependency downloads). Stage 2 copies just the built jar into a tiny JRE-only image — smaller & safer to ship. <code>ENTRYPOINT</code> runs the jar.',
+    code:
+`<span class="kw">FROM</span> maven:3.9-eclipse-temurin-17 <span class="kw">AS</span> build
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> pom.xml ./pom.xml            <span class="cm"># copy POMs first = cached deps</span>
+<span class="kw">COPY</span> post-service/src ./post-service/src
+<span class="kw">RUN</span> mvn package -pl post-service -DskipTests --also-make
+
+<span class="kw">FROM</span> eclipse-temurin:17-jre     <span class="cm"># slim runtime image</span>
+<span class="kw">COPY</span> --from=build /app/post-service/target/*.jar app.jar
+<span class="kw">ENTRYPOINT</span> [<span class="st">"java"</span>, <span class="st">"-jar"</span>, <span class="st">"app.jar"</span>]` },
+  { ico:'🧩', k:'docker-compose.yml', title:'docker-compose — boot the whole stack locally',
+    file:'docker-compose.yml',
+    why:'One command (<code>docker-compose up</code>) starts <b>everything</b>: Postgres, Eureka, the gateway, and all services. <code>depends_on</code> + <code>healthcheck</code> ensure Postgres is ready and Eureka is up before services start. Env vars point each service at the shared Postgres and the Eureka URL.',
+    code:
+`services:
+  postgres:
+    image: postgres:15
+    healthcheck: { test: ["CMD-SHELL","pg_isready -U postgres"] }
+  eureka-server: { build: eureka-server/Dockerfile, ports: ["8761:8761"] }
+  post-service:
+    build: post-service/Dockerfile
+    environment: { DB_HOST: postgres, EUREKA_URI: http://eureka-server:8761/eureka/ }
+    depends_on:
+      eureka-server: { condition: service_started }
+      postgres:      { condition: service_healthy }` },
+  { ico:'☁️', k:'render.yaml / vercel.json', title:'Cloud deploy — Render + Vercel',
+    file:'render.yaml · frontend/vercel.json',
+    why:'<b>render.yaml</b> is an Infrastructure-as-Code blueprint: it defines the 6 Docker web services + managed Postgres, and injects <code>EUREKA_CLIENT_ENABLED=false</code> plus direct <code>*_SERVICE_URL</code> HTTPS addresses (no Eureka in cloud). <b>vercel.json</b> rewrites <code>/api/*</code> on the frontend to the Render gateway, keeping requests same-origin (no CORS).',
+    code:
+`<span class="cm"># render.yaml — services resolve each other by HTTPS URL, not Eureka</span>
+EUREKA_CLIENT_ENABLED: false
+USER_SERVICE_URL: https://user-service-gntw.onrender.com
+
+<span class="cm"># frontend/vercel.json — proxy avoids CORS</span>
+{ "rewrites": [{ "source": "/api/:path*",
+                 "destination": "https://api-gateway-....onrender.com/api/:path*" }] }` },
+];
+
+const ba = document.getElementById('buildAccordions');
+BUILD_DOCS.forEach(f=>{
+  const d=document.createElement('details'); d.className='accordion';
+  d.innerHTML = `<summary><span class="ico" style="margin:0;font-size:1.2rem">${f.ico}</span>
+      <span>${f.title}</span><span class="k">${f.k}</span><span class="chev">▶</span></summary>
+    <div class="body">
+      <div class="filebar"><span class="fdot" style="background:var(--red)"></span><span class="fdot" style="background:var(--amber)"></span><span class="fdot" style="background:var(--green)"></span> ${f.file}</div>
+      <pre class="code">${f.code}</pre>
+      <p>${f.why}</p>
+    </div>`;
+  ba.appendChild(d);
+});
+
+/* ---------------- Connections: dependency graph ---------------- */
+const DEP_NODES = {
+  user:    {x:360, y:60,  label:'User',        sub:':8081', ico:'👤'},
+  post:    {x:360, y:180, label:'Post',        sub:':8082', ico:'📝'},
+  tag:     {x:600, y:180, label:'Tag',         sub:':8085', ico:'🏷️'},
+  comment: {x:180, y:300, label:'Comment',     sub:':8083', ico:'💬'},
+  like:    {x:540, y:300, label:'Like/Dislike',sub:':8084', ico:'👍'},
+};
+const DEP_EDGES = [
+  ['post','user'], ['post','tag'],
+  ['comment','user'], ['comment','post'],
+  ['like','user'], ['like','post'],
+];
+const nodesG = document.getElementById('depNodes');
+const edgesG = document.getElementById('depEdges');
+const NW=120, NH=44;
+function center(id){ const n=DEP_NODES[id]; return {x:n.x+NW/2, y:n.y+NH/2}; }
+DEP_EDGES.forEach(([a,b])=>{
+  const p1=center(a), p2=center(b);
+  // trim endpoints toward node edges
+  const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy);
+  const ux=dx/len, uy=dy/len;
+  const x1=p1.x+ux*(NW/2)*0.75, y1=p1.y+uy*(NH/2+6);
+  const x2=p2.x-ux*(NW/2)*0.85, y2=p2.y-uy*(NH/2+10);
+  const mx=(x1+x2)/2, my=(y1+y2)/2 - 24;
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+  path.setAttribute('class','dep-edge feign');
+  edgesG.appendChild(path);
+});
+Object.entries(DEP_NODES).forEach(([id,n])=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','dep-node');
+  g.innerHTML =
+    `<rect x="${n.x}" y="${n.y}" width="${NW}" height="${NH}" rx="12"
+       fill="var(--panel-strong)" stroke="var(--accent)" stroke-width="1.5"/>
+     <text x="${n.x+14}" y="${n.y+20}">${n.ico} ${n.label}</text>
+     <text x="${n.x+14}" y="${n.y+34}" class="sub">${n.sub} · own DB</text>`;
+  nodesG.appendChild(g);
+});
+
+const EDGE_NOTES = [
+  ['📝 Post → 👤 User','When creating a post, validates the author exists (and embeds the user in responses).'],
+  ['📝 Post → 🏷️ Tag','Attaches tags to a post and fetches a post\'s tag list.'],
+  ['💬 Comment → 👤 User','Validates the commenter is a real user before saving.'],
+  ['💬 Comment → 📝 Post','Validates the target post exists before saving the comment.'],
+  ['👍 Like → 👤 User','Confirms the reacting user exists.'],
+  ['👍 Like → 📝 Post','Confirms the post being reacted to exists.'],
+];
+const el2 = document.getElementById('edgeList');
+EDGE_NOTES.forEach(([t,d])=>{
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML=`<h3 style="font-size:1rem">${t}</h3><p class="muted" style="margin:4px 0 0">${d}</p>`;
+  el2.appendChild(c);
+});
+
+const ENV_VARS = [
+  ['DB_HOST / DB_PORT / DB_NAME','localhost / 5432 / main_db','Where the service\'s PostgreSQL lives'],
+  ['DB_USERNAME / DB_PASSWORD','postgres / postgres','Database credentials'],
+  ['DATABASE_URL','—','Full postgres:// URL (auto-parsed on Render)'],
+  ['PORT','808x','The port this service listens on'],
+  ['EUREKA_CLIENT_ENABLED','true','Set false in the cloud (use direct URLs)'],
+  ['EUREKA_URI','http://eureka-server:8761/eureka/','Where to register / discover'],
+  ['USER_SERVICE_URL, POST_SERVICE_URL, TAG_SERVICE_URL','lb://… (local)','Feign targets — direct HTTPS URLs in cloud'],
+];
+document.getElementById('envTable').innerHTML =
+  '<div class="ep-row" style="font-weight:700"><code style="flex:1.4">Variable</code><span class="desc">Default</span><span class="desc">Purpose</span></div>' +
+  ENV_VARS.map(([v,d,p])=>`<div class="ep-row"><code style="flex:1.4">${v}</code><span class="desc">${d}</span><span class="desc">${p}</span></div>`).join('');
+</script>
+</body>
+</html>

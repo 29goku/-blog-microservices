@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableDiscoveryClient
 public class LikeDislikeServiceApplication {
-    public static void main(String[] args){
-        SpringApplication.run(LikeDislikeServiceApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(LikeDislikeServiceApplication.class, args);
+  }
 }

@@ -2,63 +2,63 @@ package com.blog.tag.controller;
 
 import com.blog.tag.entity.Tag;
 import com.blog.tag.service.TagService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/tags")
 public class TagController {
 
-    private final TagService tagService;
+  private final TagService tagService;
 
-    public TagController(TagService tagService) {
+  public TagController(TagService tagService) {
 
-        this.tagService =  tagService;
+    this.tagService = tagService;
+  }
 
-    }
+  @GetMapping
+  public List<Tag> getTags() {
+    return tagService.getAllTags();
+  }
 
-    @GetMapping
-    public List<Tag> getTags() {
-        return tagService.getAllTags();
-    }
+  @GetMapping("/{id}")
+  public Tag getTagById(@PathVariable Long id) {
+    return tagService.findTagById(id);
+  }
 
-    @GetMapping("/{id}")
-    public Tag getTagById(@PathVariable Long id) {
-        return tagService.findTagById(id);
-    }
+  @GetMapping("/name/{name}")
+  public Tag getTagByName(@PathVariable String name) {
+    return tagService.findTagByName(name);
+  }
 
-    @GetMapping("/name/{name}")
-    public Tag getTagByName(@PathVariable String name) {
-        return tagService.findTagByName(name);
-    }
-    @GetMapping("/post/{postId}")
-    public List<Tag> getTagsByPostId(@PathVariable Long postId) {
-        return tagService.getTagsByPostId(postId);
-    }
+  @GetMapping("/post/{postId}")
+  public List<Tag> getTagsByPostId(@PathVariable Long postId) {
+    return tagService.getTagsByPostId(postId);
+  }
 
-    @DeleteMapping("/{id}")
-    public void deleteTagById(@PathVariable Long id) {
-        tagService.deleteTagById(id);
-    }
-    @PutMapping("/{id}")
-    public Tag updateTag(@PathVariable Long id, @RequestBody Tag tag) {
-        return tagService.updateTag(id, tag);
-    }
+  @DeleteMapping("/{id}")
+  public void deleteTagById(@PathVariable Long id) {
+    tagService.deleteTagById(id);
+  }
 
-    @DeleteMapping("/unassign")
-    public void removeTagFromPost(@RequestParam Long id,@RequestParam Long postId) {
-        tagService.removeTagFromPost(postId, id);
-    }
+  @PutMapping("/{id}")
+  public Tag updateTag(@PathVariable Long id, @RequestBody Tag tag) {
+    return tagService.updateTag(id, tag);
+  }
 
-    @PostMapping
-    public Tag saveTag(@RequestBody Tag tag) {
-        return tagService.createTag(tag);
-    }
+  @DeleteMapping("/unassign")
+  public void removeTagFromPost(@RequestParam Long id, @RequestParam Long postId) {
+    tagService.removeTagFromPost(postId, id);
+  }
 
-    @PostMapping("/assign")
-    public String assignTagToPost(@RequestParam Long postId, @RequestParam Long tagId) {
-        tagService.assignTagToPost(postId, tagId);
-        return "Tag with id " + tagId + " assigned to post with id " + postId;
-    }
+  @PostMapping
+  public Tag saveTag(@RequestBody Tag tag) {
+    return tagService.createTag(tag);
+  }
+
+  @PostMapping("/assign")
+  public String assignTagToPost(@RequestParam Long postId, @RequestParam Long tagId) {
+    tagService.assignTagToPost(postId, tagId);
+    return "Tag with id " + tagId + " assigned to post with id " + postId;
+  }
 }

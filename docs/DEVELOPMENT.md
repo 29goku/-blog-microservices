@@ -7,6 +7,9 @@
 Each service runs independently with hot reload support.
 
 **Terminal Setup:**
+
+> The full stack also includes `eureka-server` (8761), `api-gateway` (8080), `like-dislike-service` (8084), and `tag-service` (8085). For day-to-day work on a single service you usually only need that service plus its Feign dependencies; use `docker-compose up` to run everything at once.
+
 ```bash
 # Create 4 terminals
 
@@ -20,7 +23,7 @@ cd post-service && mvn spring-boot:run
 cd comment-service && mvn spring-boot:run
 
 # Terminal 4: Execute commands
-cd /Users/shosingh_1/blog-microservices
+cd -blog-microservices   # repo root
 ```
 
 ### 2. Hot Reload During Development
@@ -346,7 +349,8 @@ Restart service → See detailed logs
 
 **View database:**
 ```bash
-mysql -u root -p blog_post_db
+# All services share a single PostgreSQL database (main_db)
+psql -h localhost -U postgres -d main_db
 ```
 
 **Useful queries:**
@@ -354,16 +358,16 @@ mysql -u root -p blog_post_db
 -- Show all posts
 SELECT * FROM posts;
 
--- Show posts with comment count
+-- Show posts with comment count (all tables live in main_db)
 SELECT p.*, COUNT(c.id) as comment_count
 FROM posts p
-LEFT JOIN blog_comment_db.comments c ON p.id = c.postId
+LEFT JOIN comments c ON p.id = c.post_id
 GROUP BY p.id;
 
 -- Show user activity
 SELECT u.username, COUNT(p.id) as post_count
-FROM blog_user_db.users u
-LEFT JOIN posts p ON u.id = p.userId
+FROM users u
+LEFT JOIN posts p ON u.id = p.user_id
 GROUP BY u.id;
 ```
 

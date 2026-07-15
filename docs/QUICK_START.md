@@ -2,22 +2,23 @@
 
 ## TL;DR - Get Running in 5 Minutes
 
-### 1. Create Databases
+### 1. Create Database
+
+All services share a single PostgreSQL database. The easiest option is Docker Compose (`docker-compose up`), which creates it for you. To do it manually:
+
 ```bash
-mysql -u root -p -e "
-CREATE DATABASE blog_user_db;
-CREATE DATABASE blog_post_db;
-CREATE DATABASE blog_comment_db;
-"
+psql -U postgres -c "CREATE DATABASE main_db;"
 ```
 
 ### 2. Build
 ```bash
-cd /Users/shosingh_1/blog-microservices
+cd -blog-microservices   # repo root
 mvn clean package -DskipTests
 ```
 
-### 3. Start Services (4+ terminals)
+### 3. Start Services
+
+> Fastest option: `docker-compose up` runs PostgreSQL, Kafka/Zookeeper, Eureka, the gateway, and all five domain services at once. To run individually, use the terminals below (also start `like-dislike-service` on 8084 and `tag-service` on 8085 the same way).
 
 **Terminal 1 (Eureka Server):**
 ```bash
@@ -59,18 +60,26 @@ chmod +x test-apis.sh && ./test-apis.sh
 - **Eureka Server** (8761) - Service discovery and registration
 - **API Gateway** (8080) - Single entry point for all requests
 
-**3 Independent Microservices:**
+**3 Domain Microservices (core):**
 - **User Service** (8081) - Manages users
 - **Post Service** (8082) - Manages posts, calls User Service
 - **Comment Service** (8083) - Manages comments, calls User + Post Services
 
+**Plus 2 more domain services:**
+- **Like-Dislike Service** (8084) - Per-user like/dislike toggle on posts
+- **Tag Service** (8085) - Tag CRUD + assigning tags to posts
+
+**Frontend:**
+- **React 19 SPA** (Vite + TypeScript) with Posts, Users, and Tags views
+
 **Key Features:**
 - ✅ REST APIs (CRUD operations)
 - ✅ Feign Client for inter-service communication
-- ✅ Independent databases (database per service)
+- ✅ Single shared PostgreSQL database (`main_db`), per-service tables
+- ✅ Circuit breakers (Resilience4j) on Feign clients
 - ✅ Global exception handling
 - ✅ Request validation
-- ✅ Structured logging
+- ✅ Structured logging + live gateway request tracking
 
 ---
 
@@ -116,6 +125,8 @@ curl http://localhost:8080/api/posts/1 | jq
 - User Service: `http://localhost:8081/api/users`
 - Post Service: `http://localhost:8082/api/posts`
 - Comment Service: `http://localhost:8083/api/comments`
+- Like-Dislike Service: `http://localhost:8084/api/likedislike`
+- Tag Service: `http://localhost:8085/api/tags`
 
 ---
 
@@ -173,29 +184,22 @@ blog-microservices/
                     │ Routes requests  │
                     └────────┬─────────┘
                              │
-                    ┌────────┴────────┬────────────┐
-                    │                 │            │
-            ┌───────▼──────┐  ┌──────▼────┐  ┌──────▼─────┐
-            │ User Service │  │  Post Svc │  │Comment Svc │
-            │  (8081)      │  │  (8082)   │  │  (8083)    │
-            │ - Manages    │  │ - Manages │  │ - Manages  │
-            │   users      │  │   posts   │  │   comments │
-            └──────────────┘  │ - Calls   │  │ - Calls    │
-                              │   User    │  │   User &   │
-                              │   Service │  │   Post     │
-                              └──────────┘  └────────────┘
+            ┌────────┴────────┬────────────┬────────────┬────────────┐
+            │                 │            │            │            │
+    ┌───────▼──────┐  ┌──────▼────┐  ┌──────▼─────┐ ┌───▼────────┐ ┌─▼────────┐
+    │ User Service │  │  Post Svc │  │Comment Svc │ │ Like/Dislike│ │ Tag Svc  │
+    │  (8081)      │  │  (8082)   │  │  (8083)    │ │  (8084)     │ │ (8085)   │
+    └──────────────┘  └───────────┘  └────────────┘ └─────────────┘ └──────────┘
 
-            ┌─────────────────────────────────────┐
-            │  Service Discovery (Eureka)         │
-            │  (8761) - Auto-discovers services  │
-            └─────────────────────────────────────┘
+    ┌─────────────────────────────────────┐
+    │  Service Discovery (Eureka)         │
+    │  (8761) - local/Docker; off on cloud│
+    └─────────────────────────────────────┘
 
-            ┌─────────────────────────────────────┐
-            │  MySQL Databases                    │
-            ├─ blog_user_db                      │
-            ├─ blog_post_db                      │
-            └─ blog_comment_db                   │
-            └─────────────────────────────────────┘
+    ┌─────────────────────────────────────┐
+    │  PostgreSQL — single shared database│
+    │  main_db (per-service tables)       │
+    └─────────────────────────────────────┘
 ```
 
 ---
@@ -205,10 +209,10 @@ blog-microservices/
 | Issue | Solution |
 |-------|----------|
 | Port already in use | Change port in `application.yml` or kill process: `lsof -i :8081` |
-| MySQL connection refused | Start MySQL: `brew services start mysql` |
-| Feign client error | Make sure all 3 services are running |
+| PostgreSQL connection refused | Start PostgreSQL: `brew services start postgresql` (or `docker-compose up postgres`) |
+| Feign client error | Make sure the dependency services are running |
 | Build fails | Check Java version: `java -version` (need 17+) |
-| Databases not found | Run MySQL create commands (see above) |
+| Database not found | Create it: `psql -U postgres -c "CREATE DATABASE main_db;"` |
 
 ---
 
@@ -230,10 +234,10 @@ After mastering this project:
 
 1. ✅ **Service Discovery (Eureka)** - Dynamic service registration
 2. ✅ **API Gateway** - Single entry point for all services
-3. **Add Circuit Breaker** - Handle service failures gracefully
-4. **Add Kafka** - Async event-driven communication
-5. **Add Caching** - Redis for performance
-6. **Add Docker** - Containerize services
+3. ✅ **Circuit Breaker (Resilience4j)** - Handle service failures gracefully
+4. ✅ **Docker** - Containerized services via Docker Compose
+5. **Add Kafka** - Async event-driven communication (scaffolded, not yet wired)
+6. **Add Caching** - Redis for performance
 7. **Add Kubernetes** - Production deployment
 
 ---

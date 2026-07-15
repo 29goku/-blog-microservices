@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "post-service", url = "${post-service.url:}", path = "/api/posts")
 public interface PostServiceClient {
 
-    @GetMapping("/{id}")
-    @CircuitBreaker(name = "post-service", fallbackMethod = "getPostByIdFallback")
-    PostDTO getPostById(@PathVariable("id") Long id);
+  @GetMapping("/{id}")
+  @CircuitBreaker(name = "post-service", fallbackMethod = "getPostByIdFallback")
+  PostDTO getPostById(@PathVariable("id") Long id);
 
-    default PostDTO getPostByIdFallback(Long id, Exception ex) {
-        return new PostDTO(id, null, "Service Unavailable", "The post service is currently unavailable", null);
-    }
+  default PostDTO getPostByIdFallback(Long id, Exception ex) {
+    return new PostDTO(
+        id, null, "Service Unavailable", "The post service is currently unavailable", null);
+  }
 }

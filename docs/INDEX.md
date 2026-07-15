@@ -1,8 +1,8 @@
 # Blog Microservices - Complete Index
 
-**Location:** `/Users/shosingh_1/blog-microservices`  
-**Status:** ✅ Complete and Ready to Run  
-**Project Size:** 304 KB | 44 Files | 3,500+ Lines of Code
+**Location:** repo root (`-blog-microservices`)  
+**Status:** ✅ Deployed — backend on Render, frontend on Vercel  
+**Stack:** 7 Maven modules (Eureka, Gateway, 5 domain services) + React frontend
 
 ---
 
@@ -109,26 +109,39 @@ blog-microservices/
 ### Service 1: User Service (Port 8081)
 - **Responsibility:** User management
 - **Endpoints:** 6 (CRUD operations)
-- **Database:** blog_user_db
+- **Database:** main_db (shared PostgreSQL, `users` table)
 - **Feign Calls:** None
-- **Code Files:** 9 Java classes
 - **Read First:** Yes (simplest service)
 
 ### Service 2: Post Service (Port 8082)
 - **Responsibility:** Blog post management
 - **Endpoints:** 7 (CRUD + search)
-- **Database:** blog_post_db
-- **Feign Calls:** User Service (1 call)
-- **Code Files:** 10 Java classes
+- **Database:** main_db (shared PostgreSQL, `posts` table)
+- **Feign Calls:** User Service + Tag Service
 - **Read Second:** Yes (uses Feign)
 
 ### Service 3: Comment Service (Port 8083)
 - **Responsibility:** Comment management
 - **Endpoints:** 7 (CRUD operations)
-- **Database:** blog_comment_db
+- **Database:** main_db (shared PostgreSQL, `comments` table)
 - **Feign Calls:** User Service + Post Service (2 calls)
-- **Code Files:** 13 Java classes
 - **Read Third:** Yes (most complex)
+
+### Service 4: Like-Dislike Service (Port 8084)
+- **Responsibility:** Per-user like/dislike toggle on posts
+- **Endpoints:** `/api/likedislike` (toggle, counts, per-post reactions)
+- **Database:** main_db (shared PostgreSQL)
+- **Feign Calls:** User Service + Post Service
+
+### Service 5: Tag Service (Port 8085)
+- **Responsibility:** Tag CRUD + assigning/unassigning tags to posts
+- **Endpoints:** `/api/tags` (CRUD, by-name, by-post, assign, unassign)
+- **Database:** main_db (shared PostgreSQL)
+- **Feign Calls:** Feign client with Resilience4j circuit breaker
+
+### Infrastructure
+- **Eureka Server (8761):** service registry (local/Docker only; disabled on Render)
+- **API Gateway (8080):** Spring Cloud Gateway — routing, CORS, live request tracking
 
 ---
 
@@ -199,7 +212,7 @@ curl -X POST http://localhost:8083/api/comments -H "Content-Type: application/js
 ## 📋 Key Concepts
 
 **Microservices Architecture**
-- Independent services with separate databases
+- Independent services sharing one PostgreSQL database (`main_db`), each owning its own tables
 - Service-to-service communication via REST
 - Loose coupling and high cohesion
 - Independent deployment and scaling
@@ -276,7 +289,7 @@ A: See `README.md` or `PROJECT_SUMMARY.md` - database section
 **Framework:** Spring Boot 3.3.0  
 **Language:** Java 17  
 **Build Tool:** Maven 3.8+  
-**Database:** MySQL 8.0  
+**Database:** PostgreSQL 15 (single shared `main_db`)  
 **ORM:** Hibernate / Spring Data JPA  
 **REST Client:** Spring Cloud Feign  
 **API Format:** JSON  
@@ -288,25 +301,22 @@ A: See `README.md` or `PROJECT_SUMMARY.md` - database section
 
 | Metric | Value |
 |--------|-------|
-| Total Files | 44 |
-| Java Classes | 45 |
-| Configuration Files | 3 |
+| Maven Modules | 7 (Eureka, Gateway, 5 domain services) |
+| Domain Services | 5 (User, Post, Comment, Like-Dislike, Tag) |
 | Documentation Files | 8 |
-| Lines of Code | 3,500+ |
-| Services | 3 |
-| REST Endpoints | 20 |
-| Feign Calls | 3 |
-| Database Tables | 3 |
-| Project Size | 304 KB |
+| Database | 1 shared PostgreSQL (`main_db`) |
+| Frontend | React 19 SPA (Vite + TypeScript) |
+| REST Endpoints | 30+ across services |
+| Feign Calls | Post→User/Tag, Comment→User/Post, Like-Dislike→User/Post |
 
 ---
 
 ## ✅ Checklist for Getting Started
 
 - [ ] Read `QUICK_START.md` (5 min)
-- [ ] Create MySQL databases
+- [ ] Create the PostgreSQL `main_db` database (or run `docker-compose up`)
 - [ ] Build project with Maven
-- [ ] Start all 3 services (3 terminals)
+- [ ] Start Eureka, Gateway, and the 5 domain services (or use Docker Compose)
 - [ ] Run `./test-apis.sh`
 - [ ] Import Postman collection
 - [ ] Read `README.md` for architecture
@@ -320,13 +330,11 @@ A: See `README.md` or `PROJECT_SUMMARY.md` - database section
 
 ## 🚀 Next Steps After Mastering This
 
-1. **Add Eureka Service Discovery** - Remove hardcoded URLs
-2. **Add API Gateway** - Single entry point
-3. **Add Circuit Breaker** - Handle failures
-4. **Add Kafka** - Async communication
-5. **Add Redis** - Caching layer
-6. **Add Docker** - Containerization
-7. **Add Kubernetes** - Orchestration
+1. **Add Kafka** - Async communication (scaffolded via Docker Compose, not yet wired)
+2. **Add Redis** - Caching layer
+3. **Add Kubernetes** - Orchestration
+
+Already implemented: ✅ Eureka service discovery, ✅ API Gateway, ✅ Circuit Breaker (Resilience4j), ✅ Docker Compose.
 
 ---
 

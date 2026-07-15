@@ -9,33 +9,36 @@ java -version
 # Check Maven version (should be 3.8+)
 mvn -version
 
-# Check MySQL version (should be 8.0+)
-mysql --version
+# Check PostgreSQL version (should be 15+)
+psql --version
+
+# (Optional but recommended) Check Docker — runs the whole stack for you
+docker --version
 ```
 
-## Step 2: Create Databases
+> **Easiest path:** from the repo root run `docker-compose up`. This starts PostgreSQL (`main_db`), Zookeeper, Kafka, Eureka, the API Gateway, and all five domain services. The manual steps below are for running services individually.
 
-Open MySQL terminal:
+## Step 2: Create Database
+
+Open a PostgreSQL terminal:
 ```bash
-mysql -u root -p
+psql -U postgres
 ```
 
-Then run:
+Then run (all services share a single database):
 ```sql
--- Create databases
-CREATE DATABASE blog_user_db;
-CREATE DATABASE blog_post_db;
-CREATE DATABASE blog_comment_db;
+-- Create the shared database
+CREATE DATABASE main_db;
 
 -- Verify
-SHOW DATABASES;
+\l
 ```
 
 ## Step 3: Clone/Navigate to Project
 
 ```bash
-cd blog-microservices
-pwd  # Should show: /Users/shosingh_1/blog-microservices
+cd -blog-microservices
+pwd  # Should show the repo root, e.g. .../-blog-microservices
 ```
 
 ## Step 4: Build Project
@@ -48,12 +51,14 @@ mvn clean package -DskipTests
 # You should see BUILD SUCCESS at the end
 ```
 
-## Step 5: Start Services (3 terminals required)
+## Step 5: Start Services
+
+> For the full experience start `eureka-server` (8761) and `api-gateway` (8080) first, then the domain services. Below shows the three core domain services; also start `like-dislike-service` (8084) and `tag-service` (8085) the same way. Or skip all of this with `docker-compose up`.
 
 ### Terminal 1 - Start User Service (Port 8081)
 
 ```bash
-cd /Users/shosingh_1/blog-microservices/user-service
+cd -blog-microservices/user-service
 mvn spring-boot:run
 ```
 
@@ -67,7 +72,7 @@ Started UserServiceApplication in X.XXX seconds
 ### Terminal 2 - Start Post Service (Port 8082)
 
 ```bash
-cd /Users/shosingh_1/blog-microservices/post-service
+cd -blog-microservices/post-service
 mvn spring-boot:run
 ```
 
@@ -81,7 +86,7 @@ Started PostServiceApplication in X.XXX seconds
 ### Terminal 3 - Start Comment Service (Port 8083)
 
 ```bash
-cd /Users/shosingh_1/blog-microservices/comment-service
+cd -blog-microservices/comment-service
 mvn spring-boot:run
 ```
 
@@ -112,7 +117,7 @@ curl http://localhost:8083/api/comments
 
 ```bash
 # Navigate to project root
-cd /Users/shosingh_1/blog-microservices
+cd -blog-microservices
 
 # Make script executable
 chmod +x test-apis.sh
@@ -133,43 +138,43 @@ chmod +x test-apis.sh
 ### Error: "Connection refused on port 8081"
 **Solution:** Make sure Terminal 1 is running User Service. Check for error messages.
 
-### Error: "Access denied for user 'root'@'localhost'"
-**Solution:** Update MySQL password in `application.yml` files:
+### Error: "Access denied / password authentication failed for user"
+**Solution:** Update PostgreSQL credentials in `application.yml` files (or set env vars `DB_USERNAME`/`DB_PASSWORD`):
 ```yaml
 spring:
   datasource:
-    username: root
+    username: postgres
     password: YOUR_PASSWORD  # Change this
 ```
 
-Update in all three services:
+Update in each service:
 - `user-service/src/main/resources/application.yml`
 - `post-service/src/main/resources/application.yml`
 - `comment-service/src/main/resources/application.yml`
+- `like-dislike-service/src/main/resources/application.yml`
+- `tag-service/src/main/resources/application.yml`
 
-### Error: "Can't connect to MySQL server"
-**Solution:** Start MySQL:
+### Error: "Can't connect to PostgreSQL server"
+**Solution:** Start PostgreSQL:
 ```bash
 # macOS with Homebrew
-brew services start mysql
+brew services start postgresql
 
-# Or manually
-mysql.server start
+# Or use Docker Compose (starts PostgreSQL for you)
+docker-compose up postgres
 ```
 
 ### Feign Client Error: "Failed to connect to user-service"
 **Solution:** Make sure User Service is running on port 8081. Check Terminal 1.
 
 ### Database doesn't exist
-**Solution:** Verify databases were created:
+**Solution:** Verify the database was created:
 ```bash
-mysql -u root -p -e "SHOW DATABASES;"
+psql -U postgres -c "\l"
 ```
 
-Should show:
-- blog_user_db
-- blog_post_db
-- blog_comment_db
+Should list:
+- main_db
 
 ---
 
@@ -235,19 +240,21 @@ Notice the `user` object is populated via Feign client call!
 
 ## Expected Database State After Tests
 
-### blog_user_db.users
+All tables live in the single shared `main_db` database.
+
+### main_db.users
 ```
 id | username  | email              | password | fullName  | bio
 1  | john_doe  | john@example.com   | ...      | John Doe  | ...
 ```
 
-### blog_post_db.posts
+### main_db.posts
 ```
 id | userId | title                    | content | tags
 1  | 1      | Introduction to...       | ...     | microservices,...
 ```
 
-### blog_comment_db.comments
+### main_db.comments
 ```
 id | postId | userId | content                | createdAt
 1  | 1      | 1      | Great post! Very...    | 1234567890
@@ -282,42 +289,48 @@ id | postId | userId | content                | createdAt
 
 ## Next Phase (After Mastering This)
 
-Once you're comfortable with this project:
+Several of these are already implemented in the current project — kept here as a learning roadmap:
 
-1. **Add Eureka Service Discovery**
-   - Replace hardcoded URLs in Feign clients
+1. **Eureka Service Discovery** — ✅ Done (used locally/Docker; disabled on Render)
+   - Replaces hardcoded URLs in Feign clients
    - Services register themselves automatically
 
-2. **Add API Gateway**
+2. **API Gateway** — ✅ Done (Spring Cloud Gateway on 8080)
    - Single entry point for all requests
    - Route requests to appropriate services
 
-3. **Add Resilience4j**
+3. **Resilience4j** — ✅ Done (circuit breakers on Feign clients)
    - Circuit breaker pattern
    - Retry logic
    - Timeout handling
 
-4. **Add Kafka**
+4. **Add Kafka** — 🔜 Scaffolded via Docker Compose, not yet wired into business events
    - Event-driven communication
-   - Order → Inventory project
+
+5. **Add Redis caching** — 🔜 Future
+   - Cache hot reads, reduce DB load
 
 ---
 
 ## Important Notes
 
-⚠️ **Database Passwords:**
-- Default: `root`
-- Change in `application.yml` files if your MySQL password is different
+⚠️ **Database Credentials:**
+- Default user/password: `postgres` / `postgres`
+- Change in `application.yml` files (or via `DB_USERNAME`/`DB_PASSWORD` env vars) if your PostgreSQL credentials differ
 
 ⚠️ **Service Ports:**
 - User Service: 8081
 - Post Service: 8082
 - Comment Service: 8083
+- Like-Dislike Service: 8084
+- Tag Service: 8085
+- API Gateway: 8080
+- Eureka Server: 8761
 - Make sure these ports are not in use
 
-⚠️ **Feign URLs:**
-- Currently hardcoded to `localhost:8081`, `localhost:8082`, `localhost:8083`
-- Later we'll replace with Eureka service discovery
+⚠️ **Service Resolution:**
+- Locally/Docker, Feign resolves services via Eureka (`lb://service-name`)
+- On Render, Eureka is disabled and services use injected HTTPS URLs
 
 ---
 
