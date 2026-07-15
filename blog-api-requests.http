@@ -1,0 +1,256 @@
+### Blog Microservices – REST API requests
+# Run these with the IntelliJ HTTP Client (click the green ▶ gutter icon next to each request).
+#
+# All traffic normally goes through the API Gateway on port 8080.
+# Each service can also be hit directly on its own port (useful when debugging one service):
+#   api-gateway          8080   (also serves /api/tracking + /actuator)
+#   eureka-server        8761
+#   user-service         8081   /api/users
+#   post-service         8082   /api/posts
+#   comment-service      8083   /api/comments
+#   like-dislike-service 8084   /api/likedislike
+#   tag-service          8085   /api/tags
+
+@gateway = http://localhost:8080
+@userService = http://localhost:8081
+@postService = http://localhost:8082
+@commentService = http://localhost:8083
+@likeDislikeService = http://localhost:8084
+@tagService = http://localhost:8085
+
+@userId = 1
+@postId = 1
+@commentId = 1
+@tagId = 1
+
+############################################################
+# USER SERVICE  (/api/users)
+############################################################
+
+### Create user
+POST {{gateway}}/api/users
+Content-Type: application/json
+
+{
+  "username": "shobhit",
+  "email": "shobhit@example.com",
+  "password": "secret123",
+  "fullName": "Shobhit Singh",
+  "bio": "Backend engineer"
+}
+
+### Get all users
+GET {{gateway}}/api/users
+
+### Get user by id
+GET {{gateway}}/api/users/{{userId}}
+
+### Get user by username
+GET {{gateway}}/api/users/username/shobhit
+
+### Update user
+PUT {{gateway}}/api/users/{{userId}}
+Content-Type: application/json
+
+{
+  "username": "shobhit",
+  "email": "shobhit.updated@example.com",
+  "password": "secret123",
+  "fullName": "Shobhit Singh",
+  "bio": "Updated bio"
+}
+
+### Delete user
+DELETE {{gateway}}/api/users/{{userId}}
+
+############################################################
+# POST SERVICE  (/api/posts)
+############################################################
+
+### Create post
+POST {{gateway}}/api/posts
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "title": "My first post",
+  "content": "Hello world, this is the content of the post.",
+  "tags": "java,spring"
+}
+
+### Get all posts
+GET {{gateway}}/api/posts
+
+### Get post by id
+GET {{gateway}}/api/posts/{{postId}}
+
+### Get posts by user id
+GET {{gateway}}/api/posts/user/{{userId}}
+
+### Search posts by title
+GET {{gateway}}/api/posts/search?title=first
+
+### Update post
+PUT {{gateway}}/api/posts/{{postId}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "title": "My first post (edited)",
+  "content": "Updated content.",
+  "tags": "java,spring,microservices"
+}
+
+### Delete post
+DELETE {{gateway}}/api/posts/{{postId}}
+
+############################################################
+# COMMENT SERVICE  (/api/comments)
+############################################################
+
+### Create comment
+POST {{gateway}}/api/comments
+Content-Type: application/json
+
+{
+  "postId": 1,
+  "userId": 1,
+  "content": "Great post!"
+}
+
+### Get all comments
+GET {{gateway}}/api/comments
+
+### Get comments by post id
+GET {{gateway}}/api/comments/post/{{postId}}
+
+### Get comments by user id
+GET {{gateway}}/api/comments/user/{{userId}}
+
+### Get comment by id
+GET {{gateway}}/api/comments/{{commentId}}
+
+### Update comment
+PUT {{gateway}}/api/comments/{{commentId}}
+Content-Type: application/json
+
+{
+  "postId": 1,
+  "userId": 1,
+  "content": "Edited comment."
+}
+
+### Delete comment
+DELETE {{gateway}}/api/comments/{{commentId}}
+
+############################################################
+# LIKE / DISLIKE SERVICE  (/api/likedislike)
+############################################################
+
+### Create or toggle a like/dislike  (likeDislikeType: LIKE or DISLIKE)
+POST {{gateway}}/api/likedislike
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "postId": 1,
+  "likeDislikeType": "LIKE"
+}
+
+### Get like/dislike count for a post
+GET {{gateway}}/api/likedislike/count/{{postId}}
+
+### Get all like/dislike entries for a post
+GET {{gateway}}/api/likedislike/post/{{postId}}
+
+### Delete a like/dislike by id
+DELETE {{gateway}}/api/likedislike/1
+
+############################################################
+# TAG SERVICE  (/api/tags)
+############################################################
+
+### Create tag
+POST {{gateway}}/api/tags
+Content-Type: application/json
+
+{
+  "name": "java",
+  "description": "Java related posts",
+  "color": "#f89820"
+}
+
+### Get all tags
+GET {{gateway}}/api/tags
+
+### Get tag by id
+GET {{gateway}}/api/tags/{{tagId}}
+
+### Get tag by name
+GET {{gateway}}/api/tags/name/java
+
+### Get tags for a post
+GET {{gateway}}/api/tags/post/{{postId}}
+
+### Update tag
+PUT {{gateway}}/api/tags/{{tagId}}
+Content-Type: application/json
+
+{
+  "name": "java",
+  "description": "Updated description",
+  "color": "#e76f00"
+}
+
+### Assign tag to post
+POST {{gateway}}/api/tags/assign?postId={{postId}}&tagId={{tagId}}
+
+### Unassign tag from post
+DELETE {{gateway}}/api/tags/unassign?id={{tagId}}&postId={{postId}}
+
+### Delete tag by id
+DELETE {{gateway}}/api/tags/{{tagId}}
+
+############################################################
+# API GATEWAY – Request tracking  (/api/tracking)
+############################################################
+
+### Recent tracked requests (limit defaults to 20)
+GET {{gateway}}/api/tracking/requests?limit=20
+
+### All tracked requests
+GET {{gateway}}/api/tracking/requests/all
+
+### Tracking health
+GET {{gateway}}/api/tracking/health
+
+### Clear tracking history
+DELETE {{gateway}}/api/tracking/history
+
+############################################################
+# ACTUATOR / INFRA
+############################################################
+
+### Gateway health
+GET {{gateway}}/actuator/health
+
+### Gateway routes
+GET {{gateway}}/actuator/gateway/routes
+
+### Eureka dashboard
+GET http://localhost:8761/
+
+### Direct service health checks
+GET {{userService}}/actuator/health
+
+###
+GET {{postService}}/actuator/health
+
+###
+GET {{commentService}}/actuator/health
+
+###
+GET {{likeDislikeService}}/actuator/health
+
+###
+GET {{tagService}}/actuator/health
