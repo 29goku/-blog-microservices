@@ -279,8 +279,8 @@ POST http://localhost:8080/api/posts
 Content-Type: application/json
 
 {
-  "title": "My First Post",
-  "content": "Hello World",
+  "title": "My Firmst Post",
+  "content": "Hellom World",
   "userId": 1
 }
 
