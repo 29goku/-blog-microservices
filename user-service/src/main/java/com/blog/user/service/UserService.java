@@ -106,6 +106,7 @@ public class UserService {
     dto.setFullName(user.getFullName());
     dto.setBio(user.getBio());
     dto.setCreatedAt(user.getCreatedAt());
+    dto.setPostCount(user.getPostCount());
     return dto;
   }
 }

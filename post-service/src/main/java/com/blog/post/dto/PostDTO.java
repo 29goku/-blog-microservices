@@ -2,6 +2,8 @@ package com.blog.post.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostDTO {
@@ -20,9 +22,9 @@ public class PostDTO {
 
   private List<TagDTO> tagList;
 
-  private Long createdAt;
+  private LocalDateTime createdAt;
 
-  private Long updatedAt;
+  private LocalDateTime updatedAt;
 
   private UserDTO user;
 
@@ -36,8 +38,8 @@ public class PostDTO {
       String title,
       String content,
       String tags,
-      Long createdAt,
-      Long updatedAt,
+      LocalDateTime createdAt,
+      LocalDateTime updatedAt,
       UserDTO user) {
     this.id = id;
     this.userId = userId;
@@ -70,11 +72,11 @@ public class PostDTO {
     return tags;
   }
 
-  public Long getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public Long getUpdatedAt() {
+  public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
 
@@ -111,11 +113,11 @@ public class PostDTO {
     this.tags = tags;
   }
 
-  public void setCreatedAt(Long createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
-  public void setUpdatedAt(Long updatedAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
   }
 

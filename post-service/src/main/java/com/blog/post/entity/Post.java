@@ -2,6 +2,8 @@ package com.blog.post.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "posts")
 public class Post {
@@ -20,11 +22,11 @@ public class Post {
 
   private String tags;
 
-  @Column(columnDefinition = "BIGINT DEFAULT 0")
-  private Long createdAt;
+  @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  private LocalDateTime createdAt;
 
-  @Column(columnDefinition = "BIGINT DEFAULT 0")
-  private Long updatedAt;
+  @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+  private LocalDateTime updatedAt;
 
   // Default constructor
   public Post() {}
@@ -36,8 +38,8 @@ public class Post {
       String title,
       String content,
       String tags,
-      Long createdAt,
-      Long updatedAt) {
+      LocalDateTime createdAt,
+      LocalDateTime updatedAt) {
     this.id = id;
     this.userId = userId;
     this.title = title;
@@ -68,11 +70,11 @@ public class Post {
     return tags;
   }
 
-  public Long getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public Long getUpdatedAt() {
+  public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
 
@@ -97,26 +99,26 @@ public class Post {
     this.tags = tags;
   }
 
-  public void setCreatedAt(Long createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
-  public void setUpdatedAt(Long updatedAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
   }
 
   @PrePersist
   protected void onCreate() {
     if (createdAt == null) {
-      createdAt = System.currentTimeMillis();
+      createdAt = LocalDateTime.now();
     }
     if (updatedAt == null) {
-      updatedAt = System.currentTimeMillis();
+      updatedAt = LocalDateTime.now();
     }
   }
 
   @PreUpdate
   protected void onUpdate() {
-    updatedAt = System.currentTimeMillis();
+    updatedAt = LocalDateTime.now();
   }
 }

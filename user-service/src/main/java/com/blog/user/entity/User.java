@@ -9,6 +9,8 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private Integer postCount=0;
+
   @Column(nullable = false, unique = true)
   private String username;
 
@@ -86,5 +88,13 @@ public class User {
 
   public void setCreatedAt(Long createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public Integer getPostCount() {
+    return postCount;
+  }
+
+  public void setPostCount(Integer postCount) {
+    this.postCount = postCount;
   }
 }

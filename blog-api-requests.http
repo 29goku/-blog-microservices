@@ -254,3 +254,40 @@ GET {{likeDislikeService}}/actuator/health
 
 ###
 GET {{tagService}}/actuator/health
+
+###
+
+# curl -X POST http://localhost:8080/api/users
+#    -H "Content-Type: application/json"
+#    -d '{"username":"testuser","password":"123","fullName":"Test User"}'
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@test.com",
+  "password": "123",
+  "fullName": "Test User"
+}
+
+###
+
+# curl -X POST http://localhost:8080/api/posts
+#    -H "Content-Type: application/json"
+#    -d '{"title":"My First Post","content":"Hello World","userId":1}'
+POST http://localhost:8080/api/posts
+Content-Type: application/json
+
+{
+  "title": "My First Post",
+  "content": "Hello World",
+  "userId": 1
+}
+
+###
+
+# curl http://localhost:8080/api/users/1
+GET http://localhost:8080/api/users/1
+
+###
+

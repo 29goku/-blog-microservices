@@ -102,3 +102,5 @@ user-service:
 tag-service:
   url: ${TAG_SERVICE_URL:}
 
+kafka:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}

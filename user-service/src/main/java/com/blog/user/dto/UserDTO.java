@@ -9,6 +9,8 @@ public class UserDTO {
   @NotBlank(message = "Username is required")
   private String username;
 
+  private Integer postCount;
+
   @Email(message = "Email should be valid")
   @NotBlank(message = "Email is required")
   private String email;
@@ -77,4 +79,12 @@ public class UserDTO {
   public void setCreatedAt(Long createdAt) {
     this.createdAt = createdAt;
   }
-}
+
+  public Integer getPostCount() {
+    return postCount;
+  }
+
+  public void setPostCount(Integer postCount) {
+    this.postCount = postCount;
+  }
+  }

@@ -4,6 +4,7 @@ import com.blog.post.client.TagServiceClient;
 import com.blog.post.client.UserServiceClient;
 import com.blog.post.dto.PostDTO;
 import com.blog.post.entity.Post;
+import com.blog.post.event.PostCreatedEvent;
 import com.blog.post.exception.PostNotFoundException;
 import com.blog.post.exception.UserNotValidException;
 import com.blog.post.repository.PostRepository;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,15 +22,18 @@ public class PostService {
   private final PostRepository postRepository;
   private final UserServiceClient userServiceClient;
   private final TagServiceClient tagServiceClient;
+  private final KafkaTemplate<String, Object> kafkaTemplate;
 
   // Constructor
   public PostService(
       PostRepository postRepository,
       UserServiceClient userServiceClient,
-      TagServiceClient tagServiceClient) {
+      TagServiceClient tagServiceClient,
+      KafkaTemplate<String, Object> kafkaTemplate) {
     this.postRepository = postRepository;
     this.userServiceClient = userServiceClient;
     this.tagServiceClient = tagServiceClient;
+    this.kafkaTemplate = kafkaTemplate;
   }
 
   public PostDTO createPost(PostDTO postDTO) {
@@ -49,6 +54,13 @@ public class PostService {
     post.setTags(postDTO.getTags());
 
     Post savedPost = postRepository.save(post);
+    PostCreatedEvent event= new PostCreatedEvent(
+        savedPost.getId(),
+        savedPost.getTitle(),
+        savedPost.getUserId(),
+        savedPost.getCreatedAt()
+    );
+    kafkaTemplate.send("post-created",savedPost.getId().toString(), event);
     log.info("Post created successfully with id: {}", savedPost.getId());
 
     return mapToDTO(savedPost, postDTO.getUser());
