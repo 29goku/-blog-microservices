@@ -47,7 +47,6 @@ export default function CommentSection({
         content: newComment,
       });
       setNewComment('');
-      setSelectedUserId('');
       onCommentAdded();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to post comment');

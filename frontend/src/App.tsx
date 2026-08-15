@@ -36,16 +36,32 @@ function App() {
     loadUsers();
   }, []);
 
+  // Postgres doesn't guarantee row order, and an UPDATE (e.g. commentCount via
+  // Kafka) can shift a row's position in an unordered scan. Sort by id so the
+  // list order stays stable across refetches instead of visually reshuffling.
+  const sortPosts = (data: any[]) => [...data].sort((a, b) => b.id - a.id);
+
   const loadPosts = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await postAPI.getAll();
-      setPosts(data);
+      setPosts(sortPosts(data));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load posts');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Refetches posts (e.g. for an updated Kafka-driven commentCount) without
+  // toggling `loading`, so the post list doesn't unmount/collapse mid-view.
+  const refreshPostsSilently = async () => {
+    try {
+      const data = await postAPI.getAll();
+      setPosts(sortPosts(data));
+    } catch (err) {
+      console.error('Failed to refresh posts:', err);
     }
   };
 
@@ -143,7 +159,7 @@ function App() {
                   posts={posts}
                   users={users}
                   onPostDeleted={handlePostDeleted}
-                  onRefresh={loadPosts}
+                  onRefresh={refreshPostsSilently}
                   currentUserId={currentUserId}
                 />
               )}
