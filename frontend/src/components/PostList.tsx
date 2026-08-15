@@ -18,7 +18,7 @@ export default function PostList({
   posts,
   users,
   onPostDeleted,
-  onRefresh: _onRefresh,
+  onRefresh,
   currentUserId,
 }: PostListProps) {
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
@@ -103,6 +103,12 @@ export default function PostList({
     } catch (err) {
       console.error('Failed to refresh comments:', err);
     }
+
+    // The comment-created Kafka event is consumed asynchronously by post-service,
+    // so give it a moment before refetching posts for the updated commentCount.
+    setTimeout(() => {
+      onRefresh();
+    }, 1000);
   };
 
   return (
