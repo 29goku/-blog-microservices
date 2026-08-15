@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +21,18 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final UserServiceClient userServiceClient;
   private final PostServiceClient postServiceClient;
+  private final KafkaTemplate<String, Object> kafkaTemplate;
 
   public CommentService(
       CommentRepository commentRepository,
       UserServiceClient userServiceClient,
-      PostServiceClient postServiceClient) {
+      PostServiceClient postServiceClient,
+      KafkaTemplate<String, Object> kafkaTemplate
+      ) {
     this.commentRepository = commentRepository;
     this.userServiceClient = userServiceClient;
     this.postServiceClient = postServiceClient;
+    this.kafkaTemplate = kafkaTemplate;
   }
 
   public CommentDTO createComment(CommentDTO commentDTO) {
@@ -56,11 +61,21 @@ public class CommentService {
     comment.setPostId(commentDTO.getPostId());
     comment.setUserId(commentDTO.getUserId());
     comment.setContent(commentDTO.getContent());
-
     Comment savedComment = commentRepository.save(comment);
     log.info("Comment created successfully with id: {}", savedComment.getId());
 
-    return mapToDTO(savedComment, commentDTO.getUser(), commentDTO.getPost());
+    kafkaTemplate.send(
+        "comment-created",
+        savedComment.getPostId().toString(),
+        new com.blog.comment.event.CommentCreatedEvent(
+            savedComment.getId(),
+            savedComment.getPostId(),
+            savedComment.getUserId(),
+            savedComment.getContent(),
+            savedComment.getCreatedAt())
+    );
+
+      return mapToDTO(savedComment, commentDTO.getUser(), commentDTO.getPost());
   }
 
   public CommentDTO getCommentById(Long id) {

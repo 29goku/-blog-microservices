@@ -3,6 +3,8 @@ package com.blog.comment.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 public class CommentDTO {
   private Long id;
 
@@ -15,9 +17,9 @@ public class CommentDTO {
   @NotBlank(message = "Content is required")
   private String content;
 
-  private Long createdAt;
+  private LocalDateTime createdAt;
 
-  private Long updatedAt;
+  private LocalDateTime updatedAt;
 
   private UserDTO user;
 
@@ -31,8 +33,8 @@ public class CommentDTO {
       Long postId,
       Long userId,
       String content,
-      Long createdAt,
-      Long updatedAt,
+      LocalDateTime createdAt,
+      LocalDateTime updatedAt,
       UserDTO user,
       PostDTO post) {
     this.id = id;
@@ -62,11 +64,11 @@ public class CommentDTO {
     return content;
   }
 
-  public Long getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public Long getUpdatedAt() {
+  public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
 
@@ -95,11 +97,11 @@ public class CommentDTO {
     this.content = content;
   }
 
-  public void setCreatedAt(Long createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
-  public void setUpdatedAt(Long updatedAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
   }
 

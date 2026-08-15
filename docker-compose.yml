@@ -91,7 +91,10 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       EUREKA_URI: http://eureka-server:8761/eureka/
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
+      kafka:
+        condition: service_started
       eureka-server:
         condition: service_started
       postgres:

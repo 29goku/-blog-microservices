@@ -17,6 +17,10 @@ public class Post {
   @Column(nullable = false)
   private String title;
 
+  @Column(nullable = false)
+  private Integer commentCount = 0;
+
+
   @Column(nullable = false, columnDefinition = "TEXT")
   private String content;
 
@@ -38,10 +42,12 @@ public class Post {
       String title,
       String content,
       String tags,
+      Integer commentCount,
       LocalDateTime createdAt,
       LocalDateTime updatedAt) {
     this.id = id;
     this.userId = userId;
+    this.commentCount = commentCount;
     this.title = title;
     this.content = content;
     this.tags = tags;
@@ -105,6 +111,13 @@ public class Post {
 
   public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public void setCommentCount(Integer commentCount) {
+    this.commentCount = commentCount;
+  }
+  public Integer getCommentCount() {
+    return commentCount;
   }
 
   @PrePersist

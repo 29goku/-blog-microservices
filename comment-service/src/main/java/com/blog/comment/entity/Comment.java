@@ -2,6 +2,8 @@ package com.blog.comment.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -18,17 +20,17 @@ public class Comment {
   @Column(nullable = false, columnDefinition = "TEXT")
   private String content;
 
-  @Column(columnDefinition = "BIGINT DEFAULT 0")
-  private Long createdAt;
+  @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  private LocalDateTime createdAt;
 
-  @Column(columnDefinition = "BIGINT DEFAULT 0")
-  private Long updatedAt;
+  @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  private LocalDateTime updatedAt;
 
   // Constructors
   public Comment() {}
 
   public Comment(
-      Long id, Long postId, Long userId, String content, Long createdAt, Long updatedAt) {
+          Long id, Long postId, Long userId, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.postId = postId;
     this.userId = userId;
@@ -54,11 +56,11 @@ public class Comment {
     return content;
   }
 
-  public Long getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public Long getUpdatedAt() {
+  public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
 
@@ -79,26 +81,26 @@ public class Comment {
     this.content = content;
   }
 
-  public void setCreatedAt(Long createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
-  public void setUpdatedAt(Long updatedAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
   }
 
   @PrePersist
   protected void onCreate() {
     if (createdAt == null) {
-      createdAt = System.currentTimeMillis();
+      createdAt = LocalDateTime.now();
     }
     if (updatedAt == null) {
-      updatedAt = System.currentTimeMillis();
+      updatedAt = LocalDateTime.now();
     }
   }
 
   @PreUpdate
   protected void onUpdate() {
-    updatedAt = System.currentTimeMillis();
+    updatedAt = LocalDateTime.now();
   }
 }
