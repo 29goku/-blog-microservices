@@ -1,5 +1,8 @@
 package com.blog.user.config;
 
+import com.blog.user.event.PostCreatedEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -20,23 +23,26 @@ public class KafkaConsumerConfig {
     private String bootstrapServers;
 
     @Bean
-    ConsumerFactory<String, Object> consumerFactory() {
-        // Configure the consumer factory here
-
+    ConsumerFactory<String, PostCreatedEvent> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "user-service-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.blog.user.event.PostCreatedEvent");
-        props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        return new DefaultKafkaConsumerFactory<>(props);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        JsonDeserializer<PostCreatedEvent> deserializer = new JsonDeserializer<PostCreatedEvent>(PostCreatedEvent.class, mapper);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeHeaders(false);
+        deserializer.setRemoveTypeHeaders(false);
+
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
         }
 
         @Bean
-        public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-            ConcurrentKafkaListenerContainerFactory<String, Object> factory =
+        public ConcurrentKafkaListenerContainerFactory<String, PostCreatedEvent> kafkaListenerContainerFactory() {
+            ConcurrentKafkaListenerContainerFactory<String, PostCreatedEvent> factory =
                     new ConcurrentKafkaListenerContainerFactory<>();
             factory.setConsumerFactory(consumerFactory());
             return factory;
