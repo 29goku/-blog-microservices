@@ -27,6 +27,7 @@ export interface Post {
   title: string;
   content: string;
   tags: string;
+  commentCount: number;
   createdAt: number;
   updatedAt: number;
   user?: User;

@@ -178,6 +178,9 @@ export default function PostList({
               >
                 💬 Comments ({comments[post.id]?.length || 0})
               </button>
+              <span className="post-comment-count" title="commentCount from post-service, updated via Kafka">
+                🔄 Kafka commentCount: {post.commentCount ?? 0}
+              </span>
             </div>
               {expandedPostId === post.id && (
                 <CommentSection

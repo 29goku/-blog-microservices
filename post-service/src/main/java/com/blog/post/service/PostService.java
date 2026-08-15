@@ -149,6 +149,7 @@ public class PostService {
     dto.setTitle(post.getTitle());
     dto.setContent(post.getContent());
     dto.setTags(post.getTags());
+    dto.setCommentCount(post.getCommentCount());
     dto.setCreatedAt(post.getCreatedAt());
     dto.setUpdatedAt(post.getUpdatedAt());
     dto.setUser(user);

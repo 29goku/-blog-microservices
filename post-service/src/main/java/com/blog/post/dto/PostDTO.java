@@ -20,6 +20,8 @@ public class PostDTO {
 
   private String tags;
 
+  private Integer commentCount;
+
   private List<TagDTO> tagList;
 
   private LocalDateTime createdAt;
@@ -70,6 +72,14 @@ public class PostDTO {
 
   public String getTags() {
     return tags;
+  }
+
+  public Integer getCommentCount() {
+    return commentCount;
+  }
+
+  public void setCommentCount(Integer commentCount) {
+    this.commentCount = commentCount;
   }
 
   public LocalDateTime getCreatedAt() {
