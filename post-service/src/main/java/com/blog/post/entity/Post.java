@@ -17,7 +17,7 @@ public class Post {
   @Column(nullable = false)
   private String title;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
   private Integer commentCount = 0;
 
 
