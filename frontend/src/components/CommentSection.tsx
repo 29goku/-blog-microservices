@@ -20,7 +20,7 @@ export default function CommentSection({
   currentUserId,
 }: CommentSectionProps) {
   const [newComment, setNewComment] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState(String(currentUserId));
+  const [selectedUserId] = useState(String(currentUserId));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dialog, setDialog] = useState<{ title: string; message: string; type: 'error' | 'success' | 'warning' | 'info' } | null>(null);

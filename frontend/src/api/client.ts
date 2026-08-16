@@ -116,7 +116,7 @@ export const postAPI = {
     if (!res.ok) throw new Error('Failed to search posts');
     return res.json();
   },
-  create: async (post: Omit<Post, 'id' | 'createdAt' | 'updatedAt'>): Promise<Post> => {
+  create: async (post: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'commentCount'>): Promise<Post> => {
     const res = await fetch(`${API_BASE.posts}/posts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
