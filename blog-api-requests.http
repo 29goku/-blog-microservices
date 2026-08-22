@@ -291,9 +291,63 @@ GET http://localhost:8080/api/users/1
 
 ###
 
-# curl http://localhost:8080/api/posts
 #  curl http://localhost:8080/api/posts
 GET http://localhost:8080/api/posts
 
 ###
 
+### Create user (direct to user-service)
+POST {{userService}}/api/users
+Content-Type: application/json
+
+{
+  "username": "tester",
+  "email": "tester@example.com",
+  "fullName": "Tester",
+  "password": "Password123!"
+}
+
+###
+
+### Create post (direct to post-service)
+POST {{postService}}/api/posts
+Content-Type: application/json
+
+{
+  "userId": 3,
+  "title": "My post3",
+  "content": "3initial content",
+  "tags": "test"
+}
+
+###
+
+### Warm cache: get post by id (direct to post-service)
+GET {{postService}}/api/posts/3
+
+###
+
+### Warm cache: get all posts (direct to post-service)
+GET {{postService}}/api/posts
+
+###
+
+### Update post (direct to post-service)
+PUT {{postService}}/api/posts/3
+Content-Type: application/json
+
+{
+  "userId": 3,
+  "title": "dsa title",
+  "content": "3updated content"
+}
+
+###
+
+### Get post by id after update (direct to post-service)
+GET {{postService}}/api/posts/3
+
+###
+
+### Get all posts after update (direct to post-service)
+GET {{postService}}/api/posts
