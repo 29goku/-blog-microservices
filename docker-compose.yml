@@ -70,12 +70,16 @@ services:
       DB_PASSWORD: postgres
       EUREKA_URI: http://eureka-server:8761/eureka/
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       kafka:
         condition: service_started
       eureka-server:
         condition: service_started
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   comment-service:
@@ -146,6 +150,16 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
+  redis:
+    image: redis:7.0.11
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0

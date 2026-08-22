@@ -223,6 +223,7 @@
     <nav class="tabs" id="tabs">
       <button data-view="overview" class="active">Overview</button>
       <button data-view="flow">Request Flow</button>
+      <button data-view="events">Events (Kafka)</button>
       <button data-view="services">Services</button>
       <button data-view="layers">Inside a Service</button>
       <button data-view="files">Project Files</button>
@@ -288,9 +289,20 @@
       other by name instead of hard-coded addresses. (Disabled in cloud, where direct URLs are used.)</p>
       <span class="pill">:8761</span></div>
     <div class="card"><span class="ico">🔌</span><h3>OpenFeign + Resilience4j</h3>
-      <p class="muted">How services call each other. Feign makes an HTTP call look like a normal method call.
-      A <b>circuit breaker</b> returns a safe fallback if the other service is down, so one failure doesn't cascade.</p>
+      <p class="muted">How services call each other <b>synchronously</b>. Feign makes an HTTP call look like a normal
+      method call. A <b>circuit breaker</b> returns a safe fallback if the other service is down, so one failure
+      doesn't cascade.</p>
       <span class="pill">inter-service calls</span></div>
+    <div class="card"><span class="ico">📨</span><h3>Kafka — the announcement board</h3>
+      <p class="muted">How services react to things <b>asynchronously</b>, without a direct call. Post Service and
+      Comment Service each publish an event when something is created; User Service and Post Service listen and
+      update a counter — no Feign call, no waiting for a response.</p>
+      <span class="pill">:9092 (local/Docker only)</span></div>
+    <div class="card"><span class="ico">🧊</span><h3>Redis — planned, not built yet</h3>
+      <p class="muted">A design spec exists for read-through caching of <code>GET /api/posts</code> in Post Service
+      (60s TTL via <code>@Cacheable</code>). <b>Not implemented</b> in code yet — no dependency, no config, no
+      container. Treat any mention of Redis elsewhere as roadmap, not current behaviour.</p>
+      <span class="pill">future</span></div>
   </div>
 
   <h2>Why build it this way?</h2>
@@ -323,6 +335,38 @@
     💡 Notice how <b>Create Post</b> and <b>Create Comment</b> reach out to <i>other</i> services to
     <b>validate</b> data before saving. That's the <code>@FeignClient</code> in action — one service politely
     asking another "does this user really exist?" before trusting the request.
+  </div>
+</section>
+
+<!-- ==================== EVENTS (KAFKA) ==================== -->
+<section class="view" id="events">
+  <div class="eyebrow">Fire-and-forget, not ask-and-wait</div>
+  <h1>Events: the other way services talk</h1>
+  <p class="lead">Feign calls are <b>synchronous</b> — "ask a question, wait for the answer." Kafka events are
+    <b>asynchronous</b> — "announce something happened, and whoever cares can react whenever they're ready."
+    No response is expected, and the publisher doesn't even know who's listening.</p>
+
+  <div class="analogy">📌 <b>Analogy:</b> A Feign call is a phone call — you dial, you wait, you get an answer.
+    A Kafka event is a notice pinned to a board — you pin it and walk away; anyone interested reads it later,
+    on their own schedule.</div>
+
+  <h2>The two event flows today</h2>
+  <div class="grid cols-2" id="eventFlows"></div>
+
+  <h2>Why counts are updated this way</h2>
+  <div class="card">
+    <p class="muted">Before Kafka, keeping <code>User.postCount</code> or <code>Post.commentCount</code> accurate
+    would have meant one more synchronous Feign call on every write — one more thing that could fail or add
+    latency. Instead, the writing service saves its own row, fires an event, and moves on. The counter update
+    happens moments later, in the background, in a different service. If the listener is briefly down, the message
+    waits in Kafka until it's back — nothing is lost, and the original request was never blocked on it.</p>
+  </div>
+
+  <div class="concept-note" style="margin-top:18px;">
+    ⚠️ <b>Cloud caveat:</b> Kafka + Zookeeper are wired up in <code>docker-compose.yml</code> for local/Docker use,
+    but <code>render.yaml</code> doesn't provision them yet. That means on the live Render deployment these two
+    listeners currently have nothing to consume — counts won't sync there until a managed Kafka is added to the
+    cloud config.
   </div>
 </section>
 
@@ -382,7 +426,8 @@
   <p class="lead">Three kinds of "depends on" exist here. Understanding which is which clears up most of the confusion.</p>
 
   <h2>1 · Runtime service graph (who calls whom)</h2>
-  <p class="muted">Solid blue arrows = live HTTP calls via <code>@FeignClient</code> at runtime. This is the map of
+  <p class="muted">Solid blue arrows = live HTTP calls via <code>@FeignClient</code> at runtime. Dashed pink arrows =
+    async <code>Kafka</code> events — the publisher doesn't wait for a response. Together these are the full map of
     inter-service communication.</p>
   <div class="card">
     <svg class="depgraph" viewBox="0 0 720 360" id="depSvg" role="img" aria-label="Service dependency graph">
@@ -390,12 +435,18 @@
         <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
         </marker>
+        <marker id="arrow-kafka" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--pink)"/>
+        </marker>
       </defs>
       <!-- edges drawn first -->
       <g id="depEdges"></g>
       <g id="depNodes"></g>
     </svg>
-    <div class="hint" style="margin-top:8px"><span class="legend-line"></span> Feign HTTP call (validation / enrichment)</div>
+    <div class="hint" style="margin-top:8px">
+      <span class="legend-line"></span> Feign HTTP call (validation / enrichment) &nbsp;&nbsp;
+      <span class="legend-line" style="border-top-style:dashed;border-color:var(--pink)"></span> Kafka event (async, fire-and-forget)
+    </div>
   </div>
   <div class="grid cols-2" style="margin-top:14px;" id="edgeList"></div>
 
@@ -482,8 +533,9 @@
 const SERVICES = [
   { id:'user', name:'User Service', port:8081, ico:'👤', color:'var(--accent)',
     tag:'/api/users',
-    what:'Owns user accounts. The source of truth for "does this user exist?" — other services ask it before trusting a userId.',
+    what:'Owns user accounts. The source of truth for "does this user exist?" — other services ask it before trusting a userId. Also listens for <code>post-created</code> Kafka events to keep each user\'s post count in sync.',
     calls:[], calledBy:['Post Service','Comment Service','Like-Dislike Service'],
+    listensTo:[['post-created','Increments User.postCount']],
     endpoints:[
       ['POST','/api/users','Create a user'],
       ['GET','/api/users','List all users'],
@@ -494,8 +546,10 @@ const SERVICES = [
     ]},
   { id:'post', name:'Post Service', port:8082, ico:'📝', color:'var(--green)',
     tag:'/api/posts',
-    what:'Owns blog posts. When creating a post it calls User Service to confirm the author exists, and Tag Service to attach tags.',
+    what:'Owns blog posts. When creating a post it calls User Service to confirm the author exists, and Tag Service to attach tags. After saving, it publishes a <code>post-created</code> event. It also listens for <code>comment-created</code> events to keep each post\'s comment count in sync — without Comment Service calling it back.',
     calls:['User Service','Tag Service'], calledBy:['Comment Service','Like-Dislike Service'],
+    publishes:[['post-created','After a post is saved · PostId, title, userId, createdAt']],
+    listensTo:[['comment-created','Increments Post.commentCount']],
     endpoints:[
       ['POST','/api/posts','Create post (validates userId via Feign)'],
       ['GET','/api/posts','List all posts (with embedded user)'],
@@ -507,8 +561,9 @@ const SERVICES = [
     ]},
   { id:'comment', name:'Comment Service', port:8083, ico:'💬', color:'var(--amber)',
     tag:'/api/comments',
-    what:'Owns comments. Before saving a comment it validates BOTH the user and the post exist — calling two other services.',
+    what:'Owns comments. Before saving a comment it validates BOTH the user and the post exist — calling two other services. After saving, it publishes a <code>comment-created</code> event so Post Service can update its comment count asynchronously.',
     calls:['User Service','Post Service'], calledBy:[],
+    publishes:[['comment-created','After a comment is saved · commentId, postId, userId, content, createdAt']],
     endpoints:[
       ['POST','/api/comments','Create comment (validates userId & postId)'],
       ['GET','/api/comments','List all comments'],
@@ -599,6 +654,19 @@ const FLOWS = {
     ]},
 };
 
+const EVENT_FLOWS = [
+  { topic:'post-created', from:'Post Service', to:'User Service',
+    when:'Fired right after PostService saves a new post',
+    fields:'postId, title, userId, createdAt',
+    effect:'UserEventListener increments that author\'s User.postCount and saves the user row',
+    files:'Producer: post-service/.../service/PostService.java + config/KafkaProducerConfig.java · Consumer: user-service/.../event/PostEventListener.java + config/KafkaConsumerConfig.java'},
+  { topic:'comment-created', from:'Comment Service', to:'Post Service',
+    when:'Fired right after CommentService saves a new comment',
+    fields:'commentId, postId, userId, content, createdAt',
+    effect:'CommentEventListener increments that post\'s Post.commentCount and saves the post row',
+    files:'Producer: comment-service/.../service/CommentService.java + config/KafkaProducerConfig.java · Consumer: post-service/.../event/CommentEventListener.java + config/KafkaConsumerConfig.java'},
+];
+
 const LAYER_FLOW = [
   {k:'HTTP in', n:'PostController', file:'controller/PostController.java',
    d:'The <b>waiter</b>. A <code>@RestController</code> that maps the URL <code>POST /api/posts</code> to a Java method, reads the JSON body, and calls the service. It contains NO business logic — just receiving and responding.'},
@@ -633,7 +701,9 @@ const CONCEPTS = [
   ['🥞','Layered Architecture','Inside each service: Controller → Service → Repository → Database. Each layer has one responsibility and only talks to the next. Easy to test and reason about.'],
   ['📦','DTO vs Entity','Entity = the database shape (internal). DTO = the shape you send over the network (external). Keeping them separate lets you change the DB without breaking your API.'],
   ['⚡','Spring Cloud Gateway','A reactive (non-blocking) gateway built on WebFlux. Handles lots of concurrent requests efficiently — ideal for a front door.'],
-  ['🐳','Docker Compose','A recipe (<code>docker-compose.yml</code>) that boots the whole stack — Postgres, Eureka, gateway, every service — with one command for local dev.'],
+  ['🐳','Docker Compose','A recipe (<code>docker-compose.yml</code>) that boots the whole stack — Postgres, Eureka, Kafka + Zookeeper, gateway, every service — with one command for local dev.'],
+  ['📨','Kafka (event streaming)','A message broker services publish "something happened" events to. Other services subscribe and react whenever they\'re ready — no direct call, no waiting. Used here so post/comment counts update without extra synchronous calls.'],
+  ['🎯','Producer / Consumer / Topic','Kafka vocabulary. A <b>producer</b> publishes messages to a named <b>topic</b> (e.g. <code>post-created</code>). A <b>consumer</b> (<code>@KafkaListener</code>) subscribes to that topic and processes messages as they arrive.'],
 ];
 
 /* ---------------- Tab switching ---------------- */
@@ -756,6 +826,13 @@ function selectService(id){
   const s = SERVICES.find(x=>x.id===id);
   const callsHtml = s.calls.length ? s.calls.map(c=>`<span class="pill" style="border-color:var(--accent);color:var(--accent)">→ ${c}</span>`).join(' ') : '<span class="muted">none — it\'s self-contained</span>';
   const calledHtml = s.calledBy.length ? s.calledBy.map(c=>`<span class="pill">${c} →</span>`).join(' ') : '<span class="muted">none</span>';
+  const pub = s.publishes||[], sub = s.listensTo||[];
+  const kafkaHtml = (pub.length || sub.length) ? `
+    <h3 style="margin-top:18px">Kafka</h3>
+    <div class="grid cols-2" style="margin:8px 0;">
+      <div><div class="hint">Publishes:</div>${pub.length ? pub.map(([t,d])=>`<div class="ep-row"><code style="flex:0 0 auto">${t}</code><span class="desc">${d}</span></div>`).join('') : '<span class="muted">nothing</span>'}</div>
+      <div><div class="hint">Listens to:</div>${sub.length ? sub.map(([t,d])=>`<div class="ep-row"><code style="flex:0 0 auto">${t}</code><span class="desc">${d}</span></div>`).join('') : '<span class="muted">nothing</span>'}</div>
+    </div>` : '';
   svcDetail.innerHTML = `
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
       <span style="font-size:2rem">${s.ico}</span>
@@ -766,9 +843,26 @@ function selectService(id){
       <div><div class="hint">Calls out to (Feign):</div><div style="margin-top:6px">${callsHtml}</div></div>
       <div><div class="hint">Called by:</div><div style="margin-top:6px">${calledHtml}</div></div>
     </div>
+    ${kafkaHtml}
     <h3 style="margin-top:18px">Endpoints</h3>${epRows(s.endpoints)}`;
 }
 selectService('user');
+
+/* ---------------- Events (Kafka) ---------------- */
+const ef = document.getElementById('eventFlows');
+EVENT_FLOWS.forEach(e=>{
+  const el = document.createElement('div'); el.className='card';
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span class="ico" style="margin:0">📨</span><code style="font-weight:700">${e.topic}</code>
+    </div>
+    <div style="margin-bottom:8px;"><span class="pill" style="border-color:var(--accent);color:var(--accent)">${e.from}</span> publishes → <span class="pill">${e.to}</span> listens</div>
+    <p class="muted" style="margin:6px 0"><b>When:</b> ${e.when}</p>
+    <p class="muted" style="margin:6px 0"><b>Payload:</b> <code>${e.fields}</code></p>
+    <p class="muted" style="margin:6px 0"><b>Effect:</b> ${e.effect}</p>
+    <p class="hint" style="margin:10px 0 0">${e.files}</p>`;
+  ef.appendChild(el);
+});
 
 /* ---------------- Inside a service (layers) ---------------- */
 const lf = document.getElementById('layerFlow');
@@ -956,19 +1050,25 @@ user-service.url: \${USER_SERVICE_URL:}     <span class="cm"># Feign target (clo
 <span class="kw">ENTRYPOINT</span> [<span class="st">"java"</span>, <span class="st">"-jar"</span>, <span class="st">"app.jar"</span>]` },
   { ico:'🧩', k:'docker-compose.yml', title:'docker-compose — boot the whole stack locally',
     file:'docker-compose.yml',
-    why:'One command (<code>docker-compose up</code>) starts <b>everything</b>: Postgres, Eureka, the gateway, and all services. <code>depends_on</code> + <code>healthcheck</code> ensure Postgres is ready and Eureka is up before services start. Env vars point each service at the shared Postgres and the Eureka URL.',
+    why:'One command (<code>docker-compose up</code>) starts <b>everything</b>: Postgres, Eureka, <b>Zookeeper + Kafka</b>, the gateway, and all services. <code>depends_on</code> + <code>healthcheck</code> ensure Postgres is ready, Eureka is up, and Kafka is reachable before the services that need it (user, post, comment) start. Note: <code>render.yaml</code> does not provision Kafka yet, so the async event flow only runs locally/Docker today.',
     code:
 `services:
   postgres:
     image: postgres:15
     healthcheck: { test: ["CMD-SHELL","pg_isready -U postgres"] }
   eureka-server: { build: eureka-server/Dockerfile, ports: ["8761:8761"] }
+  zookeeper: { image: confluentinc/cp-zookeeper:7.4.0, ports: ["2181:2181"] }
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    ports: ["9092:9092", "29092:29092"]
+    depends_on: [zookeeper]
   post-service:
     build: post-service/Dockerfile
-    environment: { DB_HOST: postgres, EUREKA_URI: http://eureka-server:8761/eureka/ }
+    environment: { DB_HOST: postgres, EUREKA_URI: http://eureka-server:8761/eureka/, KAFKA_BOOTSTRAP_SERVERS: kafka:29092 }
     depends_on:
       eureka-server: { condition: service_started }
-      postgres:      { condition: service_healthy }` },
+      postgres:      { condition: service_healthy }
+      kafka:         { condition: service_started }` },
   { ico:'☁️', k:'render.yaml / vercel.json', title:'Cloud deploy — Render + Vercel',
     file:'render.yaml · frontend/vercel.json',
     why:'<b>render.yaml</b> is an Infrastructure-as-Code blueprint: it defines the 6 Docker web services + managed Postgres, and injects <code>EUREKA_CLIENT_ENABLED=false</code> plus direct <code>*_SERVICE_URL</code> HTTPS addresses (no Eureka in cloud). <b>vercel.json</b> rewrites <code>/api/*</code> on the frontend to the Render gateway, keeping requests same-origin (no CORS).',
@@ -1004,25 +1104,34 @@ const DEP_NODES = {
   like:    {x:540, y:300, label:'Like/Dislike',sub:':8084', ico:'👍'},
 };
 const DEP_EDGES = [
-  ['post','user'], ['post','tag'],
-  ['comment','user'], ['comment','post'],
-  ['like','user'], ['like','post'],
+  ['post','user','feign'], ['post','tag','feign'],
+  ['comment','user','feign'], ['comment','post','feign'],
+  ['like','user','feign'], ['like','post','feign'],
+  ['post','user','kafka'], ['comment','post','kafka'],
 ];
 const nodesG = document.getElementById('depNodes');
 const edgesG = document.getElementById('depEdges');
 const NW=120, NH=44;
 function center(id){ const n=DEP_NODES[id]; return {x:n.x+NW/2, y:n.y+NH/2}; }
-DEP_EDGES.forEach(([a,b])=>{
+DEP_EDGES.forEach(([a,b,kind],i)=>{
   const p1=center(a), p2=center(b);
   // trim endpoints toward node edges
   const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy);
   const ux=dx/len, uy=dy/len;
   const x1=p1.x+ux*(NW/2)*0.75, y1=p1.y+uy*(NH/2+6);
   const x2=p2.x-ux*(NW/2)*0.85, y2=p2.y-uy*(NH/2+10);
-  const mx=(x1+x2)/2, my=(y1+y2)/2 - 24;
+  const bow = kind==='kafka' ? 40 : 24;
+  const mx=(x1+x2)/2 + (kind==='kafka'? 46:0), my=(y1+y2)/2 - bow;
   const path=document.createElementNS('http://www.w3.org/2000/svg','path');
   path.setAttribute('d',`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
-  path.setAttribute('class','dep-edge feign');
+  if (kind==='kafka'){
+    path.setAttribute('class','dep-edge kafka');
+    path.setAttribute('stroke','var(--pink)');
+    path.setAttribute('stroke-dasharray','6 5');
+    path.setAttribute('marker-end','url(#arrow-kafka)');
+  } else {
+    path.setAttribute('class','dep-edge feign');
+  }
   edgesG.appendChild(path);
 });
 Object.entries(DEP_NODES).forEach(([id,n])=>{
@@ -1042,6 +1151,8 @@ const EDGE_NOTES = [
   ['💬 Comment → 📝 Post','Validates the target post exists before saving the comment.'],
   ['👍 Like → 👤 User','Confirms the reacting user exists.'],
   ['👍 Like → 📝 Post','Confirms the post being reacted to exists.'],
+  ['📝 Post ⇢ 👤 User (Kafka)','post-created event — async, fire-and-forget. User Service bumps that author\'s postCount.'],
+  ['💬 Comment ⇢ 📝 Post (Kafka)','comment-created event — async, fire-and-forget. Post Service bumps that post\'s commentCount.'],
 ];
 const el2 = document.getElementById('edgeList');
 EDGE_NOTES.forEach(([t,d])=>{
@@ -1058,6 +1169,7 @@ const ENV_VARS = [
   ['EUREKA_CLIENT_ENABLED','true','Set false in the cloud (use direct URLs)'],
   ['EUREKA_URI','http://eureka-server:8761/eureka/','Where to register / discover'],
   ['USER_SERVICE_URL, POST_SERVICE_URL, TAG_SERVICE_URL','lb://… (local)','Feign targets — direct HTTPS URLs in cloud'],
+  ['KAFKA_BOOTSTRAP_SERVERS','localhost:9092','Where user/post/comment services find the Kafka broker (local/Docker only — not set in render.yaml yet)'],
 ];
 document.getElementById('envTable').innerHTML =
   '<div class="ep-row" style="font-weight:700"><code style="flex:1.4">Variable</code><span class="desc">Default</span><span class="desc">Purpose</span></div>' +

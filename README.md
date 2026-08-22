@@ -287,6 +287,7 @@ blog-microservices/
 - **Feign + Resilience4j** — declarative HTTP clients with circuit breakers and fallbacks
 - **Reactive Gateway** — Spring Cloud Gateway over WebFlux (non-blocking)
 - **Live Request Tracking** — gateway records every request (method, path, service, duration, status) in a 100-entry in-memory buffer; frontend sidebar polls and visualizes in real time
+- **Redis Caching** — `post-service` caches enriched post reads (`GET /api/posts`, `GET /api/posts/{id}`) in Redis via Spring `@Cacheable`, 60s TTL, TTL-only invalidation
 
 ---
 
@@ -334,7 +335,7 @@ The platform is functional and deployed, but several production-grade concerns a
 | Auth/security (JWT/OAuth2 at gateway) | Security | Gateway has CORS but no auth enforcement |
 | Metrics aggregation (Prometheus/Grafana) | Observability | Actuator is exposed but nothing scrapes/aggregates it |
 | Centralized config (Spring Cloud Config Server) | Configuration | Each service carries its own `application.yml` |
-| Rate limiting at the gateway | Resilience | Fits alongside a Redis caching layer |
+| Rate limiting at the gateway | Resilience | Could reuse the Redis instance now backing `post-service`'s read caching |
 
 ### Suggested order of value
 

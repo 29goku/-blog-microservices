@@ -10,8 +10,10 @@ import com.blog.post.exception.UserNotValidException;
 import com.blog.post.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +68,7 @@ public class PostService {
     return mapToDTO(savedPost, postDTO.getUser());
   }
 
+  @Cacheable(value = "posts", key = "#id")
   public PostDTO getPostById(Long id) {
     log.info("Fetching post with id: {}", id);
     Post post =
@@ -77,6 +80,7 @@ public class PostService {
     return mapToDTO(post, user);
   }
 
+  @Cacheable(value = "posts", key = "#userId")
   public List<PostDTO> getPostsByUserId(Long userId) {
     log.info("Fetching posts for userId: {}", userId);
     var user = userServiceClient.getUserById(userId);
@@ -96,7 +100,7 @@ public class PostService {
             })
         .collect(Collectors.toList());
   }
-
+@Cacheable(value = "posts", key = "'allPosts'")
   public List<PostDTO> getAllPosts() {
     log.info("Fetching all posts");
     return postRepository.findAll().stream()
