@@ -61,6 +61,7 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
         postCacheInvalidationPublisher.publishAllInvalidated();
+        postCacheInvalidationPublisher.publishUserPostsInvalidation(savedPost.getUserId());
         PostCreatedEvent event = new PostCreatedEvent(
                 savedPost.getId(),
                 savedPost.getTitle(),
@@ -85,7 +86,7 @@ public class PostService {
         return mapToDTO(post, user);
     }
 
-    @Cacheable(value = "posts", key = "#userId")
+    @Cacheable(value = "posts", key = "'byUser:' + #userId")
     public List<PostDTO> getPostsByUserId(Long userId) {
         log.info("Fetching posts for userId: {}", userId);
         var user = userServiceClient.getUserById(userId);
@@ -137,6 +138,7 @@ public class PostService {
 
         Post updatedPost = postRepository.save(post);
         postCacheInvalidationPublisher.publishPostCacheInvalidation(id);
+        postCacheInvalidationPublisher.publishUserPostsInvalidation(updatedPost.getUserId());
         var user = userServiceClient.getUserById(updatedPost.getUserId());
         log.info("Post updated successfully with id: {}", id);
 
@@ -145,11 +147,13 @@ public class PostService {
 
     public void deletePost(Long id) {
         log.info("Deleting post with id: {}", id);
-        if (!postRepository.existsById(id)) {
-            throw new PostNotFoundException("Post not found with id: " + id);
-        }
+        Post post =
+                postRepository
+                        .findById(id)
+                        .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + id));
         postRepository.deleteById(id);
         postCacheInvalidationPublisher.publishPostCacheInvalidation(id);
+        postCacheInvalidationPublisher.publishUserPostsInvalidation(post.getUserId());
         log.info("Post deleted successfully with id: {}", id);
     }
 

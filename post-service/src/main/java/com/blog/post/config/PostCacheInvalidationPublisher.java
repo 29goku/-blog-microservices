@@ -20,4 +20,9 @@ public class PostCacheInvalidationPublisher {
     public  void  publishAllInvalidated(){
         redisTemplate.convertAndSend(topic.getTopic(), "{\"type\":\"ALL\"}");
     }
+
+    public void publishUserPostsInvalidation(Long userId) {
+        String message = String.format("{\"type\":\"USER\",\"userId\":%d}", userId);
+        redisTemplate.convertAndSend(topic.getTopic(), message);
+    }
 }

@@ -35,6 +35,10 @@ public class PostCacheInvalidationListener implements MessageListener {
                 cacheManager.getCache("posts").evict("allPosts");
                 cacheManager.getCache("posts").evict(postId);
                 log.info("Evicted posts cache for postId: {}", postId);
+            } else if ("USER".equals(type)) {
+                long userId = node.get("userId").asLong();
+                cacheManager.getCache("posts").evict("byUser:" + userId);
+                log.info("Evicted posts cache for userId: {}", userId);
             }
         }catch (Exception e) {
             log.error("Error processing cache invalidation message", e);
