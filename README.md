@@ -287,7 +287,8 @@ blog-microservices/
 - **Feign + Resilience4j** — declarative HTTP clients with circuit breakers and fallbacks
 - **Reactive Gateway** — Spring Cloud Gateway over WebFlux (non-blocking)
 - **Live Request Tracking** — gateway records every request (method, path, service, duration, status) in a 100-entry in-memory buffer; frontend sidebar polls and visualizes in real time
-- **Redis Caching** — `post-service` caches enriched post reads (`GET /api/posts`, `GET /api/posts/{id}`) in Redis via Spring `@Cacheable`, 60s TTL, TTL-only invalidation
+- **Redis Caching** — `post-service` caches enriched post reads (`GET /api/posts`, `GET /api/posts/{id}`) in Redis via Spring `@Cacheable`, 60s TTL as a fallback
+- **Redis Pub/Sub Cache Invalidation** — `post-service` publishes to the `post-cache-invalidate` channel after each write (`createPost`, `updatePost`, `deletePost`); a listener in the same service evicts the affected cache entries immediately, so reads are consistent right after a write instead of waiting out the TTL
 
 ---
 
