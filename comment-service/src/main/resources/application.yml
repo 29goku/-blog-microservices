@@ -14,13 +14,19 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-kafka:
-  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      observation-enabled: true
+    template:
+      observation-enabled: true
 
 server:
   port: ${PORT:8083}
 
 logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
   level:
     root: INFO
     com.blog: DEBUG
@@ -83,11 +89,11 @@ management:
       probability: 1.0
   otlp:
     tracing:
-      endpoint: http://otel-collector:4317
+      endpoint: http://otel-collector:4318/v1/traces
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   health:
     discoveryClient:
       enabled: false
@@ -96,5 +102,3 @@ user-service:
   url: ${USER_SERVICE_URL:}
 post-service:
   url: ${POST_SERVICE_URL:}
-
-

@@ -18,6 +18,8 @@ spring:
 server:
   port: ${PORT:8085}
 logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
   level:
     root: info
     com.blog: debug
@@ -72,11 +74,11 @@ management:
       probability: 1.0
   otlp:
     tracing:
-      endpoint: http://otel-collector:4317
+      endpoint: http://otel-collector:4318/v1/traces
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   health:
     discoveryClient:
       enabled: false

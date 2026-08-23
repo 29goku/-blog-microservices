@@ -45,6 +45,8 @@ server:
   port: ${PORT:8080}
 
 logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
   level:
     root: INFO
     com.blog: DEBUG
@@ -66,13 +68,13 @@ management:
       probability: 1.0
   otlp:
     tracing:
-      endpoint: http://otel-collector:4317
+      endpoint: http://otel-collector:4318/v1/traces
   endpoints:
     web:
       exposure:
         # Expose gateway actuator so we can introspect loaded routes
         # in production: GET /actuator/gateway/routes
-        include: health,info,gateway
+        include: health,info,gateway,prometheus
   endpoint:
     gateway:
       enabled: true

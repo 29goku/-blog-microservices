@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'microservices'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'api-gateway:8080'
+          - 'user-service:8081'
+          - 'post-service:8082'
+          - 'comment-service:8083'
+          - 'like-dislike-service:8084'
+          - 'tag-service:8085'
