@@ -1,19 +1,25 @@
 apiVersion: 1
 datasources:
   - name: Prometheus
+    uid: prometheus-ds
     type: prometheus
     access: proxy
     url: http://prometheus:9090
     isDefault: false
+    jsonData:
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo-ds
 
   - name: Tempo
+    uid: tempo-ds
     type: tempo
     access: proxy
     url: http://tempo:3200
     isDefault: true
     jsonData:
       tracesToMetrics:
-        datasourceUid: 'Prometheus'
+        datasourceUid: prometheus-ds
         tags: [{ key: 'service.name', value: 'application' }]
         queries:
           - name: 'Request Rate'
