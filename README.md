@@ -327,7 +327,6 @@ The platform is functional and deployed, but several production-grade concerns a
 | Gap | Where it fits | Notes |
 |-----|---------------|-------|
 | Retry + bulkhead | Finishes Phase 4 (resilience) | Circuit breakers exist; retry/bulkhead tuning does not |
-| Real Kafka events | Phase 5 (async) | Kafka/Zookeeper run in Docker Compose but aren't wired to any business event |
 | Schema/DB isolation | Architecture | All services share one PostgreSQL `main_db` — a shared-database coupling; consider schema-per-service or DB-per-service |
 | DB migrations (Flyway/Liquibase) | Data layer | Currently `hibernate ddl-auto=update`, which drifts schema and is risky in production |
 | Automated tests + CI/CD | Quality | Modules build with `-DskipTests`; no real test suite; Docker builds are manual |
@@ -342,8 +341,7 @@ The platform is functional and deployed, but several production-grade concerns a
 
 1. **Retry + bulkhead** — finish what Phase 4 already promises
 2. **Flyway migrations + a basic test suite + CI** — biggest correctness/safety gap
-3. **Wire Kafka to a real event** (e.g. `post-created` → notify `comment-service`) — makes Phase 5 real
-4. **Distributed tracing** — high value once multiple services talk
-5. **Auth at the gateway** (JWT/OAuth2), then Prometheus/Grafana and a config server
+3. **Distributed tracing** — high value once multiple services talk
+4. **Auth at the gateway** (JWT/OAuth2), then Prometheus/Grafana and a config server
 
 > Each item is a focused, multi-step change and should be tackled as its own increment.

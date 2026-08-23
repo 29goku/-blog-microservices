@@ -326,15 +326,15 @@ Phase 4: Resilience ✅ DONE
   ├─ Timeout handling
   └─ 🔜 Retry / bulkhead tuning
 
-Phase 5: Async Communication 🔜 SCAFFOLDED
+Phase 5: Async Communication ✅ DONE
   ├─ Kafka/Zookeeper run via Docker Compose
-  ├─ Not yet wired into business events
-  └─ Message publishing/consuming (future)
+  ├─ post-created: post-service → user-service
+  └─ comment-created: comment-service → post-service
 
-Phase 6: Caching 🔜 FUTURE
-  ├─ Redis integration
-  ├─ Cache invalidation
-  └─ Performance optimization
+Phase 6: Caching ✅ DONE
+  ├─ Redis read-through cache (post-service), 60s TTL fallback
+  ├─ Pub/sub cache invalidation on write (immediate, not TTL-bound)
+  └─ Covers post-by-id, post list, and posts-by-user cache entries
 
 Phase 7: Containerization ✅ DONE
   ├─ Docker for each service (multi-stage builds)
@@ -356,8 +356,6 @@ concerns remain open. Captured here as an honest backlog:
   Gap                                        Where it fits
   ─────────────────────────────────────────  ────────────────────────────────
   Retry + bulkhead                           Finishes Phase 4 (resilience)
-  Real Kafka events                          Makes Phase 5 real (Kafka runs in
-                                             Docker Compose, not yet wired)
   Schema/DB isolation                        All services share one main_db —
                                              a shared-database coupling
   DB migrations (Flyway/Liquibase)           Replaces hibernate ddl-auto=update
@@ -374,9 +372,8 @@ concerns remain open. Captured here as an honest backlog:
 Suggested order of value:
   1. Retry + bulkhead — finish what Phase 4 already promises
   2. Flyway migrations + a basic test suite + CI — biggest safety gap
-  3. Wire Kafka to a real event (post-created → notify comment-service)
-  4. Distributed tracing — high value once services talk
-  5. Auth at the gateway, then Prometheus/Grafana and a config server
+  3. Distributed tracing — high value once services talk
+  4. Auth at the gateway, then Prometheus/Grafana and a config server
 
 Each item is a focused, multi-step change — tackle as its own increment.
 

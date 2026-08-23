@@ -138,18 +138,47 @@
   .sim-controls button:hover{ border-color: var(--accent); }
   .sim-controls button.active{ background: linear-gradient(135deg, color-mix(in srgb,var(--accent) 30%,transparent), color-mix(in srgb,var(--accent-2) 30%,transparent)); border-color: var(--accent); }
   .sim-stage { display:flex; flex-direction:column; gap:0; margin-top:8px; }
-  .sim-node {
-    display:flex; align-items:center; gap:14px; padding:14px 18px; border:1px solid var(--border);
-    border-radius:12px; background: var(--panel); opacity:.4; transform: scale(.99);
-    transition: all .35s ease;
+  .flowsvg { width:100%; height:auto; max-height:440px; overflow:visible; }
+  .flow-node rect {
+    fill: var(--panel-strong); stroke: var(--border); stroke-width:1.5;
+    transition: fill .3s, stroke .3s, stroke-width .3s, filter .3s;
   }
-  .sim-node.lit { opacity:1; border-color: var(--accent); background: var(--panel-strong); box-shadow: 0 0 0 1px var(--accent), 0 8px 30px rgba(110,168,255,.15); transform: scale(1); }
-  .sim-node .n-ico { font-size:1.4rem; width:34px; text-align:center; }
-  .sim-node .n-title { font-weight:700; }
-  .sim-node .n-desc { color: var(--muted); font-size:.86rem; }
-  .sim-node .n-tag { margin-left:auto; font-family:monospace; font-size:.74rem; color: var(--accent); }
-  .sim-arrow { height:20px; display:flex; justify-content:center; color: var(--muted); font-size:.9rem; }
-  .sim-arrow.lit { color: var(--accent); }
+  .flow-node text { fill: var(--text); font-size:12px; font-weight:700; }
+  .flow-node .sub { fill: var(--muted); font-size:9px; font-weight:500; }
+  .flow-node { transition: opacity .3s; }
+  .flow-node:not(.active-flow) { opacity: .32; }
+  .flow-node.active-flow { opacity: 1; }
+  .flow-node.visited rect { stroke: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+  .flow-node.lit rect {
+    stroke: var(--accent); stroke-width: 2.5;
+    fill: color-mix(in srgb, var(--accent) 20%, var(--panel-strong));
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 55%, transparent));
+  }
+  .flow-edge { fill:none; stroke: var(--border); stroke-width:1.5; opacity:.22; transition: opacity .3s, stroke-width .3s; }
+  .flow-edge.relevant { opacity:.55; }
+  .flow-edge.irrelevant { opacity:.06; }
+  .flow-edge.db { stroke: var(--green); }
+  .flow-edge.cache { stroke: var(--amber); }
+  .flow-edge.return { stroke: var(--pink); stroke-dasharray:6 5; }
+  .flow-edge.feign { stroke: var(--accent); }
+  .flow-edge.http { stroke: var(--muted); }
+  .flow-edge.lit { opacity:1 !important; stroke-width:3; }
+  .flow-edge.visited { opacity:.75; }
+  #simPacket {
+    fill: var(--accent-2); opacity:0;
+    transition: cx .62s cubic-bezier(.4,0,.2,1), cy .62s cubic-bezier(.4,0,.2,1), opacity .25s;
+    filter: drop-shadow(0 0 8px var(--accent-2));
+  }
+  @keyframes flowPulse { 0%{ r:7; } 45%{ r:12; } 100%{ r:7; } }
+  #simPacket.pulse { animation: flowPulse .6s ease; }
+  .step-info {
+    display:flex; align-items:center; gap:12px; margin-top:14px; padding:12px 16px;
+    border:1px solid var(--border); border-radius:12px; background: var(--panel); min-height:24px;
+  }
+  .step-info .si-ico { font-size:1.35rem; }
+  .step-info .si-t { font-weight:700; white-space:nowrap; }
+  .step-info .si-d { color: var(--muted); font-size:.86rem; flex:1; }
+  .step-info .si-tag { font-family:monospace; font-size:.74rem; color: var(--accent); white-space:nowrap; }
 
   /* ---------- Service explorer ---------- */
   .svc-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
@@ -229,6 +258,7 @@
       <button data-view="files">Project Files</button>
       <button data-view="build">Build &amp; Deploy</button>
       <button data-view="connections">Connections</button>
+      <button data-view="caching">Caching &amp; Tracing</button>
       <button data-view="concepts">BE Concepts</button>
       <button data-view="frontend">Frontend</button>
     </nav>
@@ -298,10 +328,18 @@
       Comment Service each publish an event when something is created; User Service and Post Service listen and
       update a counter — no Feign call, no waiting for a response.</p>
       <span class="pill">:9092 (local/Docker only)</span></div>
-    <div class="card"><span class="ico">🧊</span><h3>Redis — planned, not built yet</h3>
-      <p class="muted">A design spec exists for read-through caching of <code>GET /api/posts</code> in Post Service
-      (60s TTL via <code>@Cacheable</code>). <b>Not implemented</b> in code yet — no dependency, no config, no
-      container. Treat any mention of Redis elsewhere as roadmap, not current behaviour.</p>
+    <div class="card"><span class="ico">🧊</span><h3>Redis — read-through cache + pub/sub invalidation</h3>
+      <p class="muted">Post Service caches <code>GET /api/posts</code>, <code>GET /api/posts/{id}</code>, and
+      <code>GET /api/posts/user/{userId}</code> for <b>60s</b> via <code>@Cacheable</code>. On every write
+      (create/update/delete) it also publishes to a <code>post-cache-invalidate</code> Redis pub/sub channel, so
+      the affected cache entries are evicted <b>immediately</b> — the 60s TTL is only the fallback if a publish is
+      missed. <a href="#" onclick="goto('caching');return false;">Full detail →</a></p>
+      <span class="pill" style="border-color:var(--green);color:var(--green)">done</span></div>
+    <div class="card"><span class="ico">🔭</span><h3>Distributed Tracing — planned, not built yet</h3>
+      <p class="muted">Next roadmap item: an OpenTelemetry Collector in front of every service, exporting to
+      <b>Grafana Tempo</b>, visualised in <b>Grafana</b>. Would stitch one trace ID across the gateway → Feign
+      calls → Kafka hops. <b>Not implemented</b> in code yet — design only.
+      <a href="#" onclick="goto('caching');return false;">Full detail →</a></p>
       <span class="pill">future</span></div>
   </div>
 
@@ -474,6 +512,145 @@
   </div>
 </section>
 
+<!-- ==================== CACHING & TRACING ==================== -->
+<section class="view" id="caching">
+  <div class="eyebrow">One verified, one planned</div>
+  <h1>Caching &amp; Distributed Tracing</h1>
+  <p class="lead">Redis caching in Post Service is <b>built, deployed, and verified end-to-end</b> — including two
+    real bugs found and fixed during the verification pass. Distributed tracing is <b>designed but not
+    implemented</b> yet — included here as the next roadmap step, presented honestly as a plan, not a finished
+    feature.</p>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="hint" style="margin-bottom:8px;">Jump to:</div>
+    <ul style="margin:0;padding-left:20px;line-height:1.9;">
+      <li><a href="#redis-detail">Redis: read-through cache</a></li>
+      <li><a href="#redis-pubsub">Redis: pub/sub invalidation</a></li>
+      <li><a href="#redis-bugs">Bugs found &amp; fixed</a></li>
+      <li><a href="#tracing-detail">Distributed Tracing (planned)</a></li>
+      <li><a href="#caching-gaps">Known gaps found during this audit</a></li>
+    </ul>
+  </div>
+
+  <h2 id="redis-detail">Redis: read-through cache</h2>
+  <p class="muted">Post Service is the <b>only</b> service with a cache today. Cache name <code>posts</code>,
+    backed by Spring's <code>RedisCacheManager</code> + <code>GenericJackson2JsonRedisSerializer</code> (with
+    default typing, so a cached <code>List&lt;PostDTO&gt;</code> and a cached <code>PostDTO</code> both
+    deserialize back to the right Java type), TTL <b>60 seconds</b> — configured in
+    <code>RedisCacheConfig.java</code>.</p>
+  <div class="card" id="cacheKeysTable"></div>
+  <div class="concept-note" style="margin-top:14px;">
+    💡 <b>Analogy:</b> the 60s TTL is a <b>safety net</b>, not the main defense — like a smoke detector you hope
+    never actually has to go off, because the pub/sub invalidation below (the sprinkler system) reacts
+    immediately, on every write.
+  </div>
+
+  <h2 id="redis-pubsub">Redis: pub/sub invalidation</h2>
+  <p class="muted">On every write, Post Service also publishes a small JSON message to the
+    <code>post-cache-invalidate</code> Redis channel. The publisher
+    (<code>PostCacheInvalidationPublisher.java</code>) and the listener
+    (<code>PostCacheInvalidationListener.java</code>) both live inside post-service — it's talking to itself,
+    but through Redis, so eviction logic stays out of the write path itself.</p>
+  <div class="grid cols-3" id="redisMessages"></div>
+
+  <h2 id="redis-bugs">Bugs found &amp; fixed</h2>
+  <p class="muted">Two real issues surfaced while verifying this feature end-to-end — worth showing, not hiding.</p>
+  <div class="grid cols-2">
+    <div class="card" style="border-color:var(--amber)">
+      <span class="ico">⚠️</span><h3>TTL doc/code mismatch</h3>
+      <p class="muted">Design docs and the README said <b>60s</b> TTL. The actual code originally had
+        <code>Duration.ofMinutes(10)</code> — a silent <b>10× longer</b> staleness window than documented.
+        <b>Fixed</b> to match the documented 60s.</p>
+      <span class="pill" style="border-color:var(--green);color:var(--green)">fixed</span>
+    </div>
+    <div class="card" style="border-color:var(--amber)">
+      <span class="ico">⚠️</span><h3>Cache key collision risk</h3>
+      <p class="muted"><code>getPostsByUserId</code> originally used <code>@Cacheable(value="posts", key="#userId")</code>
+        — a bare numeric key in the <b>same cache region</b> as <code>getPostById</code>'s <code>key="#id"</code>.
+        If a <code>userId</code> and <code>postId</code> were ever the same number (e.g. both <code>1</code>), a
+        <code>List&lt;PostDTO&gt;</code> and a <code>PostDTO</code> could collide under one Redis key and risk a
+        deserialization exception. <b>Fixed</b> by prefixing the key: <code>key="'byUser:' + #userId"</code>, and
+        extending pub/sub invalidation to cover it — the <code>USER</code> message type above didn't originally
+        exist; it was added specifically to fix this.</p>
+      <span class="pill" style="border-color:var(--green);color:var(--green)">fixed</span>
+    </div>
+  </div>
+  <div class="hint" style="margin-top:10px;">Verified manually: curl requests + <code>docker logs</code> showing
+    the eviction firing immediately + RedisInsight showing the actual keys and TTLs. No automated test suite for
+    this yet — same known gap as the rest of the project.</div>
+
+  <h2 id="tracing-detail">Distributed Tracing <span class="pill">future</span></h2>
+  <p class="muted">Not implemented in code — design only. The next roadmap item after Redis, and (per the
+    project's own README / delivery summary) the step before Prometheus + Grafana metrics.</p>
+  <div class="card">
+    <pre class="code">[api-gateway, post-service, user-service, tag-service, comment-service, like-dislike-service]
+        │  (OTLP gRPC, port 4317)
+        ▼
+  [OTel Collector] ──receives, batches, samples──▶ [Grafana Tempo] ◀── queried by ── [Grafana]
+                                                          │
+                                                  (object storage: S3 or local disk)</pre>
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="card"><h3>OTel Collector</h3><p class="muted">Single ingestion point — every service pushes traces
+      via OTLP instead of talking to Tempo directly. Config would have receivers (OTLP), processors
+      (<code>batch</code> + <code>tail_sampling</code> — e.g. keep 100% of error traces, 100% of slow &gt;500ms
+      traces, 5% sample of everything else), and exporters (to Tempo via OTLP).</p></div>
+    <div class="card"><h3>Grafana Tempo</h3><p class="muted">Trace storage. Local disk backend to start (swappable
+      to S3/GCS later without an architecture change). Retention e.g. 14 days
+      (<code>block_retention: 336h</code>).</p></div>
+    <div class="card"><h3>Grafana</h3><p class="muted">Queries Tempo. Chosen over Jaeger specifically because it
+      can later correlate traces with Prometheus metrics and logs in one UI — Prometheus/Grafana is already this
+      project's own next-next roadmap item after tracing.</p></div>
+    <div class="card"><h3>Per-service work needed</h3><p class="muted">Add the Micrometer OTel bridge + OTLP
+      exporter dependency, point it at the Collector's OTLP endpoint (not Tempo directly), and keep
+      <code>management.tracing.sampling.probability: 1.0</code> per-service — the Collector's tail_sampling makes
+      the real sampling decision, not each service.</p></div>
+  </div>
+  <div class="concept-note" style="margin-top:14px;">
+    ⚠️ <b>Highest-risk part to verify once built:</b> the trace must span <b>both sides</b> of the async
+    <code>post-created</code> Kafka hop — a producer span in Post Service and a consumer span in User Service —
+    under <b>one trace ID</b>. Don't assume Spring's auto-instrumentation "just works" across a Kafka hop under
+    load; test it explicitly.
+  </div>
+  <h3 style="margin-top:22px">Alternatives considered</h3>
+  <div class="grid cols-3">
+    <div class="card"><h3>Zipkin</h3><p class="muted">Simpler, but PoC-only — dropped because this project is
+      moving straight into a production-facing setup, not staying a throwaway demo.</p></div>
+    <div class="card"><h3>Jaeger</h3><p class="muted">Good UI, but no built-in Prometheus/Grafana correlation —
+      would mean a second, disconnected observability UI later.</p></div>
+    <div class="card"><h3>Hosted vendor (Datadog / Honeycomb)</h3><p class="muted">OTel Collector + a hosted
+      backend — dropped for now: this is a local-first Docker Compose project, and the cost/infra overhead isn't
+      justified yet.</p></div>
+  </div>
+
+  <h2 id="caching-gaps">Known gaps found during this audit</h2>
+  <p class="muted">Found while verifying Redis end-to-end — not complaints about unrelated code, just things
+    worth fixing before this goes further toward production.</p>
+  <div class="grid cols-2">
+    <div class="card"><span class="ico">🌐</span><h3>Gateway CORS configured in two places</h3>
+      <p class="muted"><code>application.yml</code> has a global CORS block allowing
+        <code>allowedOriginPatterns: "*"</code>, but <code>GatewayConfig.java</code> <b>also</b> defines a
+        <code>CorsWebFilter</code> bean restricting to <code>http://localhost:*</code> and
+        <code>https://*.vercel.app</code>. <b>Open question:</b> which one actually wins at runtime isn't clear
+        without testing — flagging it rather than guessing.</p></div>
+    <div class="card"><span class="ico">🏷️</span><h3>Tag traffic shows as "unknown"</h3>
+      <p class="muted">The gateway's <code>RequestTrackingFilter.resolveTargetService()</code> only recognizes
+        users/posts/comments/likedislike path prefixes. <code>/api/tags/**</code> requests fall through and show
+        up as <code>unknown</code> in the live tracking dashboard.</p></div>
+    <div class="card"><span class="ico">🔗</span><h3>Frontend tracking sidebar hardcodes localhost</h3>
+      <p class="muted"><code>RequestFlowDashboard.tsx</code> hardcodes <code>http://localhost:8080</code> for
+        polling <code>/api/tracking/requests</code>, instead of the same <code>VITE_API_URL</code> env var the
+        rest of the frontend uses. The live request-tracking sidebar silently doesn't work against a deployed
+        (non-localhost) gateway.</p></div>
+    <div class="card"><span class="ico">🗄️</span><h3>"Database per service" is table-level, not physical, by default</h3>
+      <p class="muted">All services default to the same <code>DB_NAME=main_db</code>. The isolation story in the
+        Overview tab is about each service owning its <b>tables</b> within one shared Postgres database by
+        default — not physically separate databases — unless <code>DB_NAME</code> is overridden per deployment.
+        Worth being precise about that distinction rather than letting the diagram imply full physical
+        isolation.</p></div>
+  </div>
+</section>
+
 <!-- ==================== CONCEPTS ==================== -->
 <section class="view" id="concepts">
   <div class="eyebrow">Plain-English glossary</div>
@@ -546,10 +723,24 @@ const SERVICES = [
     ]},
   { id:'post', name:'Post Service', port:8082, ico:'📝', color:'var(--green)',
     tag:'/api/posts',
-    what:'Owns blog posts. When creating a post it calls User Service to confirm the author exists, and Tag Service to attach tags. After saving, it publishes a <code>post-created</code> event. It also listens for <code>comment-created</code> events to keep each post\'s comment count in sync — without Comment Service calling it back.',
+    what:'Owns blog posts. When creating a post it calls User Service to confirm the author exists, and Tag Service to attach tags. After saving, it publishes a <code>post-created</code> event. It also listens for <code>comment-created</code> events to keep each post\'s comment count in sync — without Comment Service calling it back. The only service with a Redis cache.',
     calls:['User Service','Tag Service'], calledBy:['Comment Service','Like-Dislike Service'],
     publishes:[['post-created','After a post is saved · PostId, title, userId, createdAt']],
     listensTo:[['comment-created','Increments Post.commentCount']],
+    cache:{
+      keys:[
+        ["posts::allPosts","GET /api/posts","evicted on any create/update/delete"],
+        ["posts::{id}","GET /api/posts/{id}","evicted on update/delete of that id"],
+        ["posts::byUser:{userId}","GET /api/posts/user/{userId}","evicted on create/update/delete by that user"],
+      ],
+      ttl:'60s (Spring Cache @Cacheable, RedisCacheManager, GenericJackson2JsonRedisSerializer)',
+      channel:'post-cache-invalidate (Redis pub/sub) — publisher & listener both live in post-service',
+      messages:[
+        ["ALL","createPost","evicts allPosts"],
+        ["POST","updatePost / deletePost","evicts allPosts + that postId"],
+        ["USER","createPost / updatePost / deletePost","evicts byUser:{userId} for the post's owner"],
+      ],
+    },
     endpoints:[
       ['POST','/api/posts','Create post (validates userId via Feign)'],
       ['GET','/api/posts','List all posts (with embedded user)'],
@@ -607,50 +798,73 @@ const FLOWS = {
     title:'Create a blog post  ·  POST /api/posts',
     desc:'The richest example — the Post Service checks with two OTHER services before saving.',
     steps:[
-      {ico:'💻', t:'Browser (React)', d:'PostForm calls postAPI.create(...)', tag:'POST /api/posts'},
-      {ico:'🚪', t:'API Gateway :8080', d:'Routes /api/posts → post-service, logs the request', tag:'route'},
-      {ico:'📝', t:'Post Controller', d:'Receives JSON, hands it to the service layer', tag:'@RestController'},
-      {ico:'⚙️', t:'Post Service (logic)', d:'"Before I save, is this a real user?"', tag:'business rules'},
-      {ico:'👤', t:'→ User Service :8081', d:'Feign call validates the author exists', tag:'@FeignClient'},
-      {ico:'🏷️', t:'→ Tag Service :8085', d:'Feign call attaches tags to the post', tag:'@FeignClient'},
-      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the post row', tag:'INSERT'},
-      {ico:'💻', t:'Back to Browser', d:'New post returned as JSON, UI updates', tag:'201 Created'},
+      {ico:'💻', t:'Browser (React)', d:'PostForm calls postAPI.create(...)', tag:'POST /api/posts', node:'browser'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes /api/posts → post-service, logs the request', tag:'route', node:'gateway'},
+      {ico:'📝', t:'Post Controller', d:'Receives JSON, hands it to the service layer', tag:'@RestController', node:'post'},
+      {ico:'⚙️', t:'Post Service (logic)', d:'"Before I save, is this a real user?"', tag:'business rules', node:'post'},
+      {ico:'👤', t:'→ User Service :8081', d:'Feign call validates the author exists', tag:'@FeignClient', node:'user'},
+      {ico:'🏷️', t:'→ Tag Service :8085', d:'Feign call attaches tags to the post', tag:'@FeignClient', node:'tag'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the post row', tag:'INSERT', node:'db'},
+      {ico:'💻', t:'Back to Browser', d:'New post returned as JSON, UI updates', tag:'201 Created', node:'browser'},
     ]},
   getPosts: {
     title:'Load the feed  ·  GET /api/posts',
     desc:'A read that enriches each post with its author before returning.',
     steps:[
-      {ico:'💻', t:'Browser (React)', d:'App loads → postAPI.getAll()', tag:'GET /api/posts'},
-      {ico:'🚪', t:'API Gateway :8080', d:'Routes to post-service', tag:'route'},
-      {ico:'📝', t:'Post Controller', d:'Handles GET /api/posts', tag:'@GetMapping'},
-      {ico:'⚙️', t:'Post Service', d:'Fetches posts, then looks up each author', tag:'logic'},
-      {ico:'🗄️', t:'PostgreSQL', d:'Repository reads all post rows', tag:'SELECT'},
-      {ico:'👤', t:'→ User Service :8081', d:'Feign call to embed the user in each post', tag:'@FeignClient'},
-      {ico:'💻', t:'Back to Browser', d:'List of posts (with authors) rendered', tag:'200 OK'},
+      {ico:'💻', t:'Browser (React)', d:'App loads → postAPI.getAll()', tag:'GET /api/posts', node:'browser'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to post-service', tag:'route', node:'gateway'},
+      {ico:'📝', t:'Post Controller', d:'Handles GET /api/posts', tag:'@GetMapping', node:'post'},
+      {ico:'⚙️', t:'Post Service', d:'Fetches posts, then looks up each author', tag:'logic', node:'post'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository reads all post rows', tag:'SELECT', node:'db'},
+      {ico:'👤', t:'→ User Service :8081', d:'Feign call to embed the user in each post', tag:'@FeignClient', node:'user'},
+      {ico:'💻', t:'Back to Browser', d:'List of posts (with authors) rendered', tag:'200 OK', node:'browser'},
     ]},
   createComment: {
     title:'Comment on a post  ·  POST /api/comments',
     desc:'Validates TWO things: the user is real AND the post is real.',
     steps:[
-      {ico:'💻', t:'Browser (React)', d:'CommentSection submits a comment', tag:'POST /api/comments'},
-      {ico:'🚪', t:'API Gateway :8080', d:'Routes to comment-service', tag:'route'},
-      {ico:'💬', t:'Comment Controller', d:'Receives the comment JSON', tag:'@RestController'},
-      {ico:'⚙️', t:'Comment Service', d:'"Is the user real? Is the post real?"', tag:'validation'},
-      {ico:'👤', t:'→ User Service :8081', d:'Feign: does this user exist?', tag:'@FeignClient'},
-      {ico:'📝', t:'→ Post Service :8082', d:'Feign: does this post exist?', tag:'@FeignClient'},
-      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the comment', tag:'INSERT'},
-      {ico:'💻', t:'Back to Browser', d:'Comment appears under the post', tag:'201 Created'},
+      {ico:'💻', t:'Browser (React)', d:'CommentSection submits a comment', tag:'POST /api/comments', node:'browser'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to comment-service', tag:'route', node:'gateway'},
+      {ico:'💬', t:'Comment Controller', d:'Receives the comment JSON', tag:'@RestController', node:'comment'},
+      {ico:'⚙️', t:'Comment Service', d:'"Is the user real? Is the post real?"', tag:'validation', node:'comment'},
+      {ico:'👤', t:'→ User Service :8081', d:'Feign: does this user exist?', tag:'@FeignClient', node:'user'},
+      {ico:'📝', t:'→ Post Service :8082', d:'Feign: does this post exist?', tag:'@FeignClient', node:'post'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the comment', tag:'INSERT', node:'db'},
+      {ico:'💻', t:'Back to Browser', d:'Comment appears under the post', tag:'201 Created', node:'browser'},
     ]},
   likePost: {
     title:'Like a post  ·  POST /api/likedislike',
     desc:'A toggle: same reaction removes it, opposite reaction switches it.',
     steps:[
-      {ico:'💻', t:'Browser (React)', d:'LikeDislikeButton clicked', tag:'POST /api/likedislike'},
-      {ico:'🚪', t:'API Gateway :8080', d:'Routes to like-dislike-service', tag:'route'},
-      {ico:'👍', t:'LikeDislike Controller', d:'Receives {userId, postId, type}', tag:'@RestController'},
-      {ico:'⚙️', t:'LikeDislike Service', d:'Applies toggle logic', tag:'business rules'},
-      {ico:'🗄️', t:'PostgreSQL', d:'Insert / update / delete the reaction', tag:'UPSERT'},
-      {ico:'💻', t:'Back to Browser', d:'Counts refresh instantly', tag:'200 OK'},
+      {ico:'💻', t:'Browser (React)', d:'LikeDislikeButton clicked', tag:'POST /api/likedislike', node:'browser'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to like-dislike-service', tag:'route', node:'gateway'},
+      {ico:'👍', t:'LikeDislike Controller', d:'Receives {userId, postId, type}', tag:'@RestController', node:'like'},
+      {ico:'⚙️', t:'LikeDislike Service', d:'Applies toggle logic', tag:'business rules', node:'like'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Insert / update / delete the reaction', tag:'UPSERT', node:'db'},
+      {ico:'💻', t:'Back to Browser', d:'Counts refresh instantly', tag:'200 OK', node:'browser'},
+    ]},
+  getPostCached: {
+    title:'Load a single post (cache hit)  ·  GET /api/posts/{id}',
+    desc:'Same endpoint as a normal "get post by ID" — but hitting Redis instead of Postgres. Notice how much shorter this is than getPosts.',
+    steps:[
+      {ico:'💻', t:'Browser (React)', d:'PostDetail calls postAPI.getById(id)', tag:'GET /api/posts/{id}', node:'browser'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to post-service', tag:'route', node:'gateway'},
+      {ico:'📝', t:'Post Controller', d:'Handles GET /api/posts/{id}', tag:'@GetMapping', node:'post'},
+      {ico:'🧊', t:'Cache HIT — Redis', d:'@Cacheable finds posts::{id} already in Redis. Returns instantly — no DB query, no Feign call to User Service.', tag:'@Cacheable hit', node:'redis'},
+      {ico:'💻', t:'Back to Browser', d:'Post returned as JSON, far faster than a cache miss', tag:'200 OK', node:'browser'},
+    ]},
+  updatePostInvalidate: {
+    title:'Update a post (cache invalidation)  ·  PUT /api/posts/{id}',
+    desc:'The immediate side of cache invalidation — eviction happens before the response even returns to the browser.',
+    steps:[
+      {ico:'💻', t:'Browser (React)', d:'PostForm submits an edit', tag:'PUT /api/posts/{id}', node:'browser'},
+      {ico:'🚪', t:'API Gateway :8080', d:'Routes to post-service', tag:'route', node:'gateway'},
+      {ico:'📝', t:'Post Controller', d:'Receives the updated post JSON', tag:'@PutMapping', node:'post'},
+      {ico:'⚙️', t:'Post Service', d:'Validates, updates the entity, saves', tag:'business rules', node:'post'},
+      {ico:'🗄️', t:'PostgreSQL', d:'Repository saves the updated row', tag:'UPDATE', node:'db'},
+      {ico:'📨', t:'Publishes to post-cache-invalidate', d:'Sends {"type":"POST","postId":N} and {"type":"USER","userId":N}', tag:'Redis pub/sub', node:'redis'},
+      {ico:'🧊', t:'Listener evicts', d:'posts::allPosts + posts::{id} + posts::byUser:{userId} — gone before the response even returns', tag:'immediate', node:'redis'},
+      {ico:'💻', t:'Back to Browser', d:'Updated post returned; cache is already fresh for the next read', tag:'200 OK', node:'browser'},
     ]},
 };
 
@@ -739,7 +953,7 @@ SERVICES.forEach(s=>{
 /* ---------------- Request simulator ---------------- */
 const simControls = document.getElementById('simControls');
 const flowKeys = Object.keys(FLOWS);
-const flowLabels = { createPost:'📝 Create Post', getPosts:'📰 Load Feed', createComment:'💬 Add Comment', likePost:'👍 Like Post' };
+const flowLabels = { createPost:'📝 Create Post', getPosts:'📰 Load Feed', createComment:'💬 Add Comment', likePost:'👍 Like Post', getPostCached:'⚡ Get Post (cached)', updatePostInvalidate:'🔄 Update Post (invalidate)' };
 let currentFlow = flowKeys[0];
 let playTimer = null;
 
@@ -752,42 +966,156 @@ flowKeys.forEach(k=>{
   simControls.appendChild(b);
 });
 
+/* ---- diagram topology: a real map of the system the flows travel across ---- */
+const FLOW_NODES = {
+  browser: {x:20,  y:20,  label:'Browser',      sub:'React app', ico:'💻'},
+  gateway: {x:20,  y:160, label:'API Gateway',  sub:':8080',     ico:'🚪'},
+  user:    {x:210, y:20,  label:'User',         sub:':8081',     ico:'👤'},
+  post:    {x:210, y:160, label:'Post',         sub:':8082',     ico:'📝'},
+  tag:     {x:400, y:20,  label:'Tag',          sub:':8085',     ico:'🏷️'},
+  comment: {x:20,  y:300, label:'Comment',      sub:':8083',     ico:'💬'},
+  like:    {x:210, y:300, label:'Like/Dislike', sub:':8084',     ico:'👍'},
+  db:      {x:400, y:160, label:'PostgreSQL',   sub:'own DB',    ico:'🗄️'},
+  redis:   {x:400, y:300, label:'Redis',        sub:'cache',     ico:'🧊'},
+};
+const FNW=130, FNH=48;
+function fCenter(id){ const n=FLOW_NODES[id]; return {x:n.x+FNW/2, y:n.y+FNH/2}; }
+function flowEdgeKey(a,b){ return [a,b].sort().join('|'); }
+function flowEdgeKind(a,b){
+  const s=[a,b];
+  if (s.includes('browser') && s.includes('gateway')) return 'http';
+  if (s.includes('browser')) return 'return';
+  if (s.includes('gateway')) return 'http';
+  if (s.includes('db')) return 'db';
+  if (s.includes('redis')) return 'cache';
+  return 'feign';
+}
+function buildFlowPairs(){
+  const map = new Map();
+  Object.values(FLOWS).forEach(f=>{
+    let prev=null;
+    f.steps.forEach(s=>{
+      if (prev && prev!==s.node){
+        const key = flowEdgeKey(prev, s.node);
+        if (!map.has(key)) map.set(key, [prev, s.node]);
+      }
+      prev = s.node;
+    });
+  });
+  return [...map.values()];
+}
+function currentFlowStepPairs(){
+  const f = FLOWS[currentFlow];
+  const out = [];
+  let prev = null;
+  f.steps.forEach(s=>{ if (prev && prev!==s.node) out.push(flowEdgeKey(prev, s.node)); prev = s.node; });
+  return out;
+}
+
+let FLOW_EDGE_ELS = {}, FLOW_NODE_ELS = {};
+function renderFlowDiagram(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const stage = document.getElementById('simStage');
+  stage.innerHTML = `
+    <svg class="flowsvg" viewBox="0 0 560 380" id="flowSvg" role="img" aria-label="Animated request flow diagram">
+      <g id="flowEdges"></g>
+      <g id="flowNodes"></g>
+      <circle id="simPacket" r="7"></circle>
+    </svg>
+    <div class="step-info" id="simStepInfo"></div>`;
+  const edgesG = document.getElementById('flowEdges');
+  const nodesG = document.getElementById('flowNodes');
+  FLOW_EDGE_ELS = {}; FLOW_NODE_ELS = {};
+  buildFlowPairs().forEach(([a,b],i)=>{
+    const p1=fCenter(a), p2=fCenter(b);
+    const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1;
+    const ux=dx/len, uy=dy/len;
+    const x1=p1.x+ux*(FNW/2)*0.7, y1=p1.y+uy*(FNH/2)*0.9;
+    const x2=p2.x-ux*(FNW/2)*0.7, y2=p2.y-uy*(FNH/2)*0.9;
+    const kind = flowEdgeKind(a,b);
+    const bow = (kind==='return' ? 46 + (i%3)*14 : 18 + (i%4)*8) * ((i%2===0)?1:-1);
+    const mx=(x1+x2)/2 - uy*bow, my=(y1+y2)/2 + ux*bow;
+    const path = document.createElementNS(svgNS,'path');
+    path.setAttribute('d', `M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+    path.setAttribute('class', `flow-edge ${kind}`);
+    edgesG.appendChild(path);
+    FLOW_EDGE_ELS[flowEdgeKey(a,b)] = path;
+  });
+  Object.entries(FLOW_NODES).forEach(([id,n])=>{
+    const g = document.createElementNS(svgNS,'g');
+    g.setAttribute('class','flow-node');
+    g.innerHTML = `<rect x="${n.x}" y="${n.y}" width="${FNW}" height="${FNH}" rx="12"/>
+      <text x="${n.x+14}" y="${n.y+20}">${n.ico} ${n.label}</text>
+      <text x="${n.x+14}" y="${n.y+36}" class="sub">${n.sub}</text>`;
+    nodesG.appendChild(g);
+    FLOW_NODE_ELS[id] = g;
+  });
+}
+
 function renderFlow(){
   const f = FLOWS[currentFlow];
   document.querySelectorAll('#simControls button').forEach(b=>b.classList.toggle('active', b.dataset.flow===currentFlow));
   document.getElementById('simTitle').textContent = f.title;
   document.getElementById('simDesc').textContent = f.desc;
-  const stage = document.getElementById('simStage');
-  stage.innerHTML = '';
-  f.steps.forEach((s,i)=>{
-    if (i>0){ const a=document.createElement('div'); a.className='sim-arrow'; a.dataset.arrow=i; a.textContent='↓'; stage.appendChild(a); }
-    const n = document.createElement('div');
-    n.className='sim-node'; n.dataset.step=i;
-    n.innerHTML = `<span class="n-ico">${s.ico}</span>
-      <div><div class="n-title">${s.t}</div><div class="n-desc">${s.d}</div></div>
-      <span class="n-tag">${s.tag}</span>`;
-    stage.appendChild(n);
+  const relevant = new Set(currentFlowStepPairs());
+  const involved = new Set(f.steps.map(s=>s.node));
+  Object.entries(FLOW_EDGE_ELS).forEach(([key,el])=>{
+    el.classList.remove('lit','visited');
+    el.classList.toggle('relevant', relevant.has(key));
+    el.classList.toggle('irrelevant', !relevant.has(key));
   });
-  document.getElementById('simStatus').textContent = '';
+  Object.entries(FLOW_NODE_ELS).forEach(([id,g])=>{
+    g.classList.remove('lit','visited');
+    g.classList.toggle('active-flow', involved.has(id));
+  });
+  const packet = document.getElementById('simPacket');
+  const c0 = fCenter(f.steps[0].node);
+  packet.style.transition = 'none';
+  packet.setAttribute('cx', c0.x); packet.setAttribute('cy', c0.y);
+  packet.style.opacity = 0;
+  requestAnimationFrame(()=>{ packet.style.transition = ''; });
+  document.getElementById('simStepInfo').innerHTML = '';
+  document.getElementById('simStatus').textContent = 'Press ▶ Play flow';
 }
+
 function playFlow(){
   clearTimeout(playTimer);
-  const nodes = [...document.querySelectorAll('#simStage .sim-node')];
-  const arrows = [...document.querySelectorAll('#simStage .sim-arrow')];
-  nodes.forEach(n=>n.classList.remove('lit')); arrows.forEach(a=>a.classList.remove('lit'));
+  const f = FLOWS[currentFlow];
+  Object.values(FLOW_EDGE_ELS).forEach(el=>el.classList.remove('lit'));
+  Object.values(FLOW_NODE_ELS).forEach(el=>el.classList.remove('lit','visited'));
+  const packet = document.getElementById('simPacket');
   const status = document.getElementById('simStatus');
-  let i=0;
+  const stepInfo = document.getElementById('simStepInfo');
+  packet.style.opacity = 1;
+  const HOP_MS = 700;
+  let i = 0;
   const step = ()=>{
-    if (i>0) arrows[i-1] && arrows[i-1].classList.add('lit');
-    if (i<nodes.length){
-      nodes[i].classList.add('lit');
-      status.textContent = `Step ${i+1} of ${nodes.length}`;
-      i++; playTimer = setTimeout(step, 750);
-    } else { status.textContent = '✅ Done — request complete'; }
+    if (i >= f.steps.length){ status.textContent = '✅ Done — request complete'; return; }
+    const s = f.steps[i];
+    const prev = i>0 ? f.steps[i-1] : null;
+    Object.values(FLOW_NODE_ELS).forEach(el=>{
+      if (el.classList.contains('lit')){ el.classList.remove('lit'); el.classList.add('visited'); }
+    });
+    FLOW_NODE_ELS[s.node].classList.add('lit');
+    packet.classList.remove('pulse');
+    if (prev && prev.node !== s.node){
+      const edgeEl = FLOW_EDGE_ELS[flowEdgeKey(prev.node, s.node)];
+      if (edgeEl){ edgeEl.classList.add('lit'); }
+      const c = fCenter(s.node);
+      packet.setAttribute('cx', c.x); packet.setAttribute('cy', c.y);
+    } else {
+      void packet.offsetWidth;
+      packet.classList.add('pulse');
+    }
+    status.textContent = `Step ${i+1} of ${f.steps.length}`;
+    stepInfo.innerHTML = `<span class="si-ico">${s.ico}</span><span class="si-t">${s.t}</span><span class="si-d">${s.d}</span><span class="si-tag">${s.tag}</span>`;
+    i++;
+    playTimer = setTimeout(step, HOP_MS);
   };
   step();
 }
 document.getElementById('simPlay').onclick = playFlow;
+renderFlowDiagram();
 renderFlow();
 
 /* ---------------- Service explorer ---------------- */
@@ -833,6 +1161,13 @@ function selectService(id){
       <div><div class="hint">Publishes:</div>${pub.length ? pub.map(([t,d])=>`<div class="ep-row"><code style="flex:0 0 auto">${t}</code><span class="desc">${d}</span></div>`).join('') : '<span class="muted">nothing</span>'}</div>
       <div><div class="hint">Listens to:</div>${sub.length ? sub.map(([t,d])=>`<div class="ep-row"><code style="flex:0 0 auto">${t}</code><span class="desc">${d}</span></div>`).join('') : '<span class="muted">nothing</span>'}</div>
     </div>` : '';
+  const cacheHtml = s.cache ? `
+    <h3 style="margin-top:18px">Redis cache <a href="#" onclick="goto('caching');return false;" class="hint">(full detail →)</a></h3>
+    <div class="hint" style="margin-bottom:6px;">Cache keys — TTL ${s.cache.ttl}:</div>
+    ${s.cache.keys.map(([k,trig,evict])=>`<div class="ep-row"><code style="flex:0 0 auto">${k}</code><span class="desc">${trig} · evicted: ${evict}</span></div>`).join('')}
+    <div class="hint" style="margin:10px 0 6px;">Pub/sub invalidation — channel <code>${s.cache.channel}</code>:</div>
+    ${s.cache.messages.map(([t,pub,eff])=>`<div class="ep-row"><span class="pill" style="flex:0 0 auto">${t}</span><span class="desc">published by ${pub} → ${eff}</span></div>`).join('')}
+  ` : '';
   svcDetail.innerHTML = `
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
       <span style="font-size:2rem">${s.ico}</span>
@@ -844,6 +1179,7 @@ function selectService(id){
       <div><div class="hint">Called by:</div><div style="margin-top:6px">${calledHtml}</div></div>
     </div>
     ${kafkaHtml}
+    ${cacheHtml}
     <h3 style="margin-top:18px">Endpoints</h3>${epRows(s.endpoints)}`;
 }
 selectService('user');
@@ -1170,10 +1506,30 @@ const ENV_VARS = [
   ['EUREKA_URI','http://eureka-server:8761/eureka/','Where to register / discover'],
   ['USER_SERVICE_URL, POST_SERVICE_URL, TAG_SERVICE_URL','lb://… (local)','Feign targets — direct HTTPS URLs in cloud'],
   ['KAFKA_BOOTSTRAP_SERVERS','localhost:9092','Where user/post/comment services find the Kafka broker (local/Docker only — not set in render.yaml yet)'],
+  ['REDIS_HOST','localhost','Where post-service finds Redis'],
+  ['REDIS_PORT','6379','Redis port'],
 ];
 document.getElementById('envTable').innerHTML =
   '<div class="ep-row" style="font-weight:700"><code style="flex:1.4">Variable</code><span class="desc">Default</span><span class="desc">Purpose</span></div>' +
   ENV_VARS.map(([v,d,p])=>`<div class="ep-row"><code style="flex:1.4">${v}</code><span class="desc">${d}</span><span class="desc">${p}</span></div>`).join('');
+
+/* ---------------- Caching & Tracing ---------------- */
+const postCache = SERVICES.find(s=>s.id==='post').cache;
+document.getElementById('cacheKeysTable').innerHTML =
+  '<div class="ep-row" style="font-weight:700"><code style="flex:1.4">Cache key</code><span class="desc">Populated by</span><span class="desc">Evicted when</span></div>' +
+  postCache.keys.map(([k,trig,evict])=>`<div class="ep-row"><code style="flex:1.4">${k}</code><span class="desc">${trig}</span><span class="desc">${evict}</span></div>`).join('');
+
+const rm = document.getElementById('redisMessages');
+postCache.messages.forEach(([type,pub,eff])=>{
+  const el = document.createElement('div'); el.className='card';
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span class="ico" style="margin:0">📨</span><span class="pill" style="border-color:var(--accent);color:var(--accent)">${type}</span>
+    </div>
+    <p class="muted" style="margin:6px 0"><b>Published by:</b> <code>${pub}</code></p>
+    <p class="muted" style="margin:6px 0"><b>Effect:</b> ${eff}</p>`;
+  rm.appendChild(el);
+});
 </script>
 </body>
 </html>
