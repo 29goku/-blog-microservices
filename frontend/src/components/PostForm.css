@@ -1,57 +1,43 @@
 .post-form {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  overflow: hidden;
-}
-
-.post-form::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
 }
 
 .post-form h2 {
-  margin: 0 0 24px 0;
+  margin: 0 0 var(--space-5) 0;
   color: var(--text-h);
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   font-weight: 700;
-  color: var(--text-h);
-  font-size: 12px;
+  color: var(--text-secondary);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-family: inherit;
   box-sizing: border-box;
   color: var(--text-h);
-  transition: all 0.2s ease;
   background: var(--bg);
 }
 
@@ -64,7 +50,6 @@
 .form-group textarea:hover,
 .form-group select:hover {
   border-color: var(--text-secondary);
-  background: var(--bg-secondary);
 }
 
 .form-group input:focus,
@@ -72,8 +57,7 @@
 .form-group select:focus {
   outline: none;
   border-color: var(--accent);
-  background: var(--bg);
-  box-shadow: 0 0 0 4px rgba(91, 91, 255, 0.1), 0 2px 8px rgba(91, 91, 255, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .form-group textarea {
@@ -83,36 +67,28 @@
 }
 
 .author-display {
-  padding: 12px 14px;
-  background: linear-gradient(135deg, rgba(91, 91, 255, 0.08) 0%, rgba(91, 91, 255, 0.04) 100%);
-  border-radius: 10px;
-  font-weight: 700;
-  color: var(--accent);
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--text);
   font-size: 13px;
-  border: 1px solid rgba(91, 91, 255, 0.2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  border: 1px solid var(--border);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  background: var(--accent);
   color: white;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(91, 91, 255, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 8px 20px rgba(91, 91, 255, 0.4);
-}
-
-.btn-primary:active:not(:disabled) {
-  opacity: 0.9;
+  background: var(--accent-hover);
 }
 
 .btn-primary:disabled {
@@ -121,12 +97,12 @@
 }
 
 .error {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
-  color: #dc2626;
-  padding: 12px 14px;
-  border-radius: 10px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: color-mix(in srgb, var(--error) 8%, var(--bg));
+  color: var(--error);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--error) 25%, transparent);
   font-size: 12px;
   font-weight: 600;
 }
@@ -134,7 +110,7 @@
 .tag-picker {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .tag-pill {
@@ -143,13 +119,12 @@
   gap: 6px;
   padding: 5px 12px;
   border-radius: 20px;
-  border: 1.5px solid var(--tag-color, var(--border));
+  border: 1px solid var(--tag-color, var(--border));
   background: transparent;
   color: var(--text-h);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
 .tag-pill:hover {
@@ -173,10 +148,10 @@
 
 @media (max-width: 768px) {
   .post-form {
-    padding: 20px;
+    padding: var(--space-4);
   }
 
   .post-form h2 {
-    font-size: 18px;
+    font-size: 16px;
   }
 }

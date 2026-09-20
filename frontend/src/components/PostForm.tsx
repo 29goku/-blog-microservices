@@ -13,7 +13,6 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
     userId: String(currentUserId),
     title: '',
     content: '',
-    tags: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,12 +51,12 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
         userId: Number(formData.userId),
         title: formData.title,
         content: formData.content,
-        tags: formData.tags,
+        tags: '',
       });
       await Promise.all(
         selectedTagIds.map(tagId => tagAPI.assignToPost(post.id, tagId).catch(() => {}))
       );
-      setFormData({ userId: '', title: '', content: '', tags: '' });
+      setFormData({ userId: '', title: '', content: '' });
       setSelectedTagIds([]);
       onPostCreated();
     } catch (err) {
@@ -131,14 +130,3 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
     </form>
   );
 }
-
-const style = document.createElement('style');
-style.textContent = `
-.author-display {
-  padding: 0.75rem;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  font-weight: 500;
-  color: #333;
-}
-`;

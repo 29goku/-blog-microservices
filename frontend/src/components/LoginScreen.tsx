@@ -62,7 +62,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
     return (
       <div className="login-screen">
         <div className="login-card create-user-wrapper">
-          <h1>📝 Blog Platform</h1>
+          <h1>Blog Platform</h1>
           <CreateUserForm
             onUserCreated={handleUserCreated}
             onCancel={() => setShowCreateForm(false)}
@@ -76,7 +76,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
   return (
     <div className="login-screen">
       <div className="login-card">
-        <h1>📝 Blog Platform</h1>
+        <h1>Blog Platform</h1>
         <p className="welcome-text">Welcome! Select a user to continue</p>
 
         <form onSubmit={handleLogin}>

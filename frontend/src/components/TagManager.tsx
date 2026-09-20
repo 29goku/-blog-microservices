@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { tagAPI, type Tag } from '../api/client';
+import { EditIcon, TrashIcon } from './icons';
+import ConfirmDialog from './ConfirmDialog';
 import './TagManager.css';
 
 export default function TagManager() {
@@ -11,6 +13,7 @@ export default function TagManager() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ name: '', description: '', color: '#3b82f6' });
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
   useEffect(() => {
     loadTags();
@@ -66,7 +69,7 @@ export default function TagManager() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this tag?')) return;
+    setConfirmDelete(null);
     try {
       await tagAPI.delete(id);
       await loadTags();
@@ -154,8 +157,8 @@ export default function TagManager() {
                       <strong>{tag.name}</strong>
                       {tag.description && <p>{tag.description}</p>}
                     </div>
-                    <button className="btn-edit" onClick={() => startEdit(tag)} title="Edit tag">✏️</button>
-                    <button className="btn-delete" onClick={() => handleDelete(tag.id)} title="Delete tag">🗑️</button>
+                    <button className="btn-edit" onClick={() => startEdit(tag)} title="Edit tag"><EditIcon /></button>
+                    <button className="btn-delete" onClick={() => setConfirmDelete(tag.id)} title="Delete tag"><TrashIcon /></button>
                   </>
                 )}
               </div>
@@ -163,6 +166,18 @@ export default function TagManager() {
           </div>
         )}
       </div>
+
+      {confirmDelete !== null && (
+        <ConfirmDialog
+          title="Delete Tag"
+          message="Are you sure you want to delete this tag? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          isDangerous
+          onConfirm={() => handleDelete(confirmDelete)}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
     </div>
   );
 }

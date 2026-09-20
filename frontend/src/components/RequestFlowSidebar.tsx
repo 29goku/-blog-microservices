@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getFilesForRequest, type FileInfo } from '../services/fileMapping';
+import { RefreshIcon, TrashIcon, CloseIcon } from './icons';
 import styles from './RequestFlowSidebar.module.css';
 
 interface RequestMetadata {
@@ -57,10 +58,10 @@ export function RequestFlowSidebar({ isVisible, onHide }: RequestFlowSidebarProp
   };
 
   const getServiceColor = (service: string) => {
-    if (service.includes('user')) return '#007bff';
-    if (service.includes('post')) return '#28a745';
-    if (service.includes('comment')) return '#ffc107';
-    return '#6c757d';
+    if (service.includes('user')) return 'var(--info)';
+    if (service.includes('post')) return 'var(--success)';
+    if (service.includes('comment')) return 'var(--warning)';
+    return 'var(--text-secondary)';
   };
 
   const handleClear = () => {
@@ -73,35 +74,35 @@ export function RequestFlowSidebar({ isVisible, onHide }: RequestFlowSidebarProp
   return (
     <div className={styles.sidebar}>
       <div className={styles.header}>
-        <span>📊 Live Requests</span>
+        <span>Live Requests</span>
         <div className={styles.controls}>
           <button
             className={styles.toggleBtn}
             onClick={() => setAutoRefresh(!autoRefresh)}
             title={autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled'}
           >
-            {autoRefresh ? '⚡' : '⏸'}
+            {autoRefresh ? 'On' : 'Off'}
           </button>
           <button
             className={styles.refreshBtn}
             onClick={fetchRequests}
             title="Refresh now"
           >
-            🔄
+            <RefreshIcon />
           </button>
           <button
             className={styles.clearBtn}
             onClick={handleClear}
             title="Clear all requests"
           >
-            🗑️
+            <TrashIcon />
           </button>
           <button
             className={styles.hideBtn}
             onClick={onHide}
             title="Hide requests panel"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
       </div>

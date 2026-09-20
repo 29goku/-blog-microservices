@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { userAPI } from '../api/client';
 import Dialog from './Dialog';
 import ConfirmDialog from './ConfirmDialog';
+import { TrashIcon, MailIcon, CalendarIcon } from './icons';
 import './UserList.css';
 
 interface UserListProps {
@@ -36,7 +37,7 @@ export default function UserList({
     <>
       <div className="user-list">
         {users.length === 0 ? (
-          <p className="empty">👥 No users yet. Create one!</p>
+          <p className="empty">No users yet. Create one!</p>
         ) : (
           <div className="user-grid">
             {users.map((user) => (
@@ -48,14 +49,14 @@ export default function UserList({
                     onClick={() => setConfirmDelete(user.id)}
                     title="Delete this user"
                   >
-                    🗑️
+                    <TrashIcon />
                   </button>
                 </div>
                 <p className="username">@{user.username}</p>
-                <p className="email">✉️ {user.email}</p>
+                <p className="email"><MailIcon /> {user.email}</p>
                 {user.bio && <p className="bio">{user.bio}</p>}
                 <p className="created">
-                  📅 Joined {new Date(user.createdAt).toLocaleDateString()}
+                  <CalendarIcon /> Joined {new Date(user.createdAt).toLocaleDateString()}
                 </p>
               </div>
             ))}

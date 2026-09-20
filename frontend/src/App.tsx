@@ -11,6 +11,25 @@ import './App.css';
 
 type View = 'posts' | 'users' | 'tags';
 
+const SunIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+  </svg>
+);
+
+const ActivityIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12h4l2 7 4-14 2 7h6" />
+  </svg>
+);
+
 function App() {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string | null>(null);
@@ -108,7 +127,7 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="header-left">
-          <h1>📝 Blog Platform</h1>
+          <h1>Blog Platform</h1>
           <nav className="nav">
             <button
               className={`nav-btn ${view === 'posts' ? 'active' : ''}`}
@@ -131,13 +150,13 @@ function App() {
           </nav>
         </div>
         <div className="header-right">
-          <span className="user-badge">👤 {currentUsername}</span>
+          <span className="user-badge">{currentUsername}</span>
           <button
             className="btn-theme-toggle"
             onClick={() => setDarkMode(d => !d)}
             title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            {darkMode ? '☀️' : '🌙'}
+            {darkMode ? <SunIcon /> : <MoonIcon />}
           </button>
           <button className="btn-logout" onClick={handleLogout}>
             Logout
@@ -193,7 +212,7 @@ function App() {
           onClick={() => setSidebarVisible(true)}
           title="Show requests panel"
         >
-          📊
+          <ActivityIcon />
         </button>
       )}
     </div>

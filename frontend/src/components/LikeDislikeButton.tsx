@@ -53,7 +53,7 @@ export default function LikeDislikeButton({ postId, userId }: LikeDislikeButtonP
           disabled={loading}
           title="Like this post"
         >
-          👍 {counts.likeCount}
+          Like · {counts.likeCount}
         </button>
         <button
           className={`btn-dislike ${userVote === 'DISLIKE' ? 'active' : ''}`}
@@ -61,7 +61,7 @@ export default function LikeDislikeButton({ postId, userId }: LikeDislikeButtonP
           disabled={loading}
           title="Dislike this post"
         >
-          👎 {counts.dislikeCount}
+          Dislike · {counts.dislikeCount}
         </button>
       </div>
       {dialog && <Dialog {...dialog} onClose={() => setDialog(null)} />}

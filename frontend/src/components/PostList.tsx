@@ -4,6 +4,7 @@ import CommentSection from './CommentSection';
 import LikeDislikeButton from './LikeDislikeButton';
 import Dialog from './Dialog';
 import ConfirmDialog from './ConfirmDialog';
+import { TrashIcon, CloseIcon, CommentIcon } from './icons';
 import './PostList.css';
 
 interface PostListProps {
@@ -115,7 +116,7 @@ export default function PostList({
     <>
       <div className="post-list">
         {posts.length === 0 ? (
-          <p className="empty">📝 No posts yet. Create one!</p>
+          <p className="empty">No posts yet. Create one!</p>
         ) : (
           posts.map((post) => (
             <article key={post.id} className="post-card">
@@ -126,7 +127,7 @@ export default function PostList({
                   onClick={() => setConfirmDelete(post.id)}
                   title="Delete this post"
                 >
-                  🗑️
+                  <TrashIcon />
                 </button>
               </div>
             <p className="post-meta">
@@ -148,6 +149,7 @@ export default function PostList({
                         className="tag-remove"
                         onClick={() => handleRemoveTag(post.id, tag.id)}
                         title="Remove tag"
+                        aria-label={`Remove tag ${tag.name}`}
                       >×</button>
                     </span>
                   ))
@@ -170,7 +172,9 @@ export default function PostList({
                       </button>
                     ))
                   }
-                  <button className="tag-add-cancel" onClick={() => setAddTagPostId(null)}>✕</button>
+                  <button className="tag-add-cancel" onClick={() => setAddTagPostId(null)}>
+                    <CloseIcon />
+                  </button>
                 </div>
               ) : (
                 <button className="btn-add-tag" onClick={() => setAddTagPostId(post.id)} title="Add tag">+ Tag</button>
@@ -182,11 +186,8 @@ export default function PostList({
                 className="btn-comments"
                 onClick={() => handleToggleComments(post.id)}
               >
-                💬 Comments ({comments[post.id]?.length || 0})
+                <CommentIcon /> Comments ({comments[post.id]?.length || 0})
               </button>
-              <span className="post-comment-count" title="commentCount from post-service, updated via Kafka">
-                🔄 Kafka commentCount: {post.commentCount ?? 0}
-              </span>
             </div>
               {expandedPostId === post.id && (
                 <CommentSection

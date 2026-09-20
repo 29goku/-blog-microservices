@@ -40,6 +40,9 @@ eureka:
       defaultZone: ${EUREKA_URI:http://eureka-server:8761/eureka/}
   instance:
     prefer-ip-address: true
+jwt:
+  secret: ${JWT_SECRET:dev-only-secret-change-me-please-32chars+}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
 
 management:
   tracing:

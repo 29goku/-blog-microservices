@@ -1,16 +1,18 @@
 package com.blog.comment.dto;
 
+import java.time.LocalDateTime;
+
 public class PostDTO {
   private Long id;
   private Long userId;
   private String title;
   private String content;
-  private Long createdAt;
+  private LocalDateTime createdAt;
 
   // Constructors
   public PostDTO() {}
 
-  public PostDTO(Long id, Long userId, String title, String content, Long createdAt) {
+  public PostDTO(Long id, Long userId, String title, String content, LocalDateTime createdAt) {
     this.id = id;
     this.userId = userId;
     this.title = title;
@@ -35,7 +37,7 @@ public class PostDTO {
     return content;
   }
 
-  public Long getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
@@ -56,7 +58,7 @@ public class PostDTO {
     this.content = content;
   }
 
-  public void setCreatedAt(Long createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,9 +17,11 @@ public class UserService {
 
   private final UserRepository userRepository;
   private static final Logger log = LoggerFactory.getLogger(UserService.class);
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public UserDTO createUser(UserDTO userDTO) {
@@ -35,7 +38,7 @@ public class UserService {
     User user = new User();
     user.setUsername(userDTO.getUsername());
     user.setEmail(userDTO.getEmail());
-    user.setPassword(userDTO.getPassword());
+    user.setPassword(passwordEncoder.encode( userDTO.getPassword()));
     user.setFullName(userDTO.getFullName());
     user.setBio(userDTO.getBio());
 

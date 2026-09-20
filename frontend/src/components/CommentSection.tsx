@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { commentAPI } from '../api/client';
 import Dialog from './Dialog';
 import ConfirmDialog from './ConfirmDialog';
+import { TrashIcon, UserIcon, SendIcon } from './icons';
 import './CommentSection.css';
 
 interface CommentSectionProps {
@@ -73,10 +74,10 @@ export default function CommentSection({
     <>
       <div className="comment-section">
         <form className="comment-form" onSubmit={handleSubmit}>
-          {error && <div className="error">❌ {error}</div>}
+          {error && <div className="error">{error}</div>}
           <div className="form-row">
             <span className="commenter-badge">
-              👤 {users.find((u) => u.id === currentUserId)?.username || `User ${currentUserId}`}
+              <UserIcon /> {users.find((u) => u.id === currentUserId)?.username || `User ${currentUserId}`}
             </span>
             <input
               type="text"
@@ -86,7 +87,7 @@ export default function CommentSection({
               className="comment-input"
             />
             <button type="submit" disabled={loading} className="btn-comment">
-              💬 Post
+              <SendIcon /> Post
             </button>
           </div>
         </form>
@@ -109,7 +110,7 @@ export default function CommentSection({
                   onClick={() => setConfirmDelete(comment.id)}
                   title="Delete this comment"
                 >
-                  🗑️ Delete
+                  <TrashIcon size={12} /> Delete
                 </button>
               </div>
             ))

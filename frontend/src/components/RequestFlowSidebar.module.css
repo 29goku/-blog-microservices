@@ -96,19 +96,19 @@
 .item:hover {
   background: var(--bg-secondary);
   border-color: var(--text-secondary);
-  box-shadow: 0 2px 8px rgba(91, 91, 255, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .item.success {
-  border-left: 3px solid #22c55e;
+  border-left: 3px solid var(--success);
 }
 
 .item.client-error {
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid var(--warning);
 }
 
 .item.server-error {
-  border-left: 3px solid #dc2626;
+  border-left: 3px solid var(--error);
 }
 
 .item.pending {
@@ -133,7 +133,7 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  background: var(--accent);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;
@@ -147,7 +147,7 @@
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  background: var(--accent);
   color: white;
   min-width: 44px;
   text-align: center;
@@ -262,24 +262,24 @@
 }
 
 .fileType.controller {
-  background: #3b82f6;
+  background: var(--info);
 }
 
 .fileType.service {
-  background: #10b981;
+  background: var(--success);
 }
 
 .fileType.repository {
-  background: #f59e0b;
-  color: white;
+  background: var(--warning);
+  color: var(--text-h);
 }
 
 .fileType.entity {
-  background: #06b6d4;
+  background: var(--cat-4);
 }
 
 .fileType.filter {
-  background: #ec4899;
+  background: var(--cat-5);
 }
 
 .file small {
