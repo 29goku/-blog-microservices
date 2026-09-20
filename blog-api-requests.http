@@ -351,3 +351,11 @@ GET {{postService}}/api/posts/3
 
 ### Get all posts after update (direct to post-service)
 GET {{postService}}/api/posts
+###
+POST {{userService}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "tester",
+  "password": "Password123!"
+}

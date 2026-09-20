@@ -94,6 +94,25 @@ export const userAPI = {
   },
 };
 
+// Auth API
+export interface LoginResult {
+  token: string;
+  userId: number;
+  username: string;
+}
+
+export const authAPI = {
+  login: async (username: string, password: string): Promise<LoginResult> => {
+    const res = await fetch(`${BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) throw new Error('Invalid username or password');
+    return res.json();
+  },
+};
+
 // Post API
 export const postAPI = {
   getAll: async (): Promise<Post[]> => {

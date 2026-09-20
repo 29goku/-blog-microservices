@@ -22,6 +22,13 @@ public class GlobalExceptionHandler {
         new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage(), LocalDateTime.now());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
+    log.error("Bad credentials: {}", ex.getMessage());
+    ErrorResponse error =
+        new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), LocalDateTime.now());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+  }
 
   @ExceptionHandler(UserAlreadyExistsException.class)
   public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(

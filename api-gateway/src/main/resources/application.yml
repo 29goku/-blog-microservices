@@ -16,7 +16,7 @@ spring:
         - id: user-service
           uri: ${USER_SERVICE_URL:lb://user-service}
           predicates:
-            - Path=/api/users/**
+            - Path=/api/users/**,/api/auth/**
         - id: post-service
           uri: ${POST_SERVICE_URL:lb://post-service}
           predicates:

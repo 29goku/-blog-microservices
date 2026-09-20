@@ -1,62 +1,44 @@
-import { useState, useEffect } from 'react';
-import { userAPI } from '../api/client';
+import { useState } from 'react';
+import { authAPI } from '../api/client';
 import CreateUserForm from './CreateUserForm';
 import './LoginScreen.css';
 
 interface LoginScreenProps {
-  onLogin: (userId: number, username: string) => void;
-}
-
-interface User {
-  id: number;
-  username: string;
+  onLogin: (userId: number, username: string, token: string) => void;
 }
 
 export default function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<number | ''>('');
-  const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [justCreated, setJustCreated] = useState(false);
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username || !password) {
+      setError('Please enter your username and password');
+      return;
+    }
 
-  const loadUsers = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const data = await userAPI.getAll();
-      setUsers(data);
-      if (data.length > 0) {
-        setSelectedUserId(data[0].id);
-      }
+      const { token, userId, username: loggedInUsername } = await authAPI.login(username, password);
+      onLogin(userId, loggedInUsername, token);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load users');
+      setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedUserId === '') {
-      setError('Please select a user');
-      return;
-    }
-    const user = users.find((u) => u.id === selectedUserId);
-    if (user) {
-      onLogin(user.id, user.username);
-    }
-  };
-
-  const handleUserCreated = async () => {
+  const handleUserCreated = () => {
     setShowCreateForm(false);
-    await loadUsers();
+    setJustCreated(true);
+    setPassword('');
   };
-
-  if (loading) {
-    return <div className="login-screen loading">Loading users...</div>;
-  }
 
   if (showCreateForm) {
     return (
@@ -77,52 +59,51 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
     <div className="login-screen">
       <div className="login-card">
         <h1>Blog Platform</h1>
-        <p className="welcome-text">Welcome! Select a user to continue</p>
+        <p className="welcome-text">Welcome back! Sign in to continue</p>
 
         <form onSubmit={handleLogin}>
           {error && <div className="error">{error}</div>}
+          {justCreated && !error && (
+            <div className="success">Account created — sign in below</div>
+          )}
 
           <div className="form-group">
-            <label htmlFor="user-select">Select User</label>
-            <select
-              id="user-select"
-              value={selectedUserId}
-              onChange={(e) => setSelectedUserId(Number(e.target.value))}
-            >
-              <option value="">-- Choose a user --</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.username}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="username"
+              autoComplete="username"
+              autoFocus
+            />
           </div>
 
-          <button type="submit" className="btn-login">
-            Login
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+              autoComplete="current-password"
+            />
+          </div>
+
+          <button type="submit" className="btn-login" disabled={loading}>
+            {loading ? 'Signing in...' : 'Login'}
           </button>
         </form>
 
-        {users.length === 0 ? (
-          <div className="no-users-section">
-            <p className="no-users">No users found yet.</p>
-            <button
-              type="button"
-              onClick={() => setShowCreateForm(true)}
-              className="btn-create-link"
-            >
-              Create one now →
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowCreateForm(true)}
-            className="btn-create-link"
-          >
-            Or create a new user
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setShowCreateForm(true)}
+          className="btn-create-link"
+        >
+          Or create a new user
+        </button>
       </div>
     </div>
   );

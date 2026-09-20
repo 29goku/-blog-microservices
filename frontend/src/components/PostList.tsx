@@ -4,7 +4,7 @@ import CommentSection from './CommentSection';
 import LikeDislikeButton from './LikeDislikeButton';
 import Dialog from './Dialog';
 import ConfirmDialog from './ConfirmDialog';
-import { TrashIcon, CloseIcon, CommentIcon } from './icons';
+import { TrashIcon, EditIcon, CloseIcon, CommentIcon } from './icons';
 import './PostList.css';
 
 interface PostListProps {
@@ -28,6 +28,11 @@ export default function PostList({
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [addTagPostId, setAddTagPostId] = useState<number | null>(null);
+  const [newTagName, setNewTagName] = useState('');
+  const [creatingTag, setCreatingTag] = useState(false);
+  const [editingPostId, setEditingPostId] = useState<number | null>(null);
+  const [editPostForm, setEditPostForm] = useState({ title: '', content: '' });
+  const [savingPost, setSavingPost] = useState(false);
 
   useEffect(() => {
     tagAPI.getAll().then(setAllTags).catch(() => {});
@@ -70,6 +75,40 @@ export default function PostList({
     }
   };
 
+  const startEditPost = (post: any) => {
+    setEditingPostId(post.id);
+    setEditPostForm({ title: post.title, content: post.content });
+  };
+
+  const cancelEditPost = () => {
+    setEditingPostId(null);
+    setEditPostForm({ title: '', content: '' });
+  };
+
+  const handleUpdatePost = async (postId: number) => {
+    if (!editPostForm.title.trim() || !editPostForm.content.trim()) {
+      setDialog({ title: 'Error', message: 'Title and content are required', type: 'error' });
+      return;
+    }
+    setSavingPost(true);
+    try {
+      await postAPI.update(postId, {
+        title: editPostForm.title,
+        content: editPostForm.content,
+      });
+      setEditingPostId(null);
+      onPostDeleted();
+    } catch (err) {
+      setDialog({
+        title: 'Update Failed',
+        message: err instanceof Error ? err.message : 'Failed to update post',
+        type: 'error',
+      });
+    } finally {
+      setSavingPost(false);
+    }
+  };
+
   const handleToggleComments = (postId: number) => {
     if (expandedPostId === postId) {
       setExpandedPostId(null);
@@ -97,6 +136,28 @@ export default function PostList({
     }
   };
 
+  const handleCreateAndAddTag = async (postId: number) => {
+    const name = newTagName.trim();
+    if (!name) return;
+    setCreatingTag(true);
+    try {
+      const created = await tagAPI.create({ name, description: '', color: '#3b82f6' });
+      await tagAPI.assignToPost(postId, created.id);
+      setAllTags((prev) => [...prev, created]);
+      setNewTagName('');
+      setAddTagPostId(null);
+      onPostDeleted();
+    } catch (err) {
+      setDialog({
+        title: 'Error',
+        message: err instanceof Error ? err.message : 'Failed to create and add tag',
+        type: 'error',
+      });
+    } finally {
+      setCreatingTag(false);
+    }
+  };
+
   const handleCommentAdded = async (postId: number) => {
     try {
       const updated = await commentAPI.getByPostId(postId);
@@ -121,20 +182,65 @@ export default function PostList({
           posts.map((post) => (
             <article key={post.id} className="post-card">
               <div className="post-header">
-                <h2>{post.title}</h2>
-                <button
-                  className="btn-delete"
-                  onClick={() => setConfirmDelete(post.id)}
-                  title="Delete this post"
-                >
-                  <TrashIcon />
-                </button>
+                {editingPostId === post.id ? (
+                  <input
+                    type="text"
+                    className="post-edit-title"
+                    value={editPostForm.title}
+                    onChange={(e) => setEditPostForm((f) => ({ ...f, title: e.target.value }))}
+                    placeholder="Title"
+                  />
+                ) : (
+                  <h2>{post.title}</h2>
+                )}
+                <div className="post-header-actions">
+                  {editingPostId !== post.id && (
+                    <button
+                      className="btn-edit"
+                      onClick={() => startEditPost(post)}
+                      title="Edit this post"
+                    >
+                      <EditIcon />
+                    </button>
+                  )}
+                  <button
+                    className="btn-delete"
+                    onClick={() => setConfirmDelete(post.id)}
+                    title="Delete this post"
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
               </div>
             <p className="post-meta">
               by <strong>{getUserName(post.userId)}</strong> •{' '}
               {new Date(post.createdAt).toLocaleDateString()}
             </p>
-            <p className="post-content">{post.content}</p>
+            {editingPostId === post.id ? (
+              <div className="post-edit-form">
+                <textarea
+                  className="post-edit-content"
+                  value={editPostForm.content}
+                  onChange={(e) => setEditPostForm((f) => ({ ...f, content: e.target.value }))}
+                  placeholder="Content"
+                  rows={4}
+                />
+                <div className="post-edit-actions">
+                  <button
+                    className="btn-primary btn-sm"
+                    onClick={() => handleUpdatePost(post.id)}
+                    disabled={savingPost}
+                  >
+                    {savingPost ? 'Saving...' : 'Save'}
+                  </button>
+                  <button className="btn-cancel" onClick={cancelEditPost}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="post-content">{post.content}</p>
+            )}
             <div className="post-tags">
               {post.tagList?.length > 0
                 ? post.tagList.map((tag: { id: number; name: string; color: string }) => (
@@ -172,7 +278,35 @@ export default function PostList({
                       </button>
                     ))
                   }
-                  <button className="tag-add-cancel" onClick={() => setAddTagPostId(null)}>
+                  <form
+                    className="tag-create-inline"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleCreateAndAddTag(post.id);
+                    }}
+                  >
+                    <input
+                      type="text"
+                      value={newTagName}
+                      onChange={(e) => setNewTagName(e.target.value)}
+                      placeholder="New tag name"
+                      className="tag-create-input"
+                    />
+                    <button
+                      type="submit"
+                      className="tag-create-submit"
+                      disabled={creatingTag || !newTagName.trim()}
+                    >
+                      {creatingTag ? '...' : '+ Create & Add'}
+                    </button>
+                  </form>
+                  <button
+                    className="tag-add-cancel"
+                    onClick={() => {
+                      setAddTagPostId(null);
+                      setNewTagName('');
+                    }}
+                  >
                     <CloseIcon />
                   </button>
                 </div>

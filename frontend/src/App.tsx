@@ -31,8 +31,13 @@ const ActivityIcon = () => (
 );
 
 function App() {
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(() => {
+    const saved = localStorage.getItem('authUserId');
+    return saved ? Number(saved) : null;
+  });
+  const [currentUsername, setCurrentUsername] = useState<string | null>(() =>
+    localStorage.getItem('authUsername')
+  );
   const [view, setView] = useState<View>('posts');
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
@@ -109,12 +114,18 @@ function App() {
     await loadUsers();
   };
 
-  const handleLogin = (userId: number, username: string) => {
+  const handleLogin = (userId: number, username: string, token: string) => {
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('authUserId', String(userId));
+    localStorage.setItem('authUsername', username);
     setCurrentUserId(userId);
     setCurrentUsername(username);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUserId');
+    localStorage.removeItem('authUsername');
     setCurrentUserId(null);
     setCurrentUsername(null);
   };
