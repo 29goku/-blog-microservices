@@ -87,4 +87,5 @@ public class UserDTO {
   public void setPostCount(Integer postCount) {
     this.postCount = postCount;
   }
+
   }
