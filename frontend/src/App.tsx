@@ -56,8 +56,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadPosts();
-    loadUsers();
+    loadPosts().then(r => r);
+    loadUsers().then(r => r);
   }, []);
 
   // Postgres doesn't guarantee row order, and an UPDATE (e.g. commentCount via

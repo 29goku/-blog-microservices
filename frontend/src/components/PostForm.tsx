@@ -10,7 +10,6 @@ interface PostFormProps {
 
 export default function PostForm({ onPostCreated, users, currentUserId }: PostFormProps) {
   const [formData, setFormData] = useState({
-    userId: String(currentUserId),
     title: '',
     content: '',
   });
@@ -38,7 +37,7 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.userId || !formData.title || !formData.content) {
+    if (!currentUserId || !formData.title || !formData.content) {
       setError('All fields are required');
       return;
     }
@@ -48,7 +47,7 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
 
     try {
       const post = await postAPI.create({
-        userId: Number(formData.userId),
+        userId: currentUserId,
         title: formData.title,
         content: formData.content,
         tags: '',
@@ -56,7 +55,7 @@ export default function PostForm({ onPostCreated, users, currentUserId }: PostFo
       await Promise.all(
         selectedTagIds.map(tagId => tagAPI.assignToPost(post.id, tagId).catch(() => {}))
       );
-      setFormData({ userId: '', title: '', content: '' });
+      setFormData({ title: '', content: '' });
       setSelectedTagIds([]);
       onPostCreated();
     } catch (err) {
