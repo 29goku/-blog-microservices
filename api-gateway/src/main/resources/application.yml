@@ -84,5 +84,6 @@ management:
       enabled: true
     discoveryClient:
       enabled: false
-
-
+jwt:
+  secret: ${JWT_SECRET:dev-only-secret-change-me-please-32chars+}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}

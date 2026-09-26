@@ -454,6 +454,11 @@ See **DEVELOPMENT.md** for more development workflows.
 - Add test coverage for existing services (user, post, comment, tag, like-dislike) before adding tests for new features
 - To be scoped and added later
 
+**Phase 11 - Centralized Log Search (Future):**
+- Elasticsearch + Kibana for centralized, searchable container/application logs, likely via Filebeat's Docker autodiscover shipping into Elasticsearch
+- Complements the existing Tempo (traces) + Prometheus (metrics) + Grafana pipeline, which currently has no aggregated log view (only per-container `docker logs`)
+- Note: needs its own memory budget (Elasticsearch is JVM-heavy) — size this against the rest of the local stack before enabling, since the stack has already hit host memory pressure once
+
 ---
 
 ## Repository Statistics
