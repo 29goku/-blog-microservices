@@ -444,6 +444,16 @@ See **DEVELOPMENT.md** for more development workflows.
 - StatefulSets, ConfigMaps, Secrets
 - Helm charts for packaging
 
+**Phase 9 - File Handling (Future):**
+- File/image upload support (e.g. post attachments, user avatars)
+- Storage backend (local disk vs. S3-compatible object storage) still to be decided
+- Upload endpoint(s), size/type validation, and frontend upload UI
+
+**Phase 10 - Automated Test Coverage (Future):**
+- No unit or integration tests currently exist in any module
+- Add test coverage for existing services (user, post, comment, tag, like-dislike) before adding tests for new features
+- To be scoped and added later
+
 ---
 
 ## Repository Statistics

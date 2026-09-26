@@ -32,7 +32,7 @@ public class AuthController {
     if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
       throw new BadCredentialsException("Invalid username or password");
     }
-    String token = jwtService.generateToken(user.getId(), user.getUsername());
+  String token = jwtService.generateToken(user.getId(), user.getUsername());
     return ResponseEntity.ok(new LoginResponse(token, user.getId(), user.getUsername()));
   }
 }
