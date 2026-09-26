@@ -335,12 +335,30 @@
       the affected cache entries are evicted <b>immediately</b> — the 60s TTL is only the fallback if a publish is
       missed. <a href="#" onclick="goto('caching');return false;">Full detail →</a></p>
       <span class="pill" style="border-color:var(--green);color:var(--green)">done</span></div>
-    <div class="card"><span class="ico">🔭</span><h3>Distributed Tracing — planned, not built yet</h3>
-      <p class="muted">Next roadmap item: an OpenTelemetry Collector in front of every service, exporting to
-      <b>Grafana Tempo</b>, visualised in <b>Grafana</b>. Would stitch one trace ID across the gateway → Feign
-      calls → Kafka hops. <b>Not implemented</b> in code yet — design only.
+    <div class="card"><span class="ico">🔭</span><h3>Distributed Tracing &amp; Metrics — built &amp; verified</h3>
+      <p class="muted">Every service pushes OTLP traces to an <b>OTel Collector</b>, which tail-samples (100% errors,
+      100% slow &gt;500ms, 5% of everything else) and forwards to <b>Grafana Tempo</b>. <b>Prometheus</b> scrapes
+      <code>/actuator/prometheus</code> on all 6 services. Both are wired as <b>Grafana</b> datasources — traces in
+      Explore, a JVM/Micrometer dashboard with live metrics. Verified end-to-end: real traces with correct spans
+      across all 6 services, all 6 Prometheus targets <code>UP</code>.
       <a href="#" onclick="goto('caching');return false;">Full detail →</a></p>
-      <span class="pill">future</span></div>
+      <span class="pill" style="border-color:var(--green);color:var(--green)">done</span></div>
+  </div>
+
+  <h2>Login &amp; JWT — issued, not yet enforced</h2>
+  <div class="grid cols-2">
+    <div class="card"><span class="ico">🔑</span><h3>POST /api/auth/login</h3>
+      <p class="muted">User Service checks the username/password (BCrypt-hashed at registration) and, on success,
+      issues a signed JWT (HS256, 1hr default expiry) plus <code>{token, userId, username}</code>. Wrong
+      credentials → <code>401</code>. The frontend stores the token in <code>localStorage</code> and clears the
+      session + reloads on any later <code>401</code>.</p>
+      <span class="pill" style="border-color:var(--amber);color:var(--amber)">partial</span></div>
+    <div class="card"><span class="ico">⚠️</span><h3>Honest gap: nothing checks the token yet</h3>
+      <p class="muted"><code>SecurityFilterConfig</code> is wired up but currently
+      <code>authorizeHttpRequests(auth -&gt; auth.anyRequest().permitAll())</code> — every endpoint is open
+      regardless of whether a valid JWT is presented. The token is real and correctly signed; it's just not
+      required or validated by any filter yet. Flagging this rather than implying auth is enforced.</p>
+      <span class="pill" style="border-color:var(--amber);color:var(--amber)">gap</span></div>
   </div>
 
   <h2>Why build it this way?</h2>
@@ -514,21 +532,18 @@
 
 <!-- ==================== CACHING & TRACING ==================== -->
 <section class="view" id="caching">
-  <div class="eyebrow">One verified, one planned</div>
+  <div class="eyebrow">Both verified end-to-end</div>
   <h1>Caching &amp; Distributed Tracing</h1>
-  <p class="lead">Redis caching in Post Service is <b>built, deployed, and verified end-to-end</b> — including two
-    real bugs found and fixed during the verification pass. Distributed tracing is <b>designed but not
-    implemented</b> yet — included here as the next roadmap step, presented honestly as a plan, not a finished
-    feature.</p>
+  <p class="lead">Redis caching in Post Service and the OTel Collector → Tempo/Prometheus/Grafana observability
+    stack are <b>both built, deployed, and verified end-to-end</b> — including real bugs found and fixed during
+    each verification pass.</p>
 
   <div class="card" style="margin-bottom:24px;">
     <div class="hint" style="margin-bottom:8px;">Jump to:</div>
     <ul style="margin:0;padding-left:20px;line-height:1.9;">
       <li><a href="#redis-detail">Redis: read-through cache</a></li>
       <li><a href="#redis-pubsub">Redis: pub/sub invalidation</a></li>
-      <li><a href="#redis-bugs">Bugs found &amp; fixed</a></li>
-      <li><a href="#tracing-detail">Distributed Tracing (planned)</a></li>
-      <li><a href="#caching-gaps">Known gaps found during this audit</a></li>
+      <li><a href="#tracing-detail">Distributed Tracing &amp; Metrics (verified)</a></li>
     </ul>
   </div>
 
@@ -553,101 +568,57 @@
     but through Redis, so eviction logic stays out of the write path itself.</p>
   <div class="grid cols-3" id="redisMessages"></div>
 
-  <h2 id="redis-bugs">Bugs found &amp; fixed</h2>
-  <p class="muted">Two real issues surfaced while verifying this feature end-to-end — worth showing, not hiding.</p>
-  <div class="grid cols-2">
-    <div class="card" style="border-color:var(--amber)">
-      <span class="ico">⚠️</span><h3>TTL doc/code mismatch</h3>
-      <p class="muted">Design docs and the README said <b>60s</b> TTL. The actual code originally had
-        <code>Duration.ofMinutes(10)</code> — a silent <b>10× longer</b> staleness window than documented.
-        <b>Fixed</b> to match the documented 60s.</p>
-      <span class="pill" style="border-color:var(--green);color:var(--green)">fixed</span>
-    </div>
-    <div class="card" style="border-color:var(--amber)">
-      <span class="ico">⚠️</span><h3>Cache key collision risk</h3>
-      <p class="muted"><code>getPostsByUserId</code> originally used <code>@Cacheable(value="posts", key="#userId")</code>
-        — a bare numeric key in the <b>same cache region</b> as <code>getPostById</code>'s <code>key="#id"</code>.
-        If a <code>userId</code> and <code>postId</code> were ever the same number (e.g. both <code>1</code>), a
-        <code>List&lt;PostDTO&gt;</code> and a <code>PostDTO</code> could collide under one Redis key and risk a
-        deserialization exception. <b>Fixed</b> by prefixing the key: <code>key="'byUser:' + #userId"</code>, and
-        extending pub/sub invalidation to cover it — the <code>USER</code> message type above didn't originally
-        exist; it was added specifically to fix this.</p>
-      <span class="pill" style="border-color:var(--green);color:var(--green)">fixed</span>
-    </div>
-  </div>
-  <div class="hint" style="margin-top:10px;">Verified manually: curl requests + <code>docker logs</code> showing
-    the eviction firing immediately + RedisInsight showing the actual keys and TTLs. No automated test suite for
-    this yet — same known gap as the rest of the project.</div>
-
-  <h2 id="tracing-detail">Distributed Tracing <span class="pill">future</span></h2>
-  <p class="muted">Not implemented in code — design only. The next roadmap item after Redis, and (per the
-    project's own README / delivery summary) the step before Prometheus + Grafana metrics.</p>
+  <h2 id="tracing-detail">Distributed Tracing &amp; Metrics <span class="pill" style="border-color:var(--green);color:var(--green)">done</span></h2>
+  <p class="muted">Built and verified — every one of the 6 services (gateway + 5 domain services) exports traces
+    and metrics through the same pipeline.</p>
   <div class="card">
     <pre class="code">[api-gateway, post-service, user-service, tag-service, comment-service, like-dislike-service]
-        │  (OTLP gRPC, port 4317)
+        │  (OTLP, ports 4317 gRPC / 4318 HTTP)
         ▼
-  [OTel Collector] ──receives, batches, samples──▶ [Grafana Tempo] ◀── queried by ── [Grafana]
-                                                          │
-                                                  (object storage: S3 or local disk)</pre>
+  [OTel Collector] ──tail_sampling + batch──▶ [Grafana Tempo] ◀── queried by ── [Grafana]
+        │                                                              ▲
+        │  (each service also exposes /actuator/prometheus)           │
+        ▼                                                              │
+  [Prometheus] ───────────────────────── scraped every 5s ─────────────┘</pre>
   </div>
   <div class="grid cols-2" style="margin-top:14px;">
     <div class="card"><h3>OTel Collector</h3><p class="muted">Single ingestion point — every service pushes traces
-      via OTLP instead of talking to Tempo directly. Config would have receivers (OTLP), processors
-      (<code>batch</code> + <code>tail_sampling</code> — e.g. keep 100% of error traces, 100% of slow &gt;500ms
-      traces, 5% sample of everything else), and exporters (to Tempo via OTLP).</p></div>
-    <div class="card"><h3>Grafana Tempo</h3><p class="muted">Trace storage. Local disk backend to start (swappable
-      to S3/GCS later without an architecture change). Retention e.g. 14 days
-      (<code>block_retention: 336h</code>).</p></div>
-    <div class="card"><h3>Grafana</h3><p class="muted">Queries Tempo. Chosen over Jaeger specifically because it
-      can later correlate traces with Prometheus metrics and logs in one UI — Prometheus/Grafana is already this
-      project's own next-next roadmap item after tracing.</p></div>
-    <div class="card"><h3>Per-service work needed</h3><p class="muted">Add the Micrometer OTel bridge + OTLP
-      exporter dependency, point it at the Collector's OTLP endpoint (not Tempo directly), and keep
-      <code>management.tracing.sampling.probability: 1.0</code> per-service — the Collector's tail_sampling makes
-      the real sampling decision, not each service.</p></div>
+      via OTLP (<code>management.tracing.sampling.probability: 1.0</code> per-service, so the Collector makes the
+      real sampling call, not each app). <code>otel-collector-config.yaml</code> tail-samples: keep 100% of error
+      traces, 100% of traces &gt;500ms, and a 5% probabilistic sample of everything else — then batches and exports
+      to Tempo via OTLP gRPC.</p></div>
+    <div class="card"><h3>Grafana Tempo</h3><p class="muted">Trace storage, local-disk backend
+      (<code>storage.trace.backend: local</code>, <code>/tmp/tempo/traces</code>). Verified: real traces for every
+      service show up in Grafana Explore with correct <code>service.name</code>, span names, durations, and HTTP
+      attributes.</p></div>
+    <div class="card"><h3>Prometheus + Grafana dashboard</h3><p class="muted"><code>prometheus.yml</code> scrapes
+      <code>/actuator/prometheus</code> on all 6 services every 5s. Verified: all 6 targets show
+      <code>State: UP</code>. A JVM/Micrometer community dashboard (id <code>4701</code>) is provisioned into
+      Grafana's <b>Services</b> folder — live heap, GC, thread, and HTTP request-rate/latency panels per
+      service.</p></div>
+    <div class="card"><h3>Trace ↔ metrics correlation</h3><p class="muted">Grafana's Tempo datasource is configured
+      with <code>tracesToMetrics</code> pointing at the Prometheus datasource — from any trace span, a
+      "Request Rate" link jumps straight to that service's Prometheus query. Verified working from a real trace.</p></div>
   </div>
   <div class="concept-note" style="margin-top:14px;">
-    ⚠️ <b>Highest-risk part to verify once built:</b> the trace must span <b>both sides</b> of the async
-    <code>post-created</code> Kafka hop — a producer span in Post Service and a consumer span in User Service —
-    under <b>one trace ID</b>. Don't assume Spring's auto-instrumentation "just works" across a Kafka hop under
-    load; test it explicitly.
+    💡 <b>Chose Grafana over Jaeger/Zipkin</b> specifically for this trace↔metrics correlation in one UI — see
+    "Alternatives considered" below, which was the original reasoning before this was built.
   </div>
-  <h3 style="margin-top:22px">Alternatives considered</h3>
+  <div class="concept-note" style="margin-top:10px;">
+    ⚠️ <b>Not yet verified:</b> everything above was confirmed for HTTP request traces (gateway → service, Feign
+    calls). Whether a trace correctly spans <b>both sides</b> of the async <code>post-created</code>/
+    <code>comment-created</code> Kafka hops — producer span in one service, consumer span in another, under one
+    trace ID — has <b>not</b> been specifically tested yet. Don't assume it "just works"; verify explicitly before
+    relying on it.
+  </div>
+  <h3 style="margin-top:22px">Alternatives considered (from the original design)</h3>
   <div class="grid cols-3">
-    <div class="card"><h3>Zipkin</h3><p class="muted">Simpler, but PoC-only — dropped because this project is
-      moving straight into a production-facing setup, not staying a throwaway demo.</p></div>
+    <div class="card"><h3>Zipkin</h3><p class="muted">Simpler, but PoC-only — dropped in favor of a
+      production-facing setup.</p></div>
     <div class="card"><h3>Jaeger</h3><p class="muted">Good UI, but no built-in Prometheus/Grafana correlation —
-      would mean a second, disconnected observability UI later.</p></div>
-    <div class="card"><h3>Hosted vendor (Datadog / Honeycomb)</h3><p class="muted">OTel Collector + a hosted
-      backend — dropped for now: this is a local-first Docker Compose project, and the cost/infra overhead isn't
-      justified yet.</p></div>
-  </div>
-
-  <h2 id="caching-gaps">Known gaps found during this audit</h2>
-  <p class="muted">Found while verifying Redis end-to-end — not complaints about unrelated code, just things
-    worth fixing before this goes further toward production.</p>
-  <div class="grid cols-2">
-    <div class="card"><span class="ico">🌐</span><h3>Gateway CORS configured in two places</h3>
-      <p class="muted"><code>application.yml</code> has a global CORS block allowing
-        <code>allowedOriginPatterns: "*"</code>, but <code>GatewayConfig.java</code> <b>also</b> defines a
-        <code>CorsWebFilter</code> bean restricting to <code>http://localhost:*</code> and
-        <code>https://*.vercel.app</code>. <b>Open question:</b> which one actually wins at runtime isn't clear
-        without testing — flagging it rather than guessing.</p></div>
-    <div class="card"><span class="ico">🏷️</span><h3>Tag traffic shows as "unknown"</h3>
-      <p class="muted">The gateway's <code>RequestTrackingFilter.resolveTargetService()</code> only recognizes
-        users/posts/comments/likedislike path prefixes. <code>/api/tags/**</code> requests fall through and show
-        up as <code>unknown</code> in the live tracking dashboard.</p></div>
-    <div class="card"><span class="ico">🔗</span><h3>Frontend tracking sidebar hardcodes localhost</h3>
-      <p class="muted"><code>RequestFlowDashboard.tsx</code> hardcodes <code>http://localhost:8080</code> for
-        polling <code>/api/tracking/requests</code>, instead of the same <code>VITE_API_URL</code> env var the
-        rest of the frontend uses. The live request-tracking sidebar silently doesn't work against a deployed
-        (non-localhost) gateway.</p></div>
-    <div class="card"><span class="ico">🗄️</span><h3>"Database per service" is table-level, not physical, by default</h3>
-      <p class="muted">All services default to the same <code>DB_NAME=main_db</code>. The isolation story in the
-        Overview tab is about each service owning its <b>tables</b> within one shared Postgres database by
-        default — not physically separate databases — unless <code>DB_NAME</code> is overridden per deployment.
-        Worth being precise about that distinction rather than letting the diagram imply full physical
-        isolation.</p></div>
+      would've meant a second, disconnected observability UI.</p></div>
+    <div class="card"><h3>Hosted vendor (Datadog / Honeycomb)</h3><p class="muted">Dropped for a local-first Docker
+      Compose project — the cost/infra overhead wasn't justified.</p></div>
   </div>
 </section>
 
@@ -720,6 +691,7 @@ const SERVICES = [
       ['GET','/api/users/username/{username}','Get user by username'],
       ['PUT','/api/users/{id}','Update user'],
       ['DELETE','/api/users/{id}','Delete user'],
+      ['POST','/api/auth/login','Login — verifies BCrypt password, issues a signed JWT (not yet enforced on any endpoint)'],
     ]},
   { id:'post', name:'Post Service', port:8082, ico:'📝', color:'var(--green)',
     tag:'/api/posts',
