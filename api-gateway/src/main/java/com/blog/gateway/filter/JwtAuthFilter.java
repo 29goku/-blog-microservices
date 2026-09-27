@@ -57,6 +57,9 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<Object> {
         if (path.startsWith("/api/auth/") || path.startsWith(("/actuator"))) {
             return true;
         }
+        if (method == HttpMethod.POST && path.equals("/api/users")) {
+            return true; // signup must be reachable without a token
+        }
         boolean isGet = method == HttpMethod.GET;
         return isGet && (path.startsWith("/api/posts") || path.startsWith("/api/tags") || path.startsWith("/api/comments") || path.startsWith("/api/likedislike"));
 

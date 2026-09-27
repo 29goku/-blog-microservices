@@ -29,6 +29,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      JWT_SECRET: change-this-to-a-real-32+char-secret
       EUREKA_URI: http://eureka-server:8761/eureka/
     depends_on:
       eureka-server:
@@ -38,9 +39,8 @@ services:
     build:
       context: .
       dockerfile: user-service/Dockerfile
-    ports:
-      - "8081:8081"
     environment:
+      JWT_SECRET: change-this-to-a-real-32+char-secret
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: main_db
@@ -60,9 +60,8 @@ services:
     build:
       context: .
       dockerfile: post-service/Dockerfile
-    ports:
-      - "8082:8082"
     environment:
+      JWT_SECRET: change-this-to-a-real-32+char-secret
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: main_db
@@ -86,9 +85,8 @@ services:
     build:
       context: .
       dockerfile: comment-service/Dockerfile
-    ports:
-      - "8083:8083"
     environment:
+      JWT_SECRET: change-this-to-a-real-32+char-secret
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: main_db
@@ -108,9 +106,8 @@ services:
     build:
       context: .
       dockerfile: like-dislike-service/Dockerfile
-    ports:
-      - "8084:8084"
     environment:
+      JWT_SECRET: change-this-to-a-real-32+char-secret
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: main_db
@@ -127,9 +124,8 @@ services:
     build:
       context: .
       dockerfile: tag-service/Dockerfile
-    ports:
-      - "8085:8085"
     environment:
+      JWT_SECRET: change-this-to-a-real-32+char-secret
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: main_db
