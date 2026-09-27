@@ -17,7 +17,7 @@ public class JwtVerifier {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static Claims verify(String token){
+    public Claims verify(String token){
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }
 

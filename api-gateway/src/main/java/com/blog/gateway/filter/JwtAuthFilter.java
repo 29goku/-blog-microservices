@@ -17,10 +17,10 @@ import reactor.core.publisher.Mono;
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<Object> {
 
-    private final PriorityOrdered priorityOrdered;
+    private final JwtVerifier jwtVerifier;
 
-    public JwtAuthFilter(PriorityOrdered priorityOrdered) {
-        this.priorityOrdered = priorityOrdered;
+    public JwtAuthFilter(JwtVerifier jwtVerifier) {
+        this.jwtVerifier = jwtVerifier;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<Object> {
                 return unautorized(exchange);
             }
             try {
-                Claims claims = JwtVerifier.verify(authHeader.substring(7));
+                Claims claims = jwtVerifier.verify(authHeader.substring(7));
                 ServerHttpRequest mutatedRequest = request.mutate()
                         .header("X-User-Id", claims.get("userId").toString())
                         .header("X-Username", claims.getSubject())
