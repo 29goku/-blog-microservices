@@ -54,7 +54,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<Object> {
     }
 
     private boolean isPublic(String path, HttpMethod method) {
-        if (path.startsWith("/api/auth/") || path.startsWith(("/actuators"))) {
+        if (path.startsWith("/api/auth/") || path.startsWith(("/actuator"))) {
             return true;
         }
         boolean isGet = method == HttpMethod.GET;
