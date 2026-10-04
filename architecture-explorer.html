@@ -164,13 +164,16 @@
   .flow-edge.http { stroke: var(--muted); }
   .flow-edge.lit { opacity:1 !important; stroke-width:3; }
   .flow-edge.visited { opacity:.75; }
-  #simPacket {
+  #simPacket, #k8sPacket {
     fill: var(--accent-2); opacity:0;
     transition: cx .62s cubic-bezier(.4,0,.2,1), cy .62s cubic-bezier(.4,0,.2,1), opacity .25s;
     filter: drop-shadow(0 0 8px var(--accent-2));
   }
   @keyframes flowPulse { 0%{ r:7; } 45%{ r:12; } 100%{ r:7; } }
-  #simPacket.pulse { animation: flowPulse .6s ease; }
+  #simPacket.pulse, #k8sPacket.pulse { animation: flowPulse .6s ease; }
+  .dep-node.lit rect { stroke: var(--accent); stroke-width:2.5; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 55%, transparent)); }
+  .dep-node.visited rect { stroke: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+  .dep-edge.lit { stroke-width:3; }
   .step-info {
     display:flex; align-items:center; gap:12px; margin-top:14px; padding:12px 16px;
     border:1px solid var(--border); border-radius:12px; background: var(--panel); min-height:24px;
@@ -235,6 +238,9 @@
   .depgraph { width:100%; height:auto; }
   .dep-edge { stroke:var(--border); stroke-width:2; fill:none; marker-end:url(#arrow); }
   .dep-edge.feign { stroke:var(--accent); stroke-dasharray:0; }
+  .dep-edge.db { stroke:var(--green); }
+  .dep-edge.cache { stroke:var(--amber); }
+  .dep-edge.register { stroke:var(--muted); stroke-dasharray:4 4; }
   .dep-node text { fill:var(--text); font-size:12px; font-weight:600; }
   .dep-node .sub { fill:var(--muted); font-size:9px; }
   .legend-line{ display:inline-block; width:26px; height:0; border-top:2px solid var(--accent); vertical-align:middle; margin-right:6px; }
@@ -258,6 +264,7 @@
       <button data-view="files">Project Files</button>
       <button data-view="build">Build &amp; Deploy</button>
       <button data-view="connections">Connections</button>
+      <button data-view="kubernetes">Kubernetes</button>
       <button data-view="caching">Caching &amp; Tracing</button>
       <button data-view="concepts">BE Concepts</button>
       <button data-view="frontend">Frontend</button>
@@ -527,6 +534,59 @@
     🧠 <b>The golden rule:</b> services are <b>loosely coupled</b> at runtime (HTTP + circuit breakers) but
     <b>version-aligned</b> at build time (one parent POM). Change one service's internals freely — as long as its
     HTTP contract stays the same, nobody else breaks.
+  </div>
+</section>
+
+<!-- ==================== KUBERNETES ==================== -->
+<section class="view" id="kubernetes">
+  <div class="eyebrow">Local dev, containerized</div>
+  <h1>Running on Kubernetes (kind)</h1>
+  <p class="lead">The same system above also runs on a local 3-node <b>kind</b> (Kubernetes-in-Docker) cluster,
+    namespace <code>blog</code> — a close translation of <code>docker-compose.yml</code> into Deployments,
+    a StatefulSet, and Services. This graph is the <b>infrastructure</b> dependency graph — who needs Postgres,
+    Kafka, Redis, and Eureka — distinct from the Feign/Kafka <i>business-logic</i> graph in the Connections tab
+    above.</p>
+
+  <div class="card">
+    <svg class="depgraph" viewBox="0 0 860 480" id="k8sSvg" role="img" aria-label="Kubernetes dependency graph">
+      <defs>
+        <marker id="arrow-k8s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g id="k8sEdges"></g>
+      <g id="k8sNodes"></g>
+      <circle id="k8sPacket" r="7"></circle>
+    </svg>
+    <div class="hint" style="margin-top:10px; line-height:2;">
+      <span class="legend-line" style="border-color:var(--accent)"></span> Gateway routes to service (<code>lb://</code> via Eureka) &nbsp;&nbsp;
+      <span class="legend-line" style="border-top-style:dashed;border-color:var(--muted)"></span> Registers with Eureka &nbsp;&nbsp;
+      <span class="legend-line" style="border-color:var(--green)"></span> Reads/writes Postgres &nbsp;&nbsp;
+      <span class="legend-line" style="border-color:var(--amber)"></span> Redis cache &nbsp;&nbsp;
+      <span class="legend-line build" style="border-color:var(--pink)"></span> Kafka
+    </div>
+    <div style="margin-top:16px; display:flex; gap:10px; align-items:center;">
+      <button id="k8sPlay" class="theme-btn" style="width:auto; padding:0 18px; font-size:.9rem; font-weight:700;">▶ Play request</button>
+      <span class="hint" id="k8sStatus" style="align-self:center;">GET /api/posts — the request we actually tested against this cluster</span>
+    </div>
+  </div>
+
+  <h2>Manifest layout</h2>
+  <div class="grid cols-2" id="k8sFileCards"></div>
+
+  <div class="concept-note" style="margin-top:18px;">
+    🧠 <b>Deployment vs Service:</b> a <b>Deployment</b> runs the actual container(s) and keeps N replicas alive —
+    the compute. A <b>Service</b> gives whatever pods match its label a stable DNS name (<code>postgres</code>,
+    <code>kafka</code>, <code>eureka-server</code>, …) — the networking. Pod IPs change on every restart, so
+    nothing ever hard-codes one; everything talks to Service names instead.
+  </div>
+  <div class="concept-note" style="margin-top:10px;">
+    ⚠️ <b>Known gotcha hit while building this:</b> Kubernetes auto-injects legacy Docker-links-style env vars
+    (<code>&lt;SERVICE_NAME&gt;_PORT</code>, …) into every pod in the namespace for every Service that exists.
+    Since the Kafka Service is named <code>kafka</code>, every pod — including the Kafka pod itself — got a
+    <code>KAFKA_PORT=tcp://&lt;ip&gt;:9092</code> env var injected. Confluent's image reads <code>KAFKA_PORT</code>
+    as a legacy config key, tried to parse that URL as a bare port number, and crash-looped. Fixed with
+    <code>enableServiceLinks: false</code> on the Kafka pod spec.
   </div>
 </section>
 
@@ -1450,6 +1510,133 @@ Object.entries(DEP_NODES).forEach(([id,n])=>{
      <text x="${n.x+14}" y="${n.y+20}">${n.ico} ${n.label}</text>
      <text x="${n.x+14}" y="${n.y+34}" class="sub">${n.sub} · own DB</text>`;
   nodesG.appendChild(g);
+});
+
+/* ---------------- Kubernetes: infra dependency graph ---------------- */
+const K8S_NODES = {
+  eureka:   {x:365, y:16,  label:'eureka-server', sub:':8761',       ico:'🧭'},
+  gateway:  {x:365, y:96,  label:'api-gateway',   sub:':8080',       ico:'🚪'},
+  user:     {x:20,  y:210, label:'user-service',  sub:':8081',       ico:'👤'},
+  post:     {x:195, y:210, label:'post-service',  sub:':8082',       ico:'📝'},
+  comment:  {x:370, y:210, label:'comment-svc',   sub:':8083',       ico:'💬'},
+  like:     {x:545, y:210, label:'like-dislike',  sub:':8084',       ico:'👍'},
+  tag:      {x:710, y:210, label:'tag-service',   sub:':8085',       ico:'🏷️'},
+  postgres: {x:280, y:330, label:'postgres',      sub:'StatefulSet', ico:'🗄️'},
+  redis:    {x:490, y:330, label:'redis',         sub:'Deployment',  ico:'🧊'},
+  kafka:    {x:680, y:330, label:'kafka',         sub:'Deployment',  ico:'📨'},
+  zookeeper:{x:680, y:415, label:'zookeeper',     sub:'Deployment',  ico:'🧮'},
+};
+const K8S_EDGES = [
+  ['gateway','eureka','register'],
+  ['user','eureka','register'], ['post','eureka','register'], ['comment','eureka','register'],
+  ['like','eureka','register'], ['tag','eureka','register'],
+  ['gateway','user','feign'], ['gateway','post','feign'], ['gateway','comment','feign'],
+  ['gateway','like','feign'], ['gateway','tag','feign'],
+  ['user','postgres','db'], ['post','postgres','db'], ['comment','postgres','db'],
+  ['like','postgres','db'], ['tag','postgres','db'],
+  ['post','redis','cache'],
+  ['user','kafka','kafka'], ['post','kafka','kafka'], ['comment','kafka','kafka'],
+  ['kafka','zookeeper','kafka'],
+];
+const K8W=120, K8H=46;
+function k8sCenter(id){ const n=K8S_NODES[id]; return {x:n.x+K8W/2, y:n.y+K8H/2}; }
+const k8sEdgesG = document.getElementById('k8sEdges');
+const k8sNodesG = document.getElementById('k8sNodes');
+const K8S_NODE_ELS = {}, K8S_EDGE_ELS = {};
+K8S_EDGES.forEach(([a,b,kind],i)=>{
+  const p1=k8sCenter(a), p2=k8sCenter(b);
+  const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1;
+  const ux=dx/len, uy=dy/len;
+  const x1=p1.x+ux*(K8W/2)*0.75, y1=p1.y+uy*(K8H/2+6);
+  const x2=p2.x-ux*(K8W/2)*0.8,  y2=p2.y-uy*(K8H/2+10);
+  const bow=(18+(i%4)*10)*((i%2===0)?1:-1);
+  const mx=(x1+x2)/2 - uy*bow, my=(y1+y2)/2 + ux*bow;
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+  if (kind==='kafka'){
+    path.setAttribute('class','dep-edge kafka');
+    path.setAttribute('stroke','var(--pink)');
+    path.setAttribute('stroke-dasharray','6 5');
+    path.setAttribute('marker-end','url(#arrow-kafka)');
+  } else if (kind==='register'){
+    path.setAttribute('class','dep-edge register');
+    path.setAttribute('marker-end','url(#arrow-k8s)');
+  } else {
+    path.setAttribute('class', `dep-edge ${kind}`);
+    path.setAttribute('marker-end', kind==='feign' ? 'url(#arrow)' : 'url(#arrow-k8s)');
+  }
+  k8sEdgesG.appendChild(path);
+  K8S_EDGE_ELS[a+'|'+b] = path;
+  K8S_EDGE_ELS[b+'|'+a] = path;
+});
+Object.entries(K8S_NODES).forEach(([id,n])=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','dep-node');
+  g.innerHTML =
+    `<rect x="${n.x}" y="${n.y}" width="${K8W}" height="${K8H}" rx="12"
+       fill="var(--panel-strong)" stroke="var(--accent)" stroke-width="1.5"/>
+     <text x="${n.x+12}" y="${n.y+20}">${n.ico} ${n.label}</text>
+     <text x="${n.x+12}" y="${n.y+36}" class="sub">${n.sub}</text>`;
+  k8sNodesG.appendChild(g);
+  K8S_NODE_ELS[id] = g;
+});
+
+/* ---------------- Kubernetes: animated request flow ---------------- */
+const K8S_FLOW_STEPS = [
+  { node:'gateway',  label:'api-gateway',  detail:'GET /api/posts received, routes via Eureka lb://' },
+  { node:'post',     label:'post-service', detail:'Handles the request, queries its database' },
+  { node:'postgres', label:'postgres',     detail:'StatefulSet — SELECT the post rows, 200 OK back up the chain' },
+];
+let k8sPlayTimer = null;
+function playK8sFlow(){
+  clearTimeout(k8sPlayTimer);
+  Object.values(K8S_EDGE_ELS).forEach(el=>el.classList.remove('lit'));
+  Object.values(K8S_NODE_ELS).forEach(el=>el.classList.remove('lit','visited'));
+  const packet = document.getElementById('k8sPacket');
+  const status = document.getElementById('k8sStatus');
+  packet.style.opacity = 1;
+  const HOP_MS = 700;
+  let i = 0;
+  const step = () => {
+    if (i >= K8S_FLOW_STEPS.length){ status.textContent = '✅ Done — 200 OK'; return; }
+    const s = K8S_FLOW_STEPS[i];
+    const prev = i>0 ? K8S_FLOW_STEPS[i-1] : null;
+    Object.values(K8S_NODE_ELS).forEach(el=>{
+      if (el.classList.contains('lit')){ el.classList.remove('lit'); el.classList.add('visited'); }
+    });
+    K8S_NODE_ELS[s.node].classList.add('lit');
+    packet.classList.remove('pulse');
+    if (prev && prev.node !== s.node){
+      const edgeEl = K8S_EDGE_ELS[prev.node+'|'+s.node];
+      if (edgeEl) edgeEl.classList.add('lit');
+      const c = k8sCenter(s.node);
+      packet.setAttribute('cx', c.x); packet.setAttribute('cy', c.y);
+    } else {
+      const c = k8sCenter(s.node);
+      packet.setAttribute('cx', c.x); packet.setAttribute('cy', c.y);
+      void packet.offsetWidth;
+      packet.classList.add('pulse');
+    }
+    status.textContent = `${s.label}: ${s.detail}`;
+    i++;
+    k8sPlayTimer = setTimeout(step, HOP_MS);
+  };
+  step();
+}
+document.getElementById('k8sPlay').onclick = playK8sFlow;
+
+const K8S_FILES = [
+  ['📁','k8s/kind-cluster.yaml','Defines the 3-node kind cluster + the ingress-ready label on the control-plane node.'],
+  ['🔑','k8s/secrets.yaml','postgres-credentials (POSTGRES_USER/PASSWORD/DB) and jwt-secret (JWT_SECRET), as plaintext dev values.'],
+  ['⚙️','k8s/configmap.yaml','app-config — shared connection strings every service pulls in via envFrom: DB_HOST, EUREKA_URI, KAFKA_BOOTSTRAP_SERVERS, REDIS_HOST, etc.'],
+  ['🗄️','k8s/infra/*.yaml','postgres (StatefulSet + PVC), zookeeper, kafka, redis — the backing services, same images as docker-compose.yml.'],
+  ['⚙️','k8s/services/*.yaml','One Deployment + Service per Spring app. DB_USERNAME/PASSWORD/NAME map explicitly via secretKeyRef since those key names differ from the Postgres image\'s own env vars.'],
+  ['📦','k8s/kustomization.yaml','Lists every manifest above so the whole stack applies with one command: kubectl apply -k k8s/.'],
+];
+const k8sFc = document.getElementById('k8sFileCards');
+K8S_FILES.forEach(([ico,file,desc])=>{
+  const el=document.createElement('div'); el.className='card';
+  el.innerHTML=`<span class="ico">${ico}</span><h3 style="font-size:.95rem;font-family:monospace">${file}</h3><p class="muted">${desc}</p>`;
+  k8sFc.appendChild(el);
 });
 
 const EDGE_NOTES = [
