@@ -16,3 +16,4 @@ resources:
   - services/comment-service.yaml
   - services/like-dislike-service.yaml
   - services/tag-service.yaml
+  - ingress.yaml

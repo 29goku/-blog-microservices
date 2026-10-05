@@ -359,3 +359,15 @@ Content-Type: application/json
   "username": "best",
   "password": "best"
 }
+
+
+
+###
+# curl http://localhost/actuator/health
+GET http://localhost/actuator/health
+
+###
+# curl http://localhost/api/posts
+GET http://localhost/api/posts
+
+###
