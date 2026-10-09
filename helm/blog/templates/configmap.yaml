@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: blog
+data:
+  DB_HOST: postgres
+  DB_PORT: "{{ .Values.postgres.port }}"
+  EUREKA_URI: http://eureka-server:{{ .Values.eurekaServer.port }}/eureka/
+  EUREKA_HOST: eureka-server
+  KAFKA_BOOTSTRAP_SERVERS: kafka:{{ .Values.kafka.port }}
+  REDIS_HOST: redis
+  REDIS_PORT: "{{ .Values.redis.port }}"
