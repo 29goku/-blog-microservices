@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-service
+  namespace: blog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comment-service
+  template:
+    metadata:
+      labels:
+        app: comment-service
+    spec:
+      containers:
+        - name: comment-service
+          image: {{ .Values.commentService.image }}
+          imagePullPolicy: Never
+          ports:
+            - containerPort: {{ .Values.commentService.port }}
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: jwt-secret
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_DB
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.commentService.port }}
+            initialDelaySeconds: 25
+            periodSeconds: 10

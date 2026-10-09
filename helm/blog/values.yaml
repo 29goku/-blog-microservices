@@ -1,0 +1,51 @@
+eurekaServer:
+  image: blog/eureka-server:local
+  port: 8761
+
+apiGateway:
+  image: blog/api-gateway:local
+  port: 8080
+
+userService:
+  image: blog/user-service:local
+  port: 8081
+
+postService:
+  image: blog/post-service:local
+  port: 8082
+
+commentService:
+  image: blog/comment-service:local
+  port: 8083
+
+likeDislikeService:
+  image: blog/like-dislike-service:local
+  port: 8084
+
+tagService:
+  image: blog/tag-service:local
+  port: 8085
+
+postgres:
+  image: postgres:15
+  port: 5432
+  storage: 1Gi
+
+redis:
+  image: redis:7.0.11
+  port: 6379
+
+kafka:
+  image: confluentinc/cp-kafka:7.4.0
+  port: 9092
+  hostPort: 29092
+
+zookeeper:
+  image: confluentinc/cp-zookeeper:7.4.0
+  port: 2181
+
+secrets:
+  postgresUser: postgres
+  postgresPassword: postgres
+  postgresDb: main_db
+  jwtSecret: change-this-to-a-real-32+char-secret

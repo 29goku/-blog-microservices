@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment-service
+  namespace: blog
+spec:
+  selector:
+    app: comment-service
+  ports:
+    - port: {{ .Values.commentService.port }}
+      targetPort: {{ .Values.commentService.port }}
