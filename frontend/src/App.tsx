@@ -60,6 +60,18 @@ function App() {
     loadUsers().then(r => r);
   }, []);
 
+  // Fired by client.ts on a 401 — drop back to the login screen via state
+  // instead of a hard reload, which would just re-run the same stale-token
+  // request and loop.
+  useEffect(() => {
+    const onAuthExpired = () => {
+      setCurrentUserId(null);
+      setCurrentUsername(null);
+    };
+    window.addEventListener('auth:expired', onAuthExpired);
+    return () => window.removeEventListener('auth:expired', onAuthExpired);
+  }, []);
+
   // Postgres doesn't guarantee row order, and an UPDATE (e.g. commentCount via
   // Kafka) can shift a row's position in an unordered scan. Sort by id so the
   // list order stays stable across refetches instead of visually reshuffling.

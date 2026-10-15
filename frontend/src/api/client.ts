@@ -22,13 +22,16 @@ function authHeader(): Record<string, string> {
 // session and send the user back to the login screen instead of leaving
 // the app stuck on a generic fetch error with no way to recover.
 // `skipOn401` is for the login call itself, where a 401 means "wrong
-// password", not "session expired" — it must not trigger a reload.
+// password", not "session expired" — it must not log the user out.
+// A full page reload here would re-run the same stale-token request on
+// every reload and loop forever; dispatching an event lets App.tsx drop
+// back to the login screen via a state change instead.
 function ensureOk(res: Response, message: string, opts?: { skipOn401?: boolean }) {
   if (res.status === 401 && !opts?.skipOn401) {
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUserId');
     localStorage.removeItem('authUsername');
-    window.location.reload();
+    window.dispatchEvent(new Event('auth:expired'));
     throw new Error('Session expired, please log in again');
   }
   if (!res.ok) throw new Error(message);
