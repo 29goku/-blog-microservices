@@ -341,10 +341,25 @@ Phase 7: Containerization ✅ DONE
   ├─ Docker Compose (local full stack)
   └─ Render (backend) + Vercel (frontend)
 
-Phase 8: Orchestration 🔜 FUTURE
-  ├─ Kubernetes deployment
-  ├─ StatefulSets, ConfigMaps
-  └─ Helm charts
+Phase 8: Orchestration ✅ DONE
+  ├─ Kubernetes deployment (kind cluster "blog-microservices", namespace "blog")
+  ├─ StatefulSets, ConfigMaps, Secrets, Ingress
+  ├─ Helm chart (helm/blog) — now the live local deployment target
+  ├─ 🔜 Observability stack (Grafana/Prometheus/Tempo/otel-collector) still
+  │   runs via docker-compose, on a separate Docker network from the kind
+  │   cluster — Prometheus scrape targets are all down and traces can't
+  │   export. Needs its own Helm templates to move into the cluster.
+  ├─ 🔜 No CPU/memory requests or limits on any Deployment — this is what
+  │   let the full compose stack + kind cluster OOM-kill the kind nodes
+  │   when run side by side. Postgres StatefulSet only sets storage size,
+  │   not CPU/mem.
+  ├─ 🔜 No livenessProbe anywhere (only readinessProbe) — a hung pod won't
+  │   get restarted automatically.
+  ├─ 🔜 Frontend isn't containerized or deployed to the cluster at all —
+  │   no Dockerfile, no Helm templates. Still just `npm run dev` locally.
+  └─ 🔜 Secrets (postgres-credentials, jwt-secret) are plain stringData
+      values sourced from values.yaml, not sealed/external — fine for
+      local kind, not a pattern to carry to a real cluster.
 
 
 KNOWN GAPS & NEXT ADDITIONS
@@ -365,15 +380,24 @@ concerns remain open. Captured here as an honest backlog:
   Distributed tracing (Micrometer→OTLP/      Pairs with the gateway's existing
     Zipkin/Jaeger)                           RequestTrackingFilter
   Auth/security (JWT/OAuth2 at gateway)      Gateway has CORS but no auth
-  Metrics aggregation (Prometheus/Grafana)   Actuator exposed, nothing scrapes
+  Metrics aggregation (Prometheus/Grafana)   Actuator exposed; Prometheus/
+                                             Grafana run via compose but are
+                                             on a different network than the
+                                             kind cluster now — see Phase 8
   Centralized config (Spring Cloud Config)   Each service has its own YAML
   Rate limiting at the gateway               Fits alongside a Redis layer
+  Frontend "create user" posts to            Should call POST /api/users
+    nonexistent /api/auth/register (500)     instead; AuthController only
+                                             has /api/auth/login
 
 Suggested order of value:
-  1. Retry + bulkhead — finish what Phase 4 already promises
-  2. Flyway migrations + a basic test suite + CI — biggest safety gap
-  3. Distributed tracing — high value once services talk
-  4. Auth at the gateway, then Prometheus/Grafana and a config server
+  1. Move Grafana/Prometheus/Tempo/otel-collector into helm/blog — Phase 8
+     is otherwise done and this is actively broken (no dashboard data)
+  2. Fix frontend register endpoint (quick, isolated bug)
+  3. Retry + bulkhead — finish what Phase 4 already promises
+  4. Flyway migrations + a basic test suite + CI — biggest safety gap
+  5. Distributed tracing — high value once services talk
+  6. Auth at the gateway, then a config server
 
 Each item is a focused, multi-step change — tackle as its own increment.
 
