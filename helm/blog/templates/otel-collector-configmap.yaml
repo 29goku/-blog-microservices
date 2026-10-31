@@ -26,6 +26,7 @@ data:
           - name: sample-rest
             type: probabilistic
             probabilistic: {sampling_percentage: 5}
+
     exporters:
       otlp/tempo:
         endpoint: tempo:{{ .Values.tempo.otlpGrpcPort }}
