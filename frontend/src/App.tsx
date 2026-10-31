@@ -7,6 +7,7 @@ import UserForm from './components/UserForm';
 import LoginScreen from './components/LoginScreen';
 import TagManager from './components/TagManager';
 import Profile from './components/Profile';
+import { useAvatar } from './hooks/useAvatar';
 import { RequestFlowSidebar } from './components/RequestFlowSidebar';
 import './App.css';
 
@@ -39,6 +40,7 @@ function App() {
   const [currentUsername, setCurrentUsername] = useState<string | null>(() =>
     localStorage.getItem('authUsername')
   );
+  const headerAvatar = useAvatar(currentUserId);
   const [view, setView] = useState<View>('posts');
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
@@ -180,7 +182,16 @@ function App() {
           </nav>
         </div>
         <div className="header-right">
-          <span className="user-badge">{currentUsername}</span>
+          <span className="user-badge">
+            {headerAvatar ? (
+              <img className="user-badge-avatar" src={headerAvatar} alt="" />
+            ) : (
+              <span className="user-badge-avatar-placeholder">
+                {currentUsername?.slice(0, 1).toUpperCase()}
+              </span>
+            )}
+            {currentUsername}
+          </span>
           <button
             className="btn-theme-toggle"
             onClick={() => setDarkMode(d => !d)}

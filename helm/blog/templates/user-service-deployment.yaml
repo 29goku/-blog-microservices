@@ -53,4 +53,4 @@ spec:
       volumes:
         - name: user-avatars
           persistentVolumeClaim:
-            claimName: user-avatars-pvc
+            claimName: user-avatars

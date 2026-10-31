@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
   }
 
-  @ExceptionHandler(Exception.class)
+  @ExceptionHandler(InvalidFileException.class)
   public ResponseEntity<ErrorResponse> handleInvalidFileException(InvalidFileException ex) {
     log.error("Invalid File: {}", ex.getMessage());
     ErrorResponse error =

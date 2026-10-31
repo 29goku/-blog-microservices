@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { userAPI, type User } from '../api/client';
+import { useAvatar, AVATAR_UPDATED_EVENT } from '../hooks/useAvatar';
 import './Profile.css';
 
-const BASE = import.meta.env.VITE_API_URL ?? '';
 const MAX_SIZE = 2 * 1024 * 1024;
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 interface ProfileProps {
   currentUserId: number;
@@ -15,7 +15,7 @@ export default function Profile({ currentUserId }: ProfileProps) {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cacheBust, setCacheBust] = useState(0);
+  const avatarSrc = useAvatar(currentUserId);
 
   useEffect(() => {
     loadUser();
@@ -40,7 +40,7 @@ export default function Profile({ currentUserId }: ProfileProps) {
     if (!file) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError('Only JPEG, PNG, or WebP images are allowed');
+      setError('Only JPEG, PNG, WebP, or GIF images are allowed');
       return;
     }
     if (file.size > MAX_SIZE) {
@@ -53,7 +53,7 @@ export default function Profile({ currentUserId }: ProfileProps) {
     try {
       const updated = await userAPI.uploadAvatar(currentUserId, file);
       setUser(updated);
-      setCacheBust((n) => n + 1);
+      window.dispatchEvent(new Event(AVATAR_UPDATED_EVENT));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload avatar');
     } finally {
@@ -68,8 +68,6 @@ export default function Profile({ currentUserId }: ProfileProps) {
   if (!user) {
     return error ? <div className="error">{error}</div> : null;
   }
-
-  const avatarSrc = user.avatarUrl ? `${BASE}${user.avatarUrl}?v=${cacheBust}` : null;
 
   return (
     <div className="profile">
@@ -97,7 +95,7 @@ export default function Profile({ currentUserId }: ProfileProps) {
           {uploading ? 'Uploading...' : 'Change avatar'}
           <input
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,image/gif"
             onChange={handleFileChange}
             disabled={uploading}
             hidden

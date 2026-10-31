@@ -57,7 +57,9 @@ public class UserService {
             Path dir = Paths.get(avatarStorageDir);
             Files.createDirectories(dir);
             Path target = dir.resolve(id + '.' + ext);
-
+            for (String e : List.of("jpg", "png", "gif", "webp")) {
+                Files.deleteIfExists(dir.resolve(id + "." + e));
+            }
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException("Failed to store avatar file", e);
@@ -68,11 +70,16 @@ public class UserService {
         return mapToDTO(saved);
     }
   public Path getAvatarPath(Long id){
-      User user =userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-      if (user.getAvatarUrl() == null) {
-          throw new UserNotFoundException("Avatar not found for user with id: " + id);
-      }
-      return Paths.get(avatarStorageDir).resolve(id + '.' + user.getAvatarUrl().substring(user.getAvatarUrl().lastIndexOf('.') + 1));
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    if (user.getAvatarUrl() == null) {
+      throw new UserNotFoundException("Avatar not found for user with id: " + id);
+    }
+    for (String ext : List.of("jpg", "png", "gif", "webp")) {
+      Path candidate = Paths.get(avatarStorageDir).resolve(id + "." + ext);
+      if (Files.exists(candidate)) return candidate;
+    }
+    throw new UserNotFoundException("Avatar file missing for user with id: " + id);
   }
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {

@@ -131,6 +131,16 @@ export const userAPI = {
     ensureOk(res, 'Failed to upload avatar');
     return res.json();
   },
+  // Avatars are served behind the gateway's JWT filter, and a plain <img src>
+  // can't carry an Authorization header, so this fetches the bytes with auth
+  // and hands back an object URL for the caller to use as an <img> src.
+  getAvatarBlobUrl: async (id: number): Promise<string | null> => {
+    const res = await fetch(`${API_BASE.users}/users/${id}/avatar`, { headers: authHeader() });
+    if (res.status === 404) return null;
+    ensureOk(res, 'Failed to load avatar');
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  },
 };
 
 // Auth API
