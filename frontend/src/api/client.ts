@@ -45,6 +45,7 @@ export interface User {
   fullName: string;
   bio: string;
   createdAt: number;
+  avatarUrl?: string | null;
 }
 
 export interface Post {
@@ -118,6 +119,17 @@ export const userAPI = {
       headers: authHeader(),
     });
     ensureOk(res, 'Failed to delete user');
+  },
+  uploadAvatar: async (id: number, file: File): Promise<User> => {
+    const body = new FormData();
+    body.append('file', file);
+    const res = await fetch(`${API_BASE.users}/users/${id}/avatar`, {
+      method: 'POST',
+      headers: authHeader(),
+      body,
+    });
+    ensureOk(res, 'Failed to upload avatar');
+    return res.json();
   },
 };
 

@@ -6,10 +6,11 @@ import UserList from './components/UserList';
 import UserForm from './components/UserForm';
 import LoginScreen from './components/LoginScreen';
 import TagManager from './components/TagManager';
+import Profile from './components/Profile';
 import { RequestFlowSidebar } from './components/RequestFlowSidebar';
 import './App.css';
 
-type View = 'posts' | 'users' | 'tags';
+type View = 'posts' | 'users' | 'tags' | 'profile';
 
 const SunIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -170,6 +171,12 @@ function App() {
             >
               Tags
             </button>
+            <button
+              className={`nav-btn ${view === 'profile' ? 'active' : ''}`}
+              onClick={() => setView('profile')}
+            >
+              Profile
+            </button>
           </nav>
         </div>
         <div className="header-right">
@@ -222,6 +229,12 @@ function App() {
           {view === 'tags' && (
             <div className="section">
               <TagManager />
+            </div>
+          )}
+
+          {view === 'profile' && (
+            <div className="section">
+              <Profile currentUserId={currentUserId} />
             </div>
           )}
         </main>

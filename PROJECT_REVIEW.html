@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blog Microservices — Principal Engineering Review</title>
+<style>
+:root{--bg:#0e1116;--panel:#161b22;--panel2:#1d242d;--text:#e6edf3;--mut:#8b98a8;--line:#2a323d;--acc:#58a6ff;--crit:#ff5d5d;--high:#ff9f43;--med:#f5d142;--low:#7ee787;--ok:#3fb950}
+[data-theme=light]{--bg:#f6f8fa;--panel:#fff;--panel2:#eef1f5;--text:#1f2328;--mut:#59636e;--line:#d0d7de;--acc:#0969da;--crit:#cf222e;--high:#bc4c00;--med:#9a6700;--low:#1a7f37;--ok:#1a7f37}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+nav{position:fixed;top:0;left:0;bottom:0;width:250px;background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;overflow:auto}
+nav h1{font-size:15px;margin:0 0 12px}nav a{display:block;color:var(--mut);text-decoration:none;padding:5px 8px;border-radius:6px;font-size:13.5px}
+nav a:hover,nav a.on{background:var(--panel2);color:var(--text)}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+main{margin-left:250px;padding:30px 44px 80px;max-width:1250px}
+section{margin-bottom:56px;scroll-margin-top:20px}
+h2{font-size:26px;border-bottom:2px solid var(--acc);padding-bottom:6px;margin-top:0}
+h3{font-size:18px;margin-top:28px}h4{margin:14px 0 4px}
+.hero{background:linear-gradient(135deg,#1f6feb33,#8957e533);border:1px solid var(--line);border-radius:14px;padding:28px;margin-bottom:30px}
+.hero h1{font-size:34px;margin:0 0 6px}.hero p{color:var(--mut);margin:4px 0}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h4{margin-top:0}.stat{font-size:34px;font-weight:700}
+.crit{color:var(--crit)}.high{color:var(--high)}.med{color:var(--med)}.low{color:var(--low)}.ok{color:var(--ok)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--panel);border:1px solid var(--line)}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}th{background:var(--panel2);position:sticky;top:0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12.5px;word-break:break-all}
+pre{background:var(--panel2);padding:12px;border-radius:8px;overflow:auto;font-size:12.5px}
+.badge{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:700;color:#000}
+.b-Critical{background:var(--crit)}.b-High{background:var(--high)}.b-Medium{background:var(--med)}.b-Low{background:var(--low)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.tools input{flex:1;min-width:220px;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.chip.on{background:var(--acc);color:#fff}
+.callout{border-left:4px solid var(--acc);background:var(--panel);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+.callout.warn{border-color:var(--crit)}.callout.good{border-color:var(--ok)}
+svg text{fill:var(--text);font-size:12px}svg .box{fill:var(--panel2);stroke:var(--acc)}svg .line{stroke:var(--mut);fill:none;marker-end:url(#ar)}
+.steps li{margin:4px 0}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){nav{display:none}main{margin:0;padding:18px}.two{grid-template-columns:1fr}}
+@page{margin:12mm}@media print{section{break-before:page}svg{max-height:230mm}nav,.tools{display:none}main{margin:0;max-width:none}body{background:#fff;color:#000;font-size:10pt}pre{white-space:pre-wrap}.card,tr,pre,.callout{break-inside:avoid}h2{break-after:avoid}}
+</style>
+</head>
+<body>
+<nav>
+<h1>📘 Blog Microservices<br><small style="color:var(--mut)">Principal Review</small></h1>
+<button id="theme">Toggle theme</button>
+<div id="toc" style="margin-top:12px"></div>
+</nav>
+<main>
+<div class="hero">
+<h1>Blog Microservices — Principal Engineering Review</h1>
+<p>Repository <code>29goku/-blog-microservices</code> · Spring Boot 3 / Spring Cloud · React + Vite · Kafka · Redis · Postgres · Kubernetes/Helm</p>
+<p>Scope: what the system does, how it is built, and an evidence-based registry of what is wrong, risky, or improvable — with fixes and a roadmap. Findings cite files and lines; items marked <em>verify</em> were not fully inspected.</p>
+</div>
+
+<section id="exec"><h2>1. Executive summary</h2>
+<div class="callout">
+<b>Verdict:</b> A well-organised learning/demo platform with admirable breadth (7 services, event streaming, caching, tracing, 5 deployment targets). It is <b>not production-safe</b>: authorization is effectively absent below the gateway, secrets are placeholders committed to git, inter-service calls are fragile and N+1, there are zero automated tests, and the Kubernetes manifests lack the basics for resilience. Most of the critical items are cheap to fix and should be done before any real user data is stored.
+</div>
+<div class="grid" id="stats"></div>
+<h3>Top 10 risks (fix first)</h3>
+<ol id="top10"></ol>
+<h3>Scorecard</h3>
+<table><tr><th>Dimension</th><th>Score</th><th>Why</th></tr>
+<tr><td>Security</td><td class="crit">2 / 10</td><td>IDOR everywhere, open user-service, wildcard CORS+credentials, public actuator, placeholder secret</td></tr>
+<tr><td>Correctness</td><td class="high">4 / 10</td><td>Vote duplicates, lost-update on counters, swallowed exceptions, 500 instead of 404</td></tr>
+<tr><td>Reliability</td><td class="high">3 / 10</td><td>No timeouts/retries/breakers, dual-write to Kafka, single replicas, no liveness probes</td></tr>
+<tr><td>Performance / scalability</td><td class="high">4 / 10</td><td>N+1 HTTP fan-out, unpaginated findAll, leading-wildcard LIKE, full-list cache</td></tr>
+<tr><td>Maintainability</td><td class="med">5 / 10</td><td>Clean package layout but copy-pasted code, no shared lib, overlapping docs</td></tr>
+<tr><td>Testing / CI</td><td class="crit">1 / 10</td><td>No test sources at all, no CI observed</td></tr>
+<tr><td>Observability</td><td class="low">7 / 10</td><td>OTel + Prometheus + Tempo + Grafana present; DEBUG left on, 100% sampling, println in code</td></tr>
+<tr><td>Delivery / DevOps</td><td class="med">5 / 10</td><td>Many targets, but drift risk, :local tags, no resources/HPA/PDB</td></tr></table>
+</section>
+
+<section id="what"><h2>2. What the project does</h2>
+<p>A multi-user <b>blogging platform</b>. Users register and log in, publish posts with tags, comment, and like/dislike posts. The system also ships a developer-facing "request tracking" demo in the gateway that visualises which service handled each request.</p>
+<div class="grid">
+<div class="card"><h4>👤 Accounts</h4>Register, login (JWT, 1h), profile CRUD.</div>
+<div class="card"><h4>📝 Posts</h4>CRUD, title search, tags, cached list/detail, comment count.</div>
+<div class="card"><h4>💬 Comments</h4>Comment on posts; publishes <code>comment-created</code> to Kafka.</div>
+<div class="card"><h4>👍 Reactions</h4>Like/dislike toggle, counts per post.</div>
+<div class="card"><h4>🏷 Tags</h4>Tag CRUD and post↔tag association.</div>
+<div class="card"><h4>🔍 Request tracker</h4>Gateway keeps the last 100 requests in memory for a UI visualiser.</div>
+</div>
+<h3>Tech stack</h3>
+<table><tr><th>Layer</th><th>Tech</th><th>Notes</th></tr>
+<tr><td>Frontend</td><td>React, Vite, TypeScript</td><td>Deployed to Vercel; token in <code>localStorage</code></td></tr>
+<tr><td>Edge</td><td>Spring Cloud Gateway (WebFlux)</td><td>JWT filter, CORS, request tracking, routes via Eureka <code>lb://</code></td></tr>
+<tr><td>Discovery</td><td>Eureka Server</td><td>Redundant on Kubernetes</td></tr>
+<tr><td>Services</td><td>user, post, comment, like-dislike, tag (Spring Boot, JPA)</td><td>~4.5k LOC Java</td></tr>
+<tr><td>Data</td><td>PostgreSQL 15 (shared), Redis 7.0.11</td><td><code>ddl-auto: update</code>, no migrations</td></tr>
+<tr><td>Messaging</td><td>Kafka (cp 7.4.0) + Zookeeper</td><td>comment-created; cache invalidation via Redis pub/sub</td></tr>
+<tr><td>Observability</td><td>Prometheus, OTel collector, Tempo, Grafana</td><td>Sampling 1.0</td></tr>
+<tr><td>Deploy targets</td><td>docker-compose, Render, Railway, kind+Kustomize, Helm</td><td>Five sources of truth</td></tr></table>
+</section>
+
+<section id="arch"><h2>3. Architecture</h2>
+<svg viewBox="0 0 900 430" width="100%" role="img" aria-label="architecture">
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#8b98a8"/></marker></defs>
+<rect class="box" x="20" y="180" width="110" height="50" rx="8"/><text x="45" y="210">React SPA</text>
+<rect class="box" x="190" y="180" width="130" height="50" rx="8"/><text x="205" y="202">API Gateway</text><text x="205" y="218">JWT · CORS · track</text>
+<rect class="box" x="400" y="20" width="120" height="44" rx="8"/><text x="420" y="47">user-service</text>
+<rect class="box" x="400" y="90" width="120" height="44" rx="8"/><text x="420" y="117">post-service</text>
+<rect class="box" x="400" y="160" width="120" height="44" rx="8"/><text x="415" y="187">comment-service</text>
+<rect class="box" x="400" y="230" width="120" height="44" rx="8"/><text x="410" y="257">like-dislike-svc</text>
+<rect class="box" x="400" y="300" width="120" height="44" rx="8"/><text x="425" y="327">tag-service</text>
+<rect class="box" x="190" y="300" width="130" height="44" rx="8"/><text x="225" y="327">Eureka</text>
+<rect class="box" x="640" y="40" width="120" height="44" rx="8"/><text x="665" y="67">PostgreSQL</text>
+<rect class="box" x="640" y="130" width="120" height="44" rx="8"/><text x="675" y="157">Redis</text>
+<rect class="box" x="640" y="220" width="120" height="44" rx="8"/><text x="665" y="247">Kafka+ZK</text>
+<rect class="box" x="640" y="320" width="200" height="60" rx="8"/><text x="655" y="345">OTel → Tempo / Prometheus</text><text x="655" y="362">→ Grafana</text>
+<path class="line" d="M130 205 H190"/><path class="line" d="M320 200 L400 42"/><path class="line" d="M320 202 L400 112"/><path class="line" d="M320 205 L400 182"/><path class="line" d="M320 208 L400 252"/><path class="line" d="M320 212 L400 322"/>
+<path class="line" d="M520 42 H640"/><path class="line" d="M520 112 L640 150"/><path class="line" d="M520 182 L640 240"/><path class="line" d="M520 322 L640 70" stroke-dasharray="3"/>
+<text x="540" y="400" style="fill:var(--mut)">Services also call each other synchronously over HTTP (post→user,tag; comment→user,post; like→post)</text>
+</svg>
+<h3>Deployment targets matrix</h3>
+<table><tr><th>Target</th><th>Files</th><th>Observation</th></tr>
+<tr><td>docker-compose</td><td><code>docker-compose.yml</code></td><td>JWT_SECRET hard-coded 6× (lines 32–128)</td></tr>
+<tr><td>Render</td><td><code>render.yaml</code></td><td>Needs <code>RenderDatabaseUrlEnvironmentPostProcessor</code> hack copied into each service</td></tr>
+<tr><td>Railway</td><td><code>railway/*.toml</code></td><td>Separate config per service</td></tr>
+<tr><td>Kubernetes (kind)</td><td><code>k8s/**</code></td><td>1 replica, no resources/liveness, <code>:local</code> images</td></tr>
+<tr><td>Helm</td><td><code>helm/blog/</code></td><td>Duplicates k8s manifests; placeholder secret in values.yaml:51</td></tr></table>
+</section>
+
+<section id="svc"><h2>4. Service deep dive</h2>
+<div class="two">
+<div class="card"><h4>api-gateway</h4><ul>
+<li><code>JwtAuthFilter</code>: validates HS256, injects <code>X-User-Id</code>/<code>X-Username</code>.</li>
+<li>Public: <code>/api/auth/*</code>, <code>/actuator*</code>, <code>POST /api/users</code>, all GET on posts/tags/comments/likedislike.</li>
+<li><b>No downstream service reads those headers.</b></li>
+<li>CORS defined twice (Java + YAML), conflicting.</li>
+<li>RequestTracking: <code>HashMap</code> + <code>LinkedList</code> not thread-safe; per-instance.</li></ul></div>
+<div class="card"><h4>user-service</h4><ul>
+<li>Register/login/CRUD, BCrypt hashing (good).</li>
+<li><code>SecurityFilterConfig</code>: <code>csrf.disable()</code> + <code>anyRequest().permitAll()</code>.</li>
+<li>update/delete user without ownership check.</li>
+<li><code>getAllUsers()</code> unpaginated, exposes emails.</li>
+<li>Distinct “Username/Email already exists” → enumeration.</li></ul></div>
+<div class="card"><h4>post-service</h4><ul>
+<li>CRUD + search; Redis cache; Kafka consumer for comment count.</li>
+<li><code>userId</code> from request body (impersonation).</li>
+<li>N+1: per post user + tag HTTP calls.</li>
+<li><code>catch(Exception)</code> reports every failure as “User not found”.</li>
+<li>Tags stored as string <i>and</i> in tag-service.</li></ul></div>
+<div class="card"><h4>comment-service</h4><ul>
+<li>6 broad <code>catch (Exception e)</code> blocks (47,55,100,113,128,152).</li>
+<li>Per-comment user lookup (N+1); Kafka publish dual-write.</li></ul></div>
+<div class="card"><h4>like-dislike-service</h4><ul>
+<li>No unique (userId, postId); find-then-save race.</li>
+<li>Each vote = 2 HTTP calls, loading full post.</li>
+<li>Returns <code>null</code> on toggle-off; RuntimeException→500.</li>
+<li>Two COUNT queries per read; <code>createdAt</code> as <code>Long</code>.</li></ul></div>
+<div class="card"><h4>tag-service / eureka</h4><ul>
+<li><code>findAll()</code> unpaginated (TagService:92).</li>
+<li>@Transactional on repository methods.</li>
+<li>Eureka adds a SPOF without value on k8s.</li></ul></div>
+</div></section>
+
+<section id="flows"><h2>5. Key request flows</h2>
+<div class="two">
+<div class="card"><h4>Login</h4><ol class="steps"><li>SPA POST <code>/api/auth/login</code> (public).</li><li>user-service BCrypt-verifies, signs HS256 JWT (1h).</li><li>SPA stores token + userId in <code>localStorage</code>.</li><li>Later calls send <code>Authorization: Bearer</code>; gateway verifies and adds headers that nobody consumes.</li></ol></div>
+<div class="card"><h4>Create post</h4><ol class="steps"><li>Body contains <code>userId</code> (client-chosen).</li><li>post-service calls user-service to check it exists; any error ⇒ “User not found”.</li><li>Save to DB, evict cache, <code>kafkaTemplate.send</code> — three non-atomic steps.</li></ol></div>
+<div class="card"><h4>Comment → count</h4><ol class="steps"><li>comment-service saves, publishes <code>comment-created</code>.</li><li>post-service listener: read, <code>+1</code>, save (lost updates under concurrency; replay double-counts), <code>System.out.println</code>.</li><li>Cache invalidation via Redis pub/sub.</li></ol></div>
+<div class="card"><h4>Like toggle</h4><ol class="steps"><li>Body has userId+postId.</li><li>HTTP to post-service (full post + user + tags) and user-service.</li><li><code>findByUserIdAndPostId</code> then save/delete — no unique key ⇒ duplicates.</li></ol></div>
+</div></section>
+
+<section id="gw"><h2>Gateway deep dive: api-gateway</h2>
+<p>The gateway is the only component that authenticates. Everything downstream is <code>permitAll</code>. Its correctness therefore defines the security of the whole platform, and it is the single most important module to harden.</p>
+<h3>Request pipeline</h3>
+<div class="steps"><ol>
+<li>Request arrives on Spring Cloud Gateway (WebFlux, Netty).</li>
+<li><code>RequestTrackingFilter</code> (demo logic: hard-coded ports 8081-8084) records hops for the frontend sidebar.</li>
+<li><code>JwtAuthFilter</code> (order <code>HIGHEST_PRECEDENCE+1</code>) decides public vs protected, validates the HS256 token, and injects <code>X-User-Id</code> and <code>X-Username</code>.</li>
+<li>Route predicate matches <code>/api/&lt;svc&gt;/**</code> and resolves <code>lb://&lt;svc&gt;</code> via Eureka (or a <code>*_URL</code> override).</li>
+<li>No timeout, retry, rate limiter or circuit breaker filter is configured on any route.</li>
+</ol></div>
+<h3>The public-path allow-list</h3>
+<pre>// JwtAuthFilter.java:56-66 (paraphrased)
+private boolean isPublic(String path, HttpMethod m) {
+  if (path.startsWith("/api/auth/")) return true;
+  if (path.startsWith("/actuator"))  return true;      // gateway routes + prometheus exposed
+  if (path.equals("/api/users") &amp;&amp; m == POST) return true;   // signup
+  if (m == GET &amp;&amp; (path.startsWith("/api/posts") || path.startsWith("/api/tags")
+      || path.startsWith("/api/comments") || path.startsWith("/api/likedislike"))) return true;
+  return false;
+}</pre>
+<table><tr><th>Issue</th><th>Why it matters</th><th>Fix</th></tr>
+<tr><td><code>/actuator*</code> fully public</td><td><code>/actuator/gateway/routes</code> reveals the full internal topology; <code>/actuator/prometheus</code> leaks metrics and URIs.</td><td>Allow only <code>/actuator/health/**</code>; move the rest to a management port bound to the cluster network.</td></tr>
+<tr><td>Prefix matching with <code>startsWith</code>, no path normalisation</td><td>Encoded segments, double slashes or <code>/api/posts/../users</code> style tricks can be evaluated differently by the gateway and the downstream servlet container.</td><td>Use <code>PathPattern</code>/<code>AntPathMatcher</code> on the normalised path; deny by default using a route-metadata <code>public: true</code> flag.</td></tr>
+<tr><td>Client-supplied <code>X-User-Id</code> not stripped on public paths</td><td>On a public GET the header passes through unchanged. Any downstream code that trusts it can be spoofed.</td><td>Always <code>headers.remove(...)</code> first, then set from claims (<code>mutate().headers(h -&gt; h.remove("X-User-Id"))</code>).</td></tr>
+<tr><td><code>claims.get("userId").toString()</code></td><td>Token without the claim throws NPE; only <code>JwtException</code> is caught, so the client sees a 500.</td><td>Null-check; treat as 401. Catch <code>RuntimeException</code> in the filter.</td></tr>
+<tr><td>401 with empty body, method <code>unautorized</code></td><td>Clients cannot distinguish expired, malformed and missing tokens.</td><td>RFC 7807 problem+json with a stable <code>code</code>, plus <code>WWW-Authenticate</code>.</td></tr>
+<tr><td>No issuer/audience/<code>kid</code> checks</td><td>Any token signed with the same secret is accepted; no key rotation is possible.</td><td>Validate <code>iss</code>/<code>aud</code>; move to RS256/ES256 with JWKS and <code>kid</code>.</td></tr>
+</table>
+<h3>Two conflicting CORS configurations</h3>
+<pre># application.yml:36-42
+globalcors:
+  corsConfigurations:
+    '[/**]':
+      allowedOriginPatterns: "*"
+      allowCredentials: true</pre>
+<p><code>GatewayConfig.corsWebFilter</code> separately allows <code>localhost:*</code> and <code>*.vercel.app</code> with credentials. Two sources of truth means the effective policy depends on filter ordering. <code>*.vercel.app</code> permits <em>any</em> tenant on Vercel (including an attacker's) to make credentialed calls. Because the token lives in <code>localStorage</code> and is sent as a header, the practical blast radius is smaller than with cookies, but the policy is still wrong and would become critical the moment cookies are adopted. <strong>Fix:</strong> one config, explicit origin list from env, <code>allowCredentials</code> only if cookies are used.</p>
+<h3>Resilience and traffic management gaps</h3>
+<ul>
+<li>No <code>TimeLimiter</code>/<code>response-timeout</code> or <code>connect-timeout</code> in <code>spring.cloud.gateway.httpclient</code>. A hung downstream ties up connections indefinitely.</li>
+<li>No <code>RequestRateLimiter</code> (Redis is already deployed, so a token-bucket limiter is cheap). Login and signup are brute-forceable.</li>
+<li>No retry for idempotent GETs and no <code>CircuitBreaker</code> filter with fallback.</li>
+<li>No request-size limit; no security headers (HSTS, <code>X-Content-Type-Options</code>, CSP).</li>
+<li><code>com.blog</code> and gateway logging at DEBUG, trace sampling probability 1.0: expensive and may log tokens or bodies.</li>
+</ul>
+<h3>Dockerfile</h3>
+<pre>FROM maven:3.9-eclipse-temurin-17 AS build
+RUN mvn dependency:go-offline || true     # swallows errors
+RUN mvn package -DskipTests
+FROM eclipse-temurin:17-jre
+COPY --from=build ... app.jar
+ENTRYPOINT ["java","-jar","app.jar"]       # root, no HEALTHCHECK, no JVM flags</pre>
+<p>Runs as root; images are tag- not digest-pinned; no <code>-XX:MaxRAMPercentage</code>, so the JVM may not respect container limits sensibly; tests skipped in the build. The <code>|| true</code> hides dependency-resolution failures and defeats layer caching intent.</p>
+</section>
+
+<section id="usr"><h2>Deep dive: user-service</h2>
+<p>Owns identity: signup, login, JWT issuance, profile CRUD. Uses BCrypt (good) and a constructor-injected <code>UserService</code> (good). Everything else below is a gap.</p>
+<h3>SecurityFilterConfig: no authentication of its own</h3>
+<pre>http.csrf(c -&gt; c.disable())
+    .authorizeHttpRequests(a -&gt; a.anyRequest().permitAll());</pre>
+<p>This is acceptable only if the service is unreachable except through the gateway. The repo contradicts that assumption: docker-compose publishes service ports, the Render and Railway configs expose services publicly, and a Kubernetes <code>NodePort</code> or missing <code>NetworkPolicy</code> allows any pod to call it. Anyone with network reach can <code>DELETE /api/users/{id}</code> with no token. <strong>Fix:</strong> make each service an OAuth2 resource server that validates the JWT itself (defence in depth), and add <code>NetworkPolicy</code> default-deny.</p>
+<h3>Business logic issues</h3>
+<table><tr><th>Method</th><th>Defect</th><th>Impact</th></tr>
+<tr><td><code>createUser</code></td><td><code>existsByUsername</code> then <code>existsByEmail</code> then save: a TOCTOU race; unique constraints not confirmed (<em>verify</em>).</td><td>Duplicate accounts under concurrency; a raw constraint error may surface as a 500.</td></tr>
+<tr><td><code>createUser</code></td><td>Distinct "username taken" vs "email taken" messages.</td><td>Account enumeration. Combine with signup rate limit.</td></tr>
+<tr><td><code>getAllUsers</code></td><td>Unpaginated <code>findAll()</code>; DTO includes <code>email</code>.</td><td>PII over-exposure and unbounded response as data grows.</td></tr>
+<tr><td><code>updateUser(id, dto)</code></td><td>Id from path; no check that it equals the caller.</td><td>Any authenticated user rewrites any profile (horizontal privilege escalation, IDOR).</td></tr>
+<tr><td><code>deleteUser(id)</code></td><td>No ownership check; no cleanup in post/comment/like services.</td><td>Account takeover-by-deletion; orphaned posts, comments, votes; GDPR erasure incomplete.</td></tr>
+<tr><td>Validation</td><td>No visible Bean Validation in the service layer (<em>verify DTO annotations and <code>@Valid</code></em>).</td><td>Weak passwords, malformed emails accepted.</td></tr>
+</table>
+<h3>JwtService</h3>
+<pre>Jwts.builder().setSubject(username).claim("userId", id)
+    .setIssuedAt(now).setExpiration(now + expirationsMs)   // typo in field name
+    .signWith(Keys.hmacShaKeyFor(secret.getBytes()), HS256)</pre>
+<ul>
+<li>Symmetric secret shared between user-service and gateway; either leak lets an attacker mint admin tokens. A placeholder default (<code>dev-only-secret-change-me-please-32chars+</code>) is present in six places, so a deployment that forgets to override is silently forgeable.</li>
+<li>No <code>iss</code>, <code>aud</code>, <code>jti</code>; no refresh token; no revocation or logout. A stolen token is valid until expiry.</li>
+<li>No roles/scopes claim, so authorisation beyond "logged in" is impossible (no admin concept for tag management, moderation, etc.).</li>
+<li>Secrets shorter than 32 bytes throw <code>WeakKeyException</code> at runtime rather than failing configuration validation on boot.</li>
+</ul>
+<h3>Cross-service coupling</h3>
+<p><code>PostEventListener</code> consumes post events to maintain <code>postCount</code>. Same lost-update and non-idempotency pattern as the post-service comment counter (see Kafka section).</p>
+</section>
+
+<section id="post"><h2>Deep dive: post-service</h2>
+<p>The largest and most complex service (CRUD, search, Redis cache, Kafka producer and consumer, Feign to user and tag services). It carries most of the correctness and performance debt.</p>
+<h3>createPost: five side effects, zero atomicity</h3>
+<pre>// PostService.createPost (lines 45-75, condensed)
+try { userClient.getUserById(postDTO.getUserId()); }          // sync remote call
+catch (Exception e) { throw new RuntimeException("User not found"); }  // masks timeouts
+Post saved = postRepository.save(post);                       // 1. DB write
+cachePublisher.publishAllInvalidated();                       // 2. Redis pub/sub
+kafkaTemplate.send("post-created", event);                    // 3. Kafka, fire and forget</pre>
+<ul>
+<li><strong>Identity from the body</strong>: <code>postDTO.getUserId()</code> is trusted instead of the gateway-injected <code>X-User-Id</code>. Any logged-in user posts as anyone.</li>
+<li><strong>Dual write</strong>: if Kafka is down after the DB commit, user-service's <code>postCount</code> never updates; if the process dies between steps 1 and 3 the event is lost forever. Use the transactional outbox pattern (event row in the same transaction, relay via Debezium or a poller).</li>
+<li><strong>Error masking</strong>: the blanket catch converts a 5s Feign timeout, a 500, and a real 404 all into "User not found" (client sees 4xx or 500 inconsistently).</li>
+<li>The remote user check is redundant once the gateway has authenticated the caller: the token already proves the user existed at issue time.</li>
+</ul>
+<h3>Read path</h3>
+<table><tr><th>Method</th><th>Problem</th><th>Better</th></tr>
+<tr><td><code>getAllPosts</code></td><td><code>findAll()</code>, no pagination, cached under the one key <code>allPosts</code> for 60s; one Feign call to user-service per post (N+1 across the network).</td><td><code>Pageable</code> + keyset pagination; batch <code>POST /users/lookup</code> of distinct ids; or denormalise <code>authorName</code> into the post (updated by event).</td></tr>
+<tr><td><code>searchPostsByTitle</code></td><td><code>LIKE '%x%'</code> forces a sequential scan; same N+1 user calls.</td><td><code>pg_trgm</code> GIN index or Postgres full-text (<code>tsvector</code>); eventually OpenSearch.</td></tr>
+<tr><td><code>getPostById</code></td><td><code>@Cacheable("posts")</code> caches a DTO that embeds user data and <code>commentCount</code>; stale for up to 60s after a rename or a new comment.</td><td>Cache the entity-only part; compose user data at read time; or invalidate key on events.</td></tr>
+<tr><td><code>updatePost</code></td><td>No ownership check; does not evict <code>allPosts</code>; extra user call for the response.</td><td>Compare <code>X-User-Id</code> to <code>post.userId</code>, return 403; <code>@CacheEvict</code>.</td></tr>
+</table>
+<h3>CommentEventListener: lost updates and double counting</h3>
+<pre>@KafkaListener(topics="comment-created", groupId="post-service-group")
+public void on(CommentCreatedEvent e){
+  System.out.println("received " + e);
+  Post p = postRepository.findById(e.getPostId()).get();   // read
+  p.setCommentCount(p.getCommentCount()+1);                // modify
+  postRepository.save(p);                                  // write
+}</pre>
+<ul>
+<li>Two concurrent events for one post both read N and both write N+1: <strong>lost update</strong>. Redelivery after a rebalance double-counts: <strong>not idempotent</strong>.</li>
+<li><code>.get()</code> throws on a deleted post, so the listener fails and Kafka retries the poison message forever (no DLT).</li>
+<li><code>System.out.println</code> bypasses logging, MDC and trace correlation.</li>
+</ul>
+<p><strong>Fix (atomic):</strong> <code>@Modifying @Query("update Post p set p.commentCount = p.commentCount + 1 where p.id = :id")</code>, store processed <code>eventId</code> in a table with a unique constraint, and configure <code>DefaultErrorHandler</code> with <code>DeadLetterPublishingRecoverer</code> and bounded back-off. Better still: derive the count with <code>SELECT count(*)</code> cached, or accept eventual consistency explicitly.</p>
+<h3>RedisCacheConfig</h3>
+<pre>ObjectMapper om = new ObjectMapper();                       // bare mapper
+om.activateDefaultTyping(LaissezFaireSubTypeValidator..., NON_FINAL);
+RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(60))
+    .disableCachingNullValues();</pre>
+<ul>
+<li><strong>Security</strong>: default typing with a permissive validator is the classic Jackson polymorphic deserialization gadget surface. Anyone able to write to Redis (unauthenticated Redis on the cluster network, see infra) gains code execution potential. Use <code>BasicPolymorphicTypeValidator</code> allow-listing <code>com.blog.*</code>, or <code>GenericJackson2JsonRedisSerializer</code> with a typed mapper per cache.</li>
+<li>Single TTL for every cache; no jitter, so synchronized expiry leads to stampedes on <code>allPosts</code>. Add per-cache TTLs with random jitter and <code>@Cacheable(sync=true)</code>.</li>
+<li>Pub/sub invalidation (<code>post-cache-invalidate</code>) is at-most-once: a replica that is restarting misses the message and serves stale data until TTL. Fine given the 60s TTL, but the complexity buys little over plain TTL plus targeted evicts.</li>
+</ul>
+<h3>application.yml</h3>
+<ul>
+<li><code>ddl-auto: update</code> in production images: schema drift, no rollback, no review. Adopt Flyway/Liquibase and set <code>validate</code>.</li>
+<li>Feign <code>logger-level: full</code> logs request and response bodies (may include PII, tokens).</li>
+<li>Resilience4j instances for <code>post-service</code>, <code>user-service</code>, <code>tag-service</code> are declared with identical settings, but no <code>@CircuitBreaker</code> or Feign fallback was found wired to them (<em>verify</em>); configuration without use gives false assurance.</li>
+<li>Datasource defaults <code>postgres/postgres</code> against the shared <code>main_db</code> (see data section).</li>
+</ul>
+</section>
+<section id="cl"><h2>Deep dive: comment, like-dislike and tag services</h2>
+<h3>comment-service</h3>
+<pre>// createComment
+userClient.getUserById(dto.getUserId());      // sync call 1
+postClient.getPostById(dto.getPostId());      // sync call 2 (pulls whole DTO + N+1 user lookup!)
+Comment c = repo.save(comment);
+kafkaTemplate.send("comment-created", postId, new com.blog.comment.event.CommentCreatedEvent(...));</pre>
+<ul>
+<li>Existence validation fetches full DTOs. <code>getPostById</code> itself calls user-service, so one comment creation fans out into 3+ synchronous hops on the request path. Replace with <code>HEAD</code>/<code>exists</code> endpoints or a local read-model of post ids fed from Kafka.</li>
+<li>Blanket catch rethrows <code>InvalidCommentException</code>, so an outage reads as "invalid comment" (400) instead of 503.</li>
+<li>Fire-and-forget Kafka send with no callback, no outbox: if the broker is down the comment persists but the count never increments.</li>
+<li><code>getCommentById</code> makes two more remote calls per read: read amplification. Enrich in the BFF/frontend or cache user summaries.</li>
+<li>userId taken from the request body (IDOR, impersonated comments).</li>
+</ul>
+<h3>like-dislike-service</h3>
+<table><tr><th>Area</th><th>Finding</th></tr>
+<tr><td>Toggle logic</td><td><code>createOrToggleLikeDislike</code> (lines 30-60) is check-then-act with no transaction, no lock and <strong>no unique constraint on (userId, postId)</strong>. Double-clicks or concurrent requests create duplicate rows; the next <code>Optional.get()</code> then fails with <code>IncorrectResultSizeDataAccessException</code>, poisoning that user/post pair permanently.</td></tr>
+<tr><td>Response contract</td><td>Returns <code>null</code> when a toggle deletes the row (200 with empty body); clients cannot tell what the new state is.</td></tr>
+<tr><td>Validation</td><td>Two sync calls (user, post) behind a blanket catch, generic 500 on any failure.</td></tr>
+<tr><td>Counts</td><td><code>getLikeDislikeCount</code> runs two <code>COUNT</code> queries, uncached; use one <code>GROUP BY type</code> query or a counter table updated atomically, cached in Redis.</td></tr>
+<tr><td>Delete</td><td><code>deleteLikeDislike</code> has no ownership check; missing row throws <code>RuntimeException</code> (500 instead of 404/204).</td></tr>
+<tr><td>Entity</td><td><code>createdAt</code> is a <code>Long</code> from <code>currentTimeMillis</code> (use <code>Instant</code>/<code>timestamptz</code>, <code>@CreationTimestamp</code>); no <code>@Index</code> on postId/userId; no <code>@Version</code>. Enum stored as STRING (good).</td></tr></table>
+<p><strong>Fix sketch:</strong> unique index <code>(user_id, post_id)</code>; an idempotent <code>PUT /posts/{id}/reaction</code> with body <code>{type}</code> (or <code>DELETE</code>) using <code>INSERT ... ON CONFLICT DO UPDATE</code>; identity from <code>X-User-Id</code>.</p>
+<h3>tag-service</h3>
+<ul>
+<li><code>getTagsByPostId</code> is N+1: one <code>findById</code> per <code>PostTag</code>. Use <code>tagRepository.findAllById(ids)</code> or a join query.</li>
+<li><code>createTag</code> / <code>assignTagToPost</code> are check-then-act with unconfirmed unique constraints (<em>verify</em>), no <code>@Transactional</code> on the service (the repository interfaces carry <code>@Transactional</code>, which is the wrong layer: transactions should wrap the use case).</li>
+<li><code>assignTagToPost</code> never verifies the post exists: tags attach to ghost posts.</li>
+<li><code>deleteTagById</code> leaves orphan <code>PostTag</code> rows (no FK cascade).</li>
+<li><code>removeTagFromPost</code> throws <code>TagNotFoundException</code> when the <em>association</em> is missing: misleading.</li>
+<li><code>updateTag</code> overwrites name/description/color with nulls from a partial DTO and does not check name collisions on rename.</li>
+<li>Entity exposed directly in the API (no DTO), so schema changes become breaking API changes. Repository fields are <code>public final</code>.</li>
+<li>All tag mutations open to any authenticated user; there is no admin role.</li>
+<li><code>getAllTags</code> unpaginated.</li>
+</ul>
+</section>
+
+<section id="sec"><h2>Security assessment (STRIDE)</h2>
+<p>Overall posture: <strong>authentication is present, authorisation is almost entirely absent</strong>. The only enforced rule is "have a valid token". Nothing checks that the caller owns the resource.</p>
+<table><tr><th>STRIDE</th><th>Threat</th><th>Evidence</th><th>Rating</th></tr>
+<tr><td>Spoofing</td><td>Forge tokens with the default secret; spoof <code>X-User-Id</code> on public paths or by hitting services directly.</td><td>Default secret in 6 files; headers not stripped; services <code>permitAll</code>.</td><td>Critical</td></tr>
+<tr><td>Tampering</td><td>Edit/delete any post, user, tag, vote.</td><td>No ownership checks in <code>updatePost</code>, <code>updateUser</code>, <code>deleteUser</code>, <code>deleteLikeDislike</code>, tag endpoints.</td><td>Critical</td></tr>
+<tr><td>Repudiation</td><td>Actions attributable to body-supplied ids, not to the authenticated identity; no audit log.</td><td>userId read from DTOs.</td><td>High</td></tr>
+<tr><td>Info disclosure</td><td>Public actuator topology, email in user lists, Feign full logging, enumeration messages, DEBUG logs.</td><td>Gateway yml, <code>UserService.getAllUsers</code>.</td><td>High</td></tr>
+<tr><td>Denial of service</td><td>No rate limits, unpaginated lists, no timeouts at the gateway, unbounded Kafka retry loop.</td><td>Gateway yml, <code>PostService.getAllPosts</code>.</td><td>High</td></tr>
+<tr><td>Elevation of privilege</td><td>No roles; Jackson default typing; containers run as root; Redis/Kafka/Postgres without auth.</td><td>Dockerfiles, <code>RedisCacheConfig</code>, infra manifests.</td><td>High</td></tr></table>
+<h3>Authentication/authorisation matrix (as implemented)</h3>
+<table><tr><th>Endpoint</th><th>Gateway rule</th><th>Service rule</th><th>Ownership enforced?</th></tr>
+<tr><td>POST /api/auth/login</td><td>public</td><td>none</td><td>n/a (no lockout seen, <em>verify</em>)</td></tr>
+<tr><td>POST /api/users</td><td>public</td><td>none</td><td>n/a</td></tr>
+<tr><td>GET /api/users</td><td>JWT</td><td>none</td><td>No: lists everyone, with emails</td></tr>
+<tr><td>PUT/DELETE /api/users/{id}</td><td>JWT</td><td>none</td><td><strong>No</strong></td></tr>
+<tr><td>GET /api/posts*</td><td>public</td><td>none</td><td>n/a</td></tr>
+<tr><td>POST /api/posts</td><td>JWT</td><td>none</td><td>No: userId from body</td></tr>
+<tr><td>PUT/DELETE /api/posts/{id}</td><td>JWT</td><td>none</td><td><strong>No</strong></td></tr>
+<tr><td>POST /api/comments</td><td>JWT</td><td>none</td><td>No: userId from body</td></tr>
+<tr><td>POST/DELETE /api/likedislike</td><td>JWT</td><td>none</td><td>No</td></tr>
+<tr><td>POST/PUT/DELETE /api/tags</td><td>JWT</td><td>none</td><td>No role check</td></tr></table>
+<h3>IDOR walk-through</h3>
+<pre># Attacker is user 7, victim is user 3. One valid token for user 7 is enough.
+curl -X PUT  $GW/api/users/3  -H "Authorization: Bearer $T7" -d '{"email":"x@evil.tld"}'
+curl -X DELETE $GW/api/posts/42 -H "Authorization: Bearer $T7"
+curl -X POST $GW/api/posts -H "Authorization: Bearer $T7" -d '{"userId":3,"title":"as victim"}'</pre>
+<p>All three succeed. This is the highest-impact finding in the review and can be closed in a day: compare <code>X-User-Id</code> with the resource owner in each service, and delete <code>userId</code> from write DTOs.</p>
+<h3>Secrets</h3>
+<ul>
+<li>Helm <code>secrets.yaml</code> templates Kubernetes <code>Secret.stringData</code> from <code>values.yaml</code>; secrets live in git in clear text. Use External Secrets/SealedSecrets/SOPS plus a cloud secret manager.</li>
+<li>Default DB credentials <code>postgres/postgres</code> and the placeholder JWT secret are baked into config defaults. Fail fast on boot if the secret equals the placeholder.</li>
+<li><code>.gitignore</code> does not exclude <code>.env</code>, <code>.claude/</code>, or credential files. Add them and run <code>gitleaks</code> in CI plus a history scan.</li>
+</ul>
+<h3>Frontend token handling</h3>
+<p><code>client.ts</code> keeps the JWT in <code>localStorage('authToken')</code> (readable by any XSS), also stores <code>authUserId</code> and sends it in bodies (feeding IDOR). A 401 clears storage, but there is no expiry decode, silent refresh or logout call. Prefer short-lived access tokens in memory plus an httpOnly, SameSite refresh cookie, and add a CSP.</p>
+</section>
+
+<section id="data"><h2>Data model and consistency</h2>
+<ul>
+<li><strong>Shared database</strong>: all five data services use one <code>main_db</code> with default <code>postgres</code> superuser. This couples schemas, defeats service autonomy, and one runaway query affects all. Move to schema-per-service with distinct roles (cheap), then database-per-service if scale demands.</li>
+<li><strong>Schema management</strong>: <code>ddl-auto: update</code> in all five services. No migrations, no rollback, silent drift, risky column renames. Introduce Flyway with a baseline migration, set <code>validate</code>.</li>
+<li><strong>Constraints</strong>: unique on username, email, tag name, (user, post) vote and (post, tag) are unconfirmed or absent; no foreign keys can exist across services, so referential integrity is enforced only by chatty sync validation, which is itself racy.</li>
+<li><strong>Indexes</strong>: none declared on <code>post.user_id</code>, <code>comment.post_id</code>, <code>like_dislike(post_id)</code>, <code>post_tag(post_id)</code>; title search unindexed.</li>
+<li><strong>Types</strong>: epoch <code>Long</code> timestamps in some entities, mixed styles in others. Standardise on <code>Instant</code> / <code>timestamptz</code>.</li>
+<li><strong>Derived counters</strong> (<code>commentCount</code>, <code>postCount</code>) maintained by consumers: lost updates and non-idempotency (see post-service).</li>
+<li><strong>Deletion semantics</strong>: deleting a user or post leaves orphans in other services. Emit <code>UserDeleted</code>/<code>PostDeleted</code> events with idempotent cleanup consumers, or soft-delete.</li>
+<li><strong>Pagination</strong>: every list endpoint is unbounded.</li>
+</ul>
+<h3>Consistency model to adopt</h3>
+<table><tr><th>Pattern</th><th>Use for</th></tr>
+<tr><td>Transactional outbox + relay</td><td>Every DB write that must emit an event.</td></tr>
+<tr><td>Idempotent consumer (processed_events table)</td><td>Counters and projections.</td></tr>
+<tr><td>Saga/compensation</td><td>Cascading deletes across services.</td></tr>
+<tr><td>Local read-model of user summaries</td><td>Removes N+1 Feign calls to user-service.</td></tr></table>
+</section>
+<section id="kafka"><h2>Kafka and event design</h2>
+<table><tr><th>Topic</th><th>Producer</th><th>Consumer</th><th>Issue</th></tr>
+<tr><td><code>post-created</code></td><td>post-service</td><td>user-service (<code>PostEventListener</code>)</td><td>Dual write; counter not idempotent.</td></tr>
+<tr><td><code>comment-created</code></td><td>comment-service</td><td>post-service (<code>CommentEventListener</code>)</td><td>Dual write; lost update; no DLT; <code>println</code>.</td></tr></table>
+<ul>
+<li><strong>Delivery guarantees</strong>: producers use default settings: no <code>acks=all</code>, no <code>enable.idempotence</code>, no send callback. Failures vanish silently.</li>
+<li><strong>Schema</strong>: events are Java classes duplicated per service and serialised with JSON; no schema registry, no versioning, no <code>eventId</code> / <code>occurredAt</code> envelope. A field rename breaks consumers at runtime.</li>
+<li><strong>Error handling</strong>: no <code>DefaultErrorHandler</code>, back-off, retry topic or dead-letter topic; one poison message stalls the partition.</li>
+<li><strong>Topology</strong>: single Zookeeper + single Kafka broker (cp-kafka 7.4.0), replication factor 1, topics auto-created. Any restart loses availability; disk loss loses data. Migrate to KRaft and 3 brokers for production, or a managed service.</li>
+<li><strong>Is Kafka justified?</strong> For two counter updates, a broker plus Zookeeper is heavy. Either commit to events (outbox, more consumers: search index, notifications, analytics) or compute counts via query and cache.</li>
+</ul>
+</section>
+
+<section id="redis"><h2>Redis and caching strategy</h2>
+<ul>
+<li>Redis 7.0.11 single instance, no password, no persistence policy, no <code>maxmemory-policy</code>. Treat as a cache: set <code>maxmemory</code> + <code>allkeys-lru</code>, require auth/TLS, restrict via NetworkPolicy.</li>
+<li>One global 60s TTL with no jitter; <code>allPosts</code> is a single hot key that expires for all readers simultaneously (stampede). Use <code>sync=true</code>, jitter and stale-while-revalidate.</li>
+<li>Cached DTOs embed cross-service data (user name, comment count), so cache correctness depends on three services. Cache only data the service owns.</li>
+<li>Pub/sub invalidation <code>post-cache-invalidate</code> is lossy; <code>publishAllInvalidated</code> wipes everything on every create, which erodes hit ratio under write load.</li>
+<li>Redis is the obvious backing store for the missing gateway rate limiter and, optionally, a token deny-list.</li>
+<li>Jackson default typing: see Security (deserialisation risk).</li>
+</ul>
+</section>
+
+<section id="res"><h2>Resilience and failure modes</h2>
+<table><tr><th>Failure</th><th>Today</th><th>Target</th></tr>
+<tr><td>user-service slow</td><td>Every post/comment/like request blocks up to 5s (Feign read timeout) per call; lists multiply by N. Thread exhaustion cascades to the gateway.</td><td>Bulkheads, circuit breaker with fallback, batch lookups, local read-model.</td></tr>
+<tr><td>Kafka down</td><td>Writes succeed, events dropped silently, counters drift permanently.</td><td>Outbox; alert on relay lag.</td></tr>
+<tr><td>Redis down</td><td>Cache calls throw unless an error handler is configured (<em>verify</em>).</td><td><code>CacheErrorHandler</code> that logs and falls through to DB.</td></tr>
+<tr><td>Postgres down</td><td>All five services fail; shared single instance, StatefulSet with one replica.</td><td>Managed HA Postgres, readiness probes that detect it.</td></tr>
+<tr><td>Eureka down</td><td>Cached registry survives for a while; new instances not discovered; in k8s it is redundant with DNS.</td><td>Drop Eureka in k8s; use service DNS.</td></tr>
+<tr><td>Gateway pod restart</td><td>Single replica in several manifests: downtime.</td><td>2+ replicas, PDB, rolling update with readiness gates.</td></tr></table>
+<p>The Resilience4j config exists but is not demonstrably wired (see post-service). The first resilience task is to prove it works with a fault-injection test.</p>
+</section>
+
+<section id="api"><h2>API contract review</h2>
+<ul>
+<li><strong>Errors</strong>: inconsistent. Blanket catches produce generic 500 or 400 for everything; no problem+json; messages leak internals.</li>
+<li><strong>Verbs/semantics</strong>: toggle-by-POST returns <code>null</code>; <code>DELETE</code> on a missing row yields 500; <code>PUT</code> performs partial update (should be <code>PATCH</code>).</li>
+<li><strong>Identity in payloads</strong>: <code>userId</code> in request bodies. Derive from token.</li>
+<li><strong>Pagination/sorting/filtering</strong>: absent. Standardise on <code>?page&amp;size&amp;sort</code> or cursor.</li>
+<li><strong>Versioning</strong>: no <code>/v1</code> prefix; DTO duplicates across services drift.</li>
+<li><strong>Documentation</strong>: a Postman collection and prose docs exist but no OpenAPI. Add <code>springdoc-openapi</code> per service, aggregate at the gateway, and generate the TypeScript client from it.</li>
+<li><strong>Entity leakage</strong>: tag-service returns JPA entities directly.</li>
+<li><strong>Validation</strong>: add <code>@Valid</code>, <code>@NotBlank</code>, <code>@Email</code>, size limits, and a global <code>@RestControllerAdvice</code>.</li>
+</ul>
+</section>
+
+<section id="fe"><h2>Frontend review (React + Vite + TypeScript)</h2>
+<p>Components: <code>CommentSection, ConfirmDialog, CreateUserForm, Dialog, LikeDislikeButton, LoginScreen, PostForm, PostList, RequestFlowSidebar, TagManager</code>, plus <code>api/</code>, <code>services/</code>, <code>App.tsx</code>, <code>main.tsx</code>.</p>
+<ul>
+<li><strong>Token storage</strong>: <code>localStorage</code>; no expiry awareness; 401 handler clears storage but does not redirect or refresh cleanly.</li>
+<li><strong>Client trusts itself</strong>: stores <code>authUserId</code> and sends it in bodies; UI hides buttons for non-owners but the server does not enforce, so the UI gives false assurance.</li>
+<li><strong>Data fetching</strong>: hand-rolled calls; adopt TanStack Query for caching, retries, invalidation and loading/error states; fixes duplicate fetches after mutations.</li>
+<li><strong>Lists</strong>: loads all posts at once; add pagination or infinite scroll and virtualisation.</li>
+<li><strong>Demo code in product</strong>: <code>RequestFlowSidebar</code> relies on gateway tracking headers hard-coded to ports 8081-8084; useful for teaching, but should be behind a feature flag and not part of the prod path.</li>
+<li><strong>Accessibility</strong>: verify dialog focus trapping, labelled inputs, keyboard operation of like buttons, colour contrast (<code>Dialog</code>, <code>ConfirmDialog</code>).</li>
+<li><strong>Tests/lint</strong>: no component tests; add Vitest + Testing Library, ESLint, <code>tsc --noEmit</code> in CI.</li>
+<li><strong>Delivery</strong>: <code>VITE_API_URL</code> is build-time; one build per environment. Prefer same-origin <code>/api</code> behind the ingress/CDN, which also removes the need for CORS.</li>
+</ul>
+</section>
+
+<section id="infra"><h2>Docker, Kubernetes, Helm, Compose</h2>
+<h3>Docker</h3>
+<ul><li>Root user, no <code>HEALTHCHECK</code>, no JVM memory flags, tag-pinned base images, <code>-DskipTests</code>, <code>|| true</code> masking errors. Other services' Dockerfiles likely identical (<em>verify</em>): extract a shared pattern or use Jib/Buildpacks with a distroless JRE, non-root user, layered jars.</li></ul>
+<h3>Kubernetes (<code>k8s/</code>, kind-oriented)</h3>
+<ul>
+<li>No <code>livenessProbe</code>, no <code>resources</code> requests/limits, no HPA, no PDB, no <code>securityContext</code>, no <code>NetworkPolicy</code>.</li>
+<li>Postgres, Kafka, Zookeeper, Redis as single-replica Deployments/StatefulSets without backups; stateful infra should be managed services or operators.</li>
+<li>Eureka runs next to native k8s DNS: two discovery systems.</li>
+</ul>
+<h3>Helm (<code>helm/blog/</code>)</h3>
+<ul>
+<li>Duplicates <code>k8s/</code> manifests: two sources of truth that will diverge. Keep Helm only and generate kind config from values.</li>
+<li><code>imagePullPolicy: Never</code> in templates (kind-only). Breaks any real cluster; make it a value.</li>
+<li><code>replicas: 1</code> hard-coded; secrets in <code>values.yaml</code>; no probes/resources in the sampled template.</li>
+<li>Every template repeats near-identical Deployment+Service blocks: use a shared named template or a library chart.</li>
+</ul>
+<h3>Compose, Render, Railway</h3>
+<ul><li>Configuration is replicated across five deployment flavours (compose, Render, Railway, k8s, Helm), and the same env names are re-declared each time. Pick one primary target and generate the others, or delete the unused ones.</li>
+<li>Published host ports defeat the "only gateway is reachable" assumption (<em>verify compose port mappings</em>).</li>
+<li><code>grafana/</code> provisioning file is named <code>dashbaords.yml</code> (typo): Grafana provisioning may not pick it up depending on how it is referenced.</li></ul>
+</section>
+
+<section id="obs"><h2>Observability</h2>
+<ul>
+<li><strong>Present</strong>: Micrometer + OTLP tracing to <code>otel-collector</code>, Prometheus endpoints, Grafana provisioning. Good foundation.</li>
+<li><strong>Problems</strong>: sampling probability 1.0 everywhere (cost and overhead; use 0.05-0.1 or tail-based sampling at the collector); OTLP endpoint hard-coded to <code>http://otel-collector:4318</code> so it cannot be overridden without a rebuild; DEBUG logging for <code>com.blog</code>; <code>System.out.println</code> in the listener; Feign full logging.</li>
+<li><strong>Missing</strong>: structured JSON logs with <code>traceId</code>, business metrics (posts created, cache hit ratio, consumer lag), SLOs and alerts, dashboards-as-code reviewed, Kafka lag exporter, health groups (liveness vs readiness).</li>
+<li>Actuator is publicly routable through the gateway (security issue as well).</li>
+</ul>
+</section>
+
+<section id="test"><h2>Testing strategy</h2>
+<p>There are <strong>zero test classes</strong> in the repository (<code>*Test*.java</code> not found). Builds skip tests anyway. All findings in this document are therefore unguarded against regression.</p>
+<table><tr><th>Layer</th><th>Tooling</th><th>First targets</th></tr>
+<tr><td>Unit</td><td>JUnit 5, Mockito, AssertJ</td><td><code>JwtVerifier</code>, <code>isPublic</code> matrix, <code>UserService</code> rules.</td></tr>
+<tr><td>Slice/integration</td><td>Testcontainers (Postgres, Kafka, Redis), <code>@DataJpaTest</code></td><td>Unique constraints, toggle concurrency, idempotent consumer.</td></tr>
+<tr><td>Contract</td><td>Spring Cloud Contract or Pact</td><td>Feign clients vs user/post services; Kafka event schemas.</td></tr>
+<tr><td>Security</td><td>WebTestClient</td><td>Spoofed <code>X-User-Id</code>, expired/forged tokens, IDOR cases (must return 403).</td></tr>
+<tr><td>E2E</td><td>Playwright against compose</td><td>Signup, login, post, comment, like.</td></tr>
+<tr><td>Load</td><td>k6/Gatling</td><td><code>GET /api/posts</code> with 10k posts; verify N+1 fixed.</td></tr></table>
+</section>
+
+<section id="ci"><h2>CI/CD proposal</h2>
+<p>There is no CI: <code>.github/</code> contains only <code>modernize/appcat</code> assessment artefacts and no <code>workflows/</code>. Proposed pipeline:</p>
+<pre>name: ci
+on: [pull_request, push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy: { matrix: { svc: [api-gateway,user-service,post-service,comment-service,like-dislike-service,tag-service,eureka-server] } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17, cache: maven }
+      - run: mvn -B -pl ${{ matrix.svc }} -am verify        # tests ON
+      - uses: aquasecurity/trivy-action@master              # image + deps scan
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: cd frontend &amp;&amp; npm ci &amp;&amp; npm run lint &amp;&amp; npx tsc --noEmit &amp;&amp; npm test --if-present &amp;&amp; npm run build
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2</pre>
+<p>Then: build and push images tagged with the commit SHA, Dependabot/Renovate, branch protection requiring green checks, and a deploy job via Helm/Argo CD.</p>
+</section>
+
+<section id="perf"><h2>Performance, capacity and cost</h2>
+<table><tr><th>Hot path</th><th>Cost model today</th><th>After fixes</th></tr>
+<tr><td>GET /api/posts (N posts)</td><td>1 full table scan + N HTTP calls to user-service (+ gateway hop each).</td><td>1 paged query + 1 batch lookup (or zero with denormalised author).</td></tr>
+<tr><td>POST /api/comments</td><td>2 sync Feign calls (one fans out to a 3rd) + insert + Kafka.</td><td>1 insert + outbox row.</td></tr>
+<tr><td>Like toggle</td><td>2 validation calls + select + write.</td><td>1 upsert.</td></tr>
+<tr><td>Like counts</td><td>2 COUNT queries per request, uncached.</td><td>1 grouped query or counter row, cached.</td></tr>
+<tr><td>Search by title</td><td>Sequential scan, N+1 user calls.</td><td>Trigram/FTS index, paged.</td></tr></table>
+<ul>
+<li>JVM footprint: 7 Spring Boot JVMs + Kafka + Zookeeper + Postgres + Redis + OTel + Prometheus + Grafana. A modest cluster just to idle. Consider consolidating comment/like/tag into one "engagement" service, or a modular monolith, until scale demands otherwise.</li>
+<li>Tune: <code>-XX:MaxRAMPercentage=75</code>, <code>spring.jmx.enabled=false</code>, lazy init, CDS/AOT or GraalVM native for gateway; Hikari pool sizing (<code>maximum-pool-size</code> vs Postgres <code>max_connections</code> with 5 services).</li>
+<li>Logging at DEBUG plus 100% tracing is itself a measurable CPU and storage cost.</li>
+</ul>
+</section>
+
+<section id="code"><h2>Code quality and maintainability</h2>
+<ul>
+<li><strong>Duplication</strong>: <code>RenderDatabaseUrlEnvironmentPostProcessor</code>, <code>CorsConfig</code>, <code>UserDTO</code> and event classes are copy-pasted across services. Extract a <code>blog-common</code> starter (versioned) for the post-processor, error model, event envelope, and header constants.</li>
+<li><strong>Style</strong>: mixed 2-space (Google) and 4-space indentation; stray spacing like <code>encode( password)</code>; misspellings (<code>unautorized</code>, <code>expirationsMs</code>, <code>dashbaords.yml</code>). Add Spotless/Checkstyle and EditorConfig.</li>
+<li><strong>Exceptions</strong>: <code>catch (Exception)</code> then <code>RuntimeException</code> pervasive; create domain exceptions and a single advice that maps them.</li>
+<li><strong>Encapsulation</strong>: <code>public final</code> repository fields (<code>TagService</code>), public repository field in <code>CommentEventListener</code>.</li>
+<li><strong>Leftovers</strong>: template comments in <code>JwtAuthFilter</code> (29-31), pointless <code>rawPath.split("\\?")</code>, demo logic in <code>RequestTrackingFilter</code>.</li>
+<li><strong>Layering</strong>: <code>@Transactional</code> on repositories (<code>PostTagRepository</code>) instead of service methods; services return DTOs built with manual mapping: adopt MapStruct.</li>
+<li><strong>Dependencies</strong>: Java 17 / Spring Boot version drift across modules should be unified through a parent POM / BOM; no multi-module root build exists, so every service builds in isolation.</li>
+</ul>
+</section>
+
+<section id="hyg"><h2>Repository hygiene</h2>
+<ul>
+<li>267 tracked files include AI-tool state (<code>.claude/agent-memory-local/*</code>, <code>docs/superpowers/*</code>, <code>.impeccable/critique/*.md</code>), a generated <code>architecture-explorer.html</code>, and a Postman collection. Remove or ignore tool state.</li>
+<li><code>.gitignore</code> lacks <code>.env*</code>, <code>.claude/</code>, <code>*.pem</code>, IDE files beyond <code>.idea</code>; it ignores <code>*.png</code> globally, which may hide legitimate docs images.</li>
+<li>Overlapping docs (<code>README</code>, <code>ARCHITECTURE.txt</code>, <code>DELIVERY_SUMMARY.txt</code>, <code>START_HERE.txt</code>, <code>k8s/ARCHITECTURE.md</code>) can contradict each other; some mention a Kotlin port though no <code>.kt</code> file exists. Collapse to a README, <code>docs/architecture.md</code> and ADRs.</li>
+<li>Commit history has messages like "ds", "ewq", "inti", "jwt". Adopt Conventional Commits and PR templates, plus CODEOWNERS.</li>
+</ul>
+</section>
+
+<section id="risk"><h2>Risk matrix and effort/impact</h2>
+<table><tr><th>Theme</th><th>Likelihood</th><th>Impact</th><th>Effort</th><th>Priority</th></tr>
+<tr><td>Missing authorisation / IDOR</td><td>Very high</td><td>Critical</td><td>S</td><td>P0</td></tr>
+<tr><td>Default JWT secret, no startup guard</td><td>High</td><td>Critical</td><td>XS</td><td>P0</td></tr>
+<tr><td>Services directly reachable, permitAll</td><td>High</td><td>Critical</td><td>M</td><td>P0</td></tr>
+<tr><td>Public actuator</td><td>Very high</td><td>High</td><td>XS</td><td>P0</td></tr>
+<tr><td>No tests / no CI</td><td>Certain</td><td>High</td><td>M</td><td>P1</td></tr>
+<tr><td>Dual-write event loss, counter races</td><td>Medium</td><td>High</td><td>M</td><td>P1</td></tr>
+<tr><td>N+1 and unbounded lists</td><td>Certain at scale</td><td>High</td><td>S-M</td><td>P1</td></tr>
+<tr><td>Vote duplicates (no unique key)</td><td>High</td><td>Medium</td><td>XS</td><td>P1</td></tr>
+<tr><td>ddl-auto update, shared DB</td><td>Medium</td><td>High</td><td>M</td><td>P2</td></tr>
+<tr><td>Root containers, no limits/probes</td><td>Certain</td><td>Medium</td><td>S</td><td>P2</td></tr>
+<tr><td>Repo hygiene, duplication</td><td>Certain</td><td>Low</td><td>S</td><td>P3</td></tr></table>
+</section>
+
+<section id="adr"><h2>Proposed ADRs</h2>
+<table><tr><th>#</th><th>Decision</th><th>Rationale</th></tr>
+<tr><td>ADR-1</td><td>Authorisation enforced in each service from the verified JWT (resource-server), not from a trusted header.</td><td>Defence in depth; works when ports are exposed.</td></tr>
+<tr><td>ADR-2</td><td>Asymmetric JWT (ES256) with JWKS and short-lived access tokens + refresh.</td><td>Removes shared secret; enables rotation and revocation.</td></tr>
+<tr><td>ADR-3</td><td>Flyway for all schema changes; <code>ddl-auto=validate</code>.</td><td>Reviewable, reversible schema evolution.</td></tr>
+<tr><td>ADR-4</td><td>Transactional outbox for all domain events; idempotent consumers.</td><td>Eliminates dual-write loss and double counts.</td></tr>
+<tr><td>ADR-5</td><td>Schema-per-service, then DB-per-service.</td><td>Autonomy and blast-radius reduction.</td></tr>
+<tr><td>ADR-6</td><td>Helm as the single deploy artefact; remove duplicated manifests.</td><td>One source of truth.</td></tr>
+<tr><td>ADR-7</td><td>Drop Eureka in Kubernetes; use DNS.</td><td>Less moving parts.</td></tr>
+<tr><td>ADR-8</td><td>OpenAPI as contract; generate the TS client.</td><td>Prevents frontend/backend drift.</td></tr></table>
+</section>
+
+<section id="rb"><h2>Operational runbook sketches</h2>
+<h3>Rotate the JWT secret (today)</h3>
+<ol><li>Generate 48+ random bytes; store in the secret manager.</li><li>Roll gateway and user-service together (both must share it); all sessions invalidate.</li><li>Verify with a login and an authenticated call; watch 401 rate on the dashboard.</li></ol>
+<h3>Comment counts drifted</h3>
+<ol><li>Compare <code>post.comment_count</code> with <code>select post_id,count(*) from comment group by 1</code>.</li><li>Run a one-off correcting UPDATE; check consumer lag on group <code>post-service-group</code>.</li><li>Look for poison messages (stuck offset) and broker availability during the incident window.</li></ol>
+<h3>Cache serving stale posts</h3>
+<ol><li>Check TTL (60s) and that <code>post-cache-invalidate</code> messages arrive.</li><li>As a mitigation, <code>redis-cli --scan --pattern 'posts*' | xargs redis-cli del</code>.</li></ol>
+</section>
+
+<section id="gloss"><h2>Glossary and open verification list</h2>
+<table><tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>IDOR</td><td>Insecure direct object reference: acting on an object id without checking ownership.</td></tr>
+<tr><td>Outbox</td><td>Writing events to a DB table in the same transaction as the data, relayed to the broker afterwards.</td></tr>
+<tr><td>TOCTOU</td><td>Time-of-check to time-of-use race.</td></tr>
+<tr><td>N+1</td><td>One query/call for a list plus one more for each item.</td></tr>
+<tr><td>DLT</td><td>Dead-letter topic for messages that repeatedly fail.</td></tr></table>
+<h3>Items I could not confirm from source and recommend verifying before presenting as fact</h3>
+<ul>
+<li>Dockerfiles of services other than api-gateway (assumed root, no HEALTHCHECK).</li>
+<li><code>AuthController</code> login behaviour (lockout, error shape).</li>
+<li>Actual DB unique constraints on username, email, tag name and associations.</li>
+<li>Whether <code>@CircuitBreaker</code> or Feign fallbacks are wired to the Resilience4j instances.</li>
+<li>Whether any downstream service reads <code>X-User-Id</code>.</li>
+<li><code>PostService.deletePost</code> behaviour (ownership, cache eviction, events).</li>
+<li>docker-compose published ports and Eureka dashboard security.</li>
+</ul>
+</section>
+<section id="dg1"><h2>Diagram: current architecture</h2>
+<p>Everything below is derived from the repository: one public entry point (api-gateway), five domain services plus user-service, Eureka for discovery, Kafka for async events, Redis for cache, Postgres as storage.</p>
+<svg viewBox="0 0 900 440" width="100%" role="img" aria-label="Current architecture">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b98a8"/></marker></defs>
+<rect class="box" x="20" y="180" width="110" height="50" rx="8"/><text x="45" y="210">React SPA</text>
+<rect class="box" x="190" y="170" width="140" height="70" rx="8"/><text x="205" y="200">api-gateway</text><text x="205" y="218">JWT filter · routes</text>
+<rect class="box" x="400" y="20" width="130" height="46" rx="8"/><text x="420" y="48">user-service</text>
+<rect class="box" x="400" y="95" width="130" height="46" rx="8"/><text x="420" y="123">post-service</text>
+<rect class="box" x="400" y="170" width="130" height="46" rx="8"/><text x="410" y="198">comment-service</text>
+<rect class="box" x="400" y="245" width="130" height="46" rx="8"/><text x="405" y="273">like-dislike-svc</text>
+<rect class="box" x="400" y="320" width="130" height="46" rx="8"/><text x="430" y="348">tag-service</text>
+<rect class="box" x="620" y="20" width="130" height="46" rx="8"/><text x="640" y="48">Postgres (users)</text>
+<rect class="box" x="620" y="110" width="130" height="46" rx="8"/><text x="640" y="138">Postgres (posts…)</text>
+<rect class="box" x="620" y="200" width="130" height="46" rx="8"/><text x="660" y="228">Redis</text>
+<rect class="box" x="620" y="290" width="130" height="46" rx="8"/><text x="660" y="318">Kafka</text>
+<rect class="box" x="190" y="330" width="140" height="46" rx="8"/><text x="225" y="358">Eureka</text>
+<path class="line" d="M130 205H190"/><path class="line" d="M330 190L400 43"/><path class="line" d="M330 195L400 118"/><path class="line" d="M330 205L400 193"/><path class="line" d="M330 215L400 268"/><path class="line" d="M330 225L400 343"/>
+<path class="line" d="M530 43H620"/><path class="line" d="M530 118H620"/><path class="line" d="M530 270L620 223"/><path class="line" d="M530 268L620 313"/><path class="line" d="M530 130L620 215"/>
+<path class="line" d="M260 330V240" stroke-dasharray="4"/>
+<text x="20" y="420">Dashed = service discovery. Solid = request/event path. Inter-service REST calls (post→user, comment→user) are omitted for clarity but exist (see N+1 findings).</text></svg>
+<div class="callout warn"><b>Reading the picture:</b> the gateway is the only trust boundary. Anything that can reach a service port directly (compose, NodePort, in-cluster pod) bypasses authentication entirely.</div>
+<table><tr><th>Edge</th><th>Protocol</th><th>Failure mode</th><th>Mitigation needed</th></tr>
+<tr><td>SPA → gateway</td><td>HTTPS/JSON</td><td>Token theft via localStorage XSS</td><td>HttpOnly cookie or BFF; CSP</td></tr>
+<tr><td>gateway → service</td><td>HTTP via Eureka</td><td>Stale registry, no mTLS</td><td>Mesh/mTLS, retries with budget</td></tr>
+<tr><td>service → service</td><td>REST</td><td>N+1, cascading latency</td><td>Batch endpoints, cache, async projection</td></tr>
+<tr><td>service → Kafka</td><td>TCP</td><td>Dual-write loss</td><td>Transactional outbox</td></tr>
+<tr><td>service → Redis</td><td>RESP</td><td>Stampede, stale entries</td><td>TTL jitter, single-flight, invalidation on write</td></tr></table></section>
+
+<section id="dg2"><h2>Diagram: request sequence (create post, then like)</h2>
+<svg viewBox="0 0 900 400" width="100%" role="img" aria-label="Sequence">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b98a8"/></marker></defs>
+<text x="40" y="20">Client</text><text x="200" y="20">Gateway</text><text x="360" y="20">post-svc</text><text x="520" y="20">DB</text><text x="650" y="20">Kafka</text><text x="780" y="20">like-svc</text>
+<path d="M55 30V380M215 30V380M375 30V380M525 30V380M660 30V380M795 30V380" stroke="#8b98a8" stroke-dasharray="3"/>
+<path class="line" d="M55 60H215"/><text x="70" y="55">POST /posts + JWT</text>
+<path class="line" d="M215 95H375"/><text x="230" y="90">validate JWT, forward</text>
+<path class="line" d="M375 130H525"/><text x="390" y="125">INSERT post</text>
+<path class="line" d="M375 165H660"/><text x="420" y="160">publish PostCreated (separate tx!)</text>
+<path class="line" d="M375 200H55"/><text x="150" y="195">201 Created</text>
+<path class="line" d="M55 250H215"/><text x="70" y="245">POST /likes</text>
+<path class="line" d="M215 285H795"/><text x="400" y="280">route + forward</text>
+<path class="line" d="M795 320H525"/><text x="600" y="315">upsert like (no unique constraint – verify)</text>
+<path class="line" d="M795 355H660"/><text x="700" y="350">LikeEvent</text></svg>
+<p><b>Observations:</b> the DB commit and the Kafka publish are two independent operations, so a crash between them loses or duplicates events. The like path has no idempotency key; double-click means double-count. These map to findings on outbox and idempotency.</p></section>
+
+<section id="dg3"><h2>Diagram: Kafka event flow and failure points</h2>
+<svg viewBox="0 0 900 300" width="100%" role="img" aria-label="Kafka">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b98a8"/></marker></defs>
+<rect class="box" x="20" y="110" width="140" height="50" rx="8"/><text x="40" y="140">Producer svc</text>
+<rect class="box" x="260" y="110" width="150" height="50" rx="8"/><text x="285" y="140">Topic (N partitions)</text>
+<rect class="box" x="520" y="40" width="140" height="50" rx="8"/><text x="545" y="70">Consumer A</text>
+<rect class="box" x="520" y="180" width="140" height="50" rx="8"/><text x="555" y="210">DLT topic</text>
+<rect class="box" x="740" y="40" width="130" height="50" rx="8"/><text x="770" y="70">Read model</text>
+<path class="line" d="M160 135H260"/><path class="line" d="M410 125L520 70"/><path class="line" d="M590 90V180" stroke-dasharray="4"/><path class="line" d="M660 65H740"/>
+<text x="20" y="260">① no outbox  ② no schema registry  ③ key choice decides ordering  ④ consumer must be idempotent  ⑤ DLT needs alerting + replay tool</text></svg>
+<table><tr><th>#</th><th>Gap</th><th>Consequence</th><th>Remedy</th></tr>
+<tr><td>1</td><td>Publish after commit</td><td>Lost events</td><td>Outbox + relay (Debezium or poller)</td></tr>
+<tr><td>2</td><td>JSON without schema</td><td>Silent breaking changes</td><td>Avro/Protobuf + registry, compatibility BACKWARD</td></tr>
+<tr><td>3</td><td>Partition key unclear</td><td>Out-of-order per post</td><td>Key by aggregate id</td></tr>
+<tr><td>4</td><td>At-least-once</td><td>Duplicates</td><td>Processed-event table / natural idempotency</td></tr>
+<tr><td>5</td><td>No DLT runbook</td><td>Poison message stalls partition</td><td>DefaultErrorHandler + backoff + DLT + alert</td></tr></table></section>
+
+<section id="dg4"><h2>Diagram: target architecture</h2>
+<svg viewBox="0 0 900 420" width="100%" role="img" aria-label="Target">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b98a8"/></marker></defs>
+<rect class="box" x="20" y="30" width="120" height="44" rx="8"/><text x="50" y="57">CDN + WAF</text>
+<rect class="box" x="20" y="110" width="120" height="44" rx="8"/><text x="45" y="137">SPA / BFF</text>
+<rect class="box" x="200" y="70" width="150" height="60" rx="8"/><text x="215" y="97">Gateway + OIDC</text><text x="215" y="115">rate limit · authZ</text>
+<rect class="box" x="420" y="20" width="440" height="230" rx="10" style="stroke-dasharray:5"/><text x="430" y="40">Service mesh (mTLS, retries, telemetry)</text>
+<rect class="box" x="440" y="60" width="110" height="40" rx="8"/><text x="458" y="85">users</text>
+<rect class="box" x="570" y="60" width="110" height="40" rx="8"/><text x="590" y="85">posts</text>
+<rect class="box" x="700" y="60" width="110" height="40" rx="8"/><text x="715" y="85">comments</text>
+<rect class="box" x="440" y="130" width="110" height="40" rx="8"/><text x="465" y="155">likes</text>
+<rect class="box" x="570" y="130" width="110" height="40" rx="8"/><text x="600" y="155">tags</text>
+<rect class="box" x="700" y="130" width="110" height="40" rx="8"/><text x="715" y="155">feed/search</text>
+<rect class="box" x="440" y="290" width="130" height="44" rx="8"/><text x="455" y="317">Kafka + Registry</text>
+<rect class="box" x="600" y="290" width="130" height="44" rx="8"/><text x="620" y="317">Postgres HA</text>
+<rect class="box" x="760" y="290" width="100" height="44" rx="8"/><text x="785" y="317">Redis</text>
+<rect class="box" x="200" y="290" width="190" height="44" rx="8"/><text x="215" y="317">OTel · Prom · Grafana · Loki</text>
+<path class="line" d="M80 74V110"/><path class="line" d="M140 132L200 110"/><path class="line" d="M350 100H420"/><path class="line" d="M620 250V290"/>
+<text x="20" y="390">Changes: managed secrets, outbox, contract tests, IaC, GitOps (Argo CD), HPA + PDB, network policies, SLO-based alerting.</text></svg></section>
+
+<section id="dg5"><h2>Diagram: risk heat-map</h2>
+<svg viewBox="0 0 700 380" width="100%" role="img" aria-label="Heatmap">
+<rect x="80" y="20" width="180" height="100" fill="#f5d142" opacity=".5"/><rect x="260" y="20" width="180" height="100" fill="#ff9f43" opacity=".6"/><rect x="440" y="20" width="180" height="100" fill="#ff5d5d" opacity=".7"/>
+<rect x="80" y="120" width="180" height="100" fill="#7ee787" opacity=".5"/><rect x="260" y="120" width="180" height="100" fill="#f5d142" opacity=".5"/><rect x="440" y="120" width="180" height="100" fill="#ff9f43" opacity=".6"/>
+<rect x="80" y="220" width="180" height="100" fill="#7ee787" opacity=".3"/><rect x="260" y="220" width="180" height="100" fill="#7ee787" opacity=".5"/><rect x="440" y="220" width="180" height="100" fill="#f5d142" opacity=".5"/>
+<text x="95" y="345">Low likelihood</text><text x="285" y="345">Medium</text><text x="465" y="345">High likelihood</text>
+<text x="5" y="70">High impact</text><text x="5" y="170">Medium</text><text x="5" y="270">Low</text>
+<text x="450" y="60">R1 AuthZ gaps</text><text x="450" y="80">R2 secrets in git</text><text x="450" y="100">R3 zero tests</text>
+<text x="270" y="60">R4 event loss</text><text x="270" y="80">R5 no HA DB</text>
+<text x="450" y="150">R6 N+1 latency</text><text x="450" y="170">R7 no HPA/PDB</text>
+<text x="270" y="150">R8 cache stampede</text><text x="270" y="250">R9 CORS drift</text>
+<text x="450" y="250">R10 dependency CVEs</text><text x="95" y="150">R11 log PII</text></svg></section>
+
+<section id="score"><h2>Maturity scorecard</h2>
+<p>Scale: 0 absent · 1 ad-hoc · 2 repeatable · 3 defined · 4 measured · 5 optimised. Scores are the reviewer's judgement from repository evidence.</p>
+<table><tr><th>Dimension</th><th>Now</th><th>Target (6 mo)</th><th>Evidence</th></tr>
+<tr><td>Architecture clarity</td><td>3</td><td>4</td><td>Clean service split, README, diagrams</td></tr>
+<tr><td>Security</td><td>1</td><td>3</td><td>Gateway JWT only; placeholder secrets</td></tr>
+<tr><td>Testing</td><td>0</td><td>3</td><td>No automated tests found</td></tr>
+<tr><td>CI/CD</td><td>1</td><td>4</td><td>No pipeline in repo</td></tr>
+<tr><td>Observability</td><td>2</td><td>4</td><td>Tracing present; no SLOs/alerts</td></tr>
+<tr><td>Resilience</td><td>1</td><td>3</td><td>Fragile sync calls</td></tr>
+<tr><td>Data management</td><td>2</td><td>3</td><td>DB per service; no migrations discipline</td></tr>
+<tr><td>Kubernetes readiness</td><td>1</td><td>4</td><td>No probes/limits/HPA</td></tr>
+<tr><td>Developer experience</td><td>3</td><td>4</td><td>Compose, Helm, multiple targets</td></tr>
+<tr><td>Cost awareness</td><td>0</td><td>2</td><td>No sizing or budget</td></tr></table>
+<svg viewBox="0 0 700 200" width="100%" role="img" aria-label="Radar-like bars">
+<g font-size="12"><text x="10" y="25">Security</text><rect x="120" y="12" width="60" height="14" fill="#ff5d5d"/>
+<text x="10" y="55">Testing</text><rect x="120" y="42" width="5" height="14" fill="#ff5d5d"/>
+<text x="10" y="85">Resilience</text><rect x="120" y="72" width="60" height="14" fill="#ff9f43"/>
+<text x="10" y="115">Observability</text><rect x="120" y="102" width="120" height="14" fill="#f5d142"/>
+<text x="10" y="145">Architecture</text><rect x="120" y="132" width="180" height="14" fill="#3fb950"/>
+<text x="10" y="175">Dev experience</text><rect x="120" y="162" width="180" height="14" fill="#3fb950"/></g></svg></section>
+
+<section id="slo"><h2>SLIs, SLOs and error budgets</h2>
+<p>No service-level objectives exist. A principal would insist on a small, honest set before any scaling work, because they tell the team what to optimise.</p>
+<table><tr><th>Journey</th><th>SLI</th><th>SLO (28d)</th><th>Alert</th></tr>
+<tr><td>Read feed / post</td><td>% 2xx&lt;500ms at gateway</td><td>99.5% availability, p95 &lt; 400ms</td><td>Burn rate 14.4× over 1h, 6× over 6h</td></tr>
+<tr><td>Create post</td><td>% successful writes</td><td>99.9%</td><td>Burn rate multi-window</td></tr>
+<tr><td>Login</td><td>% success excluding 401</td><td>99.9%, p99 &lt; 800ms</td><td>Page on fast burn</td></tr>
+<tr><td>Event freshness</td><td>Consumer lag seconds</td><td>p99 &lt; 30s</td><td>Lag &gt; 60s for 5m</td></tr>
+<tr><td>Like count correctness</td><td>Reconciliation drift</td><td>&lt; 0.1%</td><td>Nightly job diff</td></tr></table>
+<div class="callout good"><b>Error-budget policy:</b> when a budget is exhausted, feature work pauses for reliability work on the top contributing finding until the budget recovers.</div>
+<pre>sum(rate(http_server_requests_seconds_count{status!~"5.."}[5m]))
+/ sum(rate(http_server_requests_seconds_count[5m]))</pre></section>
+
+<section id="threat"><h2>Diagram: threat model and trust boundaries</h2>
+<svg viewBox="0 0 900 340" width="100%" role="img" aria-label="Threat model">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b98a8"/></marker></defs>
+<rect x="10" y="20" width="200" height="290" rx="10" fill="#ff5d5d" opacity=".12"/><text x="20" y="40">Zone 0: Internet (untrusted)</text>
+<rect x="240" y="20" width="200" height="290" rx="10" fill="#ff9f43" opacity=".12"/><text x="250" y="40">Zone 1: Edge (gateway)</text>
+<rect x="470" y="20" width="420" height="290" rx="10" fill="#3fb950" opacity=".12"/><text x="480" y="40">Zone 2: Internal (flat network today)</text>
+<rect class="box" x="30" y="100" width="150" height="40" rx="8"/><text x="50" y="125">Browser / attacker</text>
+<rect class="box" x="260" y="100" width="150" height="40" rx="8"/><text x="285" y="125">Gateway</text>
+<rect class="box" x="490" y="100" width="150" height="40" rx="8"/><text x="520" y="125">Services</text>
+<rect class="box" x="700" y="100" width="150" height="40" rx="8"/><text x="740" y="125">DB / Redis / Kafka</text>
+<path class="line" d="M180 120H260"/><path class="line" d="M410 120H490"/><path class="line" d="M640 120H700"/>
+<text x="30" y="200">T1 token theft (XSS)  T2 brute force login  T3 IDOR on posts/comments</text>
+<text x="30" y="225">T4 forged X-User-Id if service reachable  T5 secrets from git history</text>
+<text x="30" y="250">T6 unauthenticated Redis/Kafka/Eureka  T7 supply-chain (unpinned images)</text>
+<text x="30" y="275">T8 log injection / PII leakage  T9 rate-limit absence → scraping/DoS</text></svg>
+<table><tr><th>Threat</th><th>STRIDE</th><th>Control</th><th>Priority</th></tr>
+<tr><td>IDOR on resources</td><td>E</td><td>Ownership check in each service; policy tests</td><td>P0</td></tr>
+<tr><td>Header spoofing</td><td>S</td><td>Strip inbound identity headers; mTLS; NetworkPolicy</td><td>P0</td></tr>
+<tr><td>Secret exposure</td><td>I</td><td>Rotate, purge history, external secrets</td><td>P0</td></tr>
+<tr><td>Login brute force</td><td>S</td><td>Rate limit + lockout + MFA</td><td>P1</td></tr>
+<tr><td>Dependency CVE</td><td>T</td><td>Dependabot/Renovate + Trivy + SBOM</td><td>P1</td></tr></table></section>
+
+<section id="cap"><h2>Capacity and cost model</h2>
+<p>Assumptions (to be replaced with real telemetry): 100k MAU, 10% DAU, 30 reads per DAU session, 1 write per 20 reads, peak factor 5×.</p>
+<table><tr><th>Quantity</th><th>Calculation</th><th>Result</th></tr>
+<tr><td>DAU</td><td>100,000 × 10%</td><td>10,000</td></tr>
+<tr><td>Reads/day</td><td>10,000 × 30</td><td>300,000</td></tr>
+<tr><td>Avg RPS</td><td>300,000 / 86,400</td><td>~3.5</td></tr>
+<tr><td>Peak RPS</td><td>3.5 × 5 × write amplification (N+1 ≈ 10)</td><td>~175 internal calls/s</td></tr>
+<tr><td>Writes/day</td><td>15,000</td><td>~0.17 /s</td></tr>
+<tr><td>Storage / yr</td><td>15,000 × 365 × 2 KB</td><td>~11 GB</td></tr></table>
+<p><b>Conclusion:</b> load is modest. The system is over-built for scale but under-built for reliability; spend goes on HA, not horizontal scale. N+1 removal cuts internal traffic ~10×.</p>
+<table><tr><th>Component</th><th>Starter prod (monthly, indicative)</th><th>Saving lever</th></tr>
+<tr><td>3 node k8s</td><td>$300–450</td><td>Spot for stateless, right-size requests</td></tr>
+<tr><td>Managed Postgres HA</td><td>$150–300</td><td>One cluster, schema-per-service early</td></tr>
+<tr><td>Managed Kafka</td><td>$250+</td><td>Defer: use outbox + DB polling until volume justifies</td></tr>
+<tr><td>Redis</td><td>$40–100</td><td>Small instance, eviction policy</td></tr>
+<tr><td>Observability</td><td>$100–300</td><td>Sampling, log retention 14d</td></tr></table></section>
+
+<section id="mig"><h2>Migration strategy: how to change a live system safely</h2>
+<ol class="steps"><li><b>Strangler</b> – put new behaviour behind gateway routes; migrate one route at a time.</li>
+<li><b>Expand / contract schema</b> – add nullable column, dual-write, backfill, switch reads, drop old column in a later release.</li>
+<li><b>Outbox first</b> – before any event redesign, make publishing reliable.</li>
+<li><b>Parallel run</b> – compare old and new responses (shadow traffic) for the batch-endpoint rewrite.</li>
+<li><b>Feature flags</b> – decouple deploy from release; kill switches for risky paths.</li>
+<li><b>Rollback rule</b> – every change documents its rollback; data migrations are forward-compatible for one release.</li></ol>
+<pre>-- expand/contract example
+ALTER TABLE likes ADD COLUMN user_post_key text;
+UPDATE likes SET user_post_key = user_id||':'||post_id;   -- backfill in batches
+CREATE UNIQUE INDEX CONCURRENTLY ux_likes_user_post ON likes(user_post_key);</pre></section>
+
+<section id="p90"><h2>30 / 60 / 90 day plan</h2>
+<div class="grid">
+<div class="card"><h4>Days 0–30: Stop the bleeding</h4><ul><li>Rotate and purge committed secrets</li><li>Ownership checks (IDOR) in all write paths</li><li>Strip inbound X-User-Id; NetworkPolicy</li><li>CI: build, unit test, Trivy, gitleaks</li><li>Probes, requests/limits on every Deployment</li></ul></div>
+<div class="card"><h4>Days 31–60: Make it reliable</h4><ul><li>Testcontainers integration tests per service</li><li>Batch endpoints; remove N+1</li><li>Unique constraints + idempotent likes</li><li>Outbox + DLT + lag alerts</li><li>HPA, PDB, graceful shutdown</li></ul></div>
+<div class="card"><h4>Days 61–90: Make it operable</h4><ul><li>SLOs + burn-rate alerts + dashboards</li><li>Argo CD GitOps, environment promotion</li><li>Contract tests (Pact / Spring Cloud Contract)</li><li>Backup/restore drill, DR runbook</li><li>Load test (k6) with budgets in CI</li></ul></div></div>
+<svg viewBox="0 0 900 220" width="100%" role="img" aria-label="Gantt">
+<g font-size="12"><text x="10" y="30">Security fixes</text><rect x="160" y="18" width="200" height="14" fill="#ff5d5d"/>
+<text x="10" y="60">CI + tests</text><rect x="160" y="48" width="400" height="14" fill="#58a6ff"/>
+<text x="10" y="90">K8s hardening</text><rect x="260" y="78" width="300" height="14" fill="#ff9f43"/>
+<text x="10" y="120">Outbox + events</text><rect x="360" y="108" width="300" height="14" fill="#8957e5"/>
+<text x="10" y="150">SLOs / observability</text><rect x="460" y="138" width="400" height="14" fill="#3fb950"/>
+<text x="10" y="180">GitOps / DR</text><rect x="560" y="168" width="300" height="14" fill="#f5d142"/>
+<text x="160" y="210">Day 0 ········ 30 ········ 60 ········ 90</text></g></svg></section>
+
+<section id="future"><h2>12-month future plan</h2>
+<table><tr><th>Quarter</th><th>Theme</th><th>Outcomes</th><th>Exit criteria</th></tr>
+<tr><td>Q1</td><td>Foundations</td><td>Security baseline, CI, tests, k8s hygiene</td><td>No P0 findings; build &lt; 10 min; coverage ≥ 60% on core paths</td></tr>
+<tr><td>Q2</td><td>Reliability</td><td>Outbox, idempotency, SLOs, DR drill</td><td>99.5% SLO met 2 months; RTO &lt; 1h, RPO &lt; 5m</td></tr>
+<tr><td>Q3</td><td>Product leverage</td><td>Feed/search service, notifications, media upload via object storage</td><td>p95 feed &lt; 300ms; search relevance baseline</td></tr>
+<tr><td>Q4</td><td>Scale &amp; platform</td><td>Golden path template, multi-AZ, cost dashboards, optional multi-region read</td><td>New service in &lt; 1 day; cost per MAU tracked</td></tr></table>
+<h3>Future capabilities worth considering</h3>
+<ul><li>Dedicated <b>feed service</b> with precomputed timelines (fan-out on write for small authors, on read for large).</li>
+<li><b>Search</b> via OpenSearch fed by Kafka, replacing SQL LIKE queries.</li>
+<li><b>Notifications</b> (email/push/websocket) driven by the existing events.</li>
+<li><b>Media</b> upload via pre-signed URLs, image resizing pipeline, CDN.</li>
+<li><b>Moderation</b>: report queue, spam heuristics, rate limits, audit log.</li>
+<li><b>Analytics</b>: event stream to a warehouse, privacy-aware metrics.</li>
+<li><b>Admin/back-office</b> with RBAC and full audit trail.</li></ul></section>
+
+<section id="pe"><h2>What a principal engineer would add</h2>
+<table><tr><th>Addition</th><th>Why it matters</th><th>Concrete first step</th></tr>
+<tr><td>Contract testing</td><td>Prevents silent breaking API/event changes between teams</td><td>Pact for post→user and event schemas</td></tr>
+<tr><td>Golden-path platform</td><td>Every service starts secure, observable and deployable</td><td>Cookiecutter/Backstage template with CI, Helm, dashboards</td></tr>
+<tr><td>Feature flags</td><td>Safe rollout and instant kill switch</td><td>OpenFeature + a simple provider</td></tr>
+<tr><td>Chaos &amp; game days</td><td>Validates resilience claims</td><td>Kill Redis and a pod in staging; measure SLO impact</td></tr>
+<tr><td>Disaster recovery</td><td>Defines RTO/RPO and proves restore</td><td>Quarterly restore drill from backups</td></tr>
+<tr><td>Data governance / PII</td><td>GDPR: erase, export, retention</td><td>Data inventory; user-delete saga across services</td></tr>
+<tr><td>FinOps</td><td>Cost visibility per service</td><td>Label everything, cost dashboard, budget alerts</td></tr>
+<tr><td>API governance</td><td>Consistent errors, pagination, versioning</td><td>OpenAPI lint in CI, RFC 7807 problem details</td></tr>
+<tr><td>Supply-chain security</td><td>SBOM, signed images, pinned digests</td><td>Syft + cosign + Renovate</td></tr>
+<tr><td>Architecture fitness functions</td><td>Keeps design from decaying</td><td>ArchUnit rules: no cross-service DB, layering</td></tr></table></section>
+
+<section id="team"><h2>Ownership and operating model</h2>
+<table><tr><th>Area</th><th>Owner</th><th>Responsibilities</th></tr>
+<tr><td>Identity &amp; gateway</td><td>Platform/Security pod</td><td>AuthN/Z, rate limit, secrets</td></tr>
+<tr><td>Content (posts, tags, comments)</td><td>Content pod</td><td>Domain logic, schemas, SLOs</td></tr>
+<tr><td>Engagement (likes, feed)</td><td>Engagement pod</td><td>Counters, projections, events</td></tr>
+<tr><td>Infra &amp; delivery</td><td>Platform pod</td><td>Clusters, CI/CD, observability</td></tr></table>
+<ul><li>Every service has a named owner, on-call rota, runbook and dashboard before production.</li>
+<li>ADRs are required for cross-service changes; reviewed in a weekly architecture forum.</li>
+<li>Definition of Done includes tests, docs, metrics, alerts, rollback.</li></ul></section>
+
+<section id="bvb"><h2>Build vs buy decisions</h2>
+<table><tr><th>Capability</th><th>Build</th><th>Buy / adopt</th><th>Recommendation</th></tr>
+<tr><td>Authentication</td><td>Custom JWT (today)</td><td>Keycloak, Auth0, Cognito</td><td>Adopt OIDC provider; remove password handling</td></tr>
+<tr><td>Service discovery</td><td>Eureka</td><td>Kubernetes DNS</td><td>Drop Eureka on k8s</td></tr>
+<tr><td>Gateway</td><td>Spring Cloud Gateway</td><td>Envoy/Istio/managed APIM</td><td>Keep for now; revisit with mesh</td></tr>
+<tr><td>Messaging</td><td>Self-run Kafka</td><td>Managed Kafka / SNS+SQS</td><td>Managed; or defer until needed</td></tr>
+<tr><td>Search</td><td>SQL LIKE</td><td>OpenSearch managed</td><td>Buy</td></tr>
+<tr><td>Observability</td><td>Self-host stack</td><td>Grafana Cloud / Datadog</td><td>Buy if team &lt; 10</td></tr></table></section>
+
+<section id="kpi"><h2>Success metrics and KPIs</h2>
+<table><tr><th>Category</th><th>Metric</th><th>Baseline</th><th>Target</th></tr>
+<tr><td>Delivery (DORA)</td><td>Deploy frequency</td><td>Manual</td><td>Daily on demand</td></tr>
+<tr><td></td><td>Lead time for change</td><td>Unknown</td><td>&lt; 1 day</td></tr>
+<tr><td></td><td>Change failure rate</td><td>Unknown</td><td>&lt; 15%</td></tr>
+<tr><td></td><td>MTTR</td><td>Unknown</td><td>&lt; 1 hour</td></tr>
+<tr><td>Quality</td><td>Test coverage on core paths</td><td>0%</td><td>≥ 70%</td></tr>
+<tr><td>Security</td><td>Open critical CVEs</td><td>Unknown</td><td>0 older than 7 days</td></tr>
+<tr><td>Reliability</td><td>SLO attainment</td><td>Unmeasured</td><td>≥ 99.5%</td></tr>
+<tr><td>Performance</td><td>Internal calls per page view</td><td>~10+</td><td>≤ 3</td></tr>
+<tr><td>Cost</td><td>Cost per MAU</td><td>Unknown</td><td>Tracked monthly</td></tr></table></section>
+
+<section id="rr"><h2>Risks to the plan and open questions</h2>
+<ul><li><b>Team capacity:</b> the plan assumes 3–5 engineers; fewer means drop Q3 scope, never Q1.</li>
+<li><b>Scope creep:</b> new features compete with hardening; enforce a reliability budget of 20–30% of capacity.</li>
+<li><b>Hidden coupling:</b> items marked <em>verify</em> may change estimates; run a one-week discovery spike first.</li>
+<li><b>Open questions:</b> real traffic numbers, compliance regime (GDPR?), target cloud, expected growth, who is on call.</li></ul>
+<div class="callout"><b>Bottom line:</b> fix security and testing first, make events reliable second, then invest in product features on a stable base. Nothing here requires a rewrite.</div></section>
+
+<section id="findings"><h2>6. Findings registry</h2>
+<p>Click severity/category chips or search. Effort: S ≤ 1 day, M ≤ 1 week, L &gt; 1 week.</p>
+<div class="tools"><input id="q" placeholder="Search findings, files, fixes…"><span id="count" style="color:var(--mut)"></span></div>
+<div class="tools" id="sevChips"></div><div class="tools" id="catChips"></div>
+<div style="overflow:auto"><table id="ft"><thead><tr><th>ID</th><th>Sev</th><th>Category</th><th>Finding &amp; evidence</th><th>Impact</th><th>Recommended fix</th><th>Effort</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="opt"><h2>7. Optimisation opportunities</h2>
+<table><tr><th>Area</th><th>Today</th><th>Proposal</th><th>Expected gain</th></tr>
+<tr><td>Post list</td><td>findAll + 2 HTTP calls per post</td><td>Paginate; batch <code>/users?ids=</code>; denormalise author name/tag names into post read model or cache users in Redis</td><td>O(N) → O(1) remote calls; 10–50× latency drop on list</td></tr>
+<tr><td>Votes</td><td>2 HTTP + 2 COUNTs per read</td><td>Unique index; Redis/DB counters; validate post via cached existence check or event-fed local table</td><td>Removes cross-service hop from hot path</td></tr>
+<tr><td>Search</td><td>LIKE '%x%'</td><td><code>pg_trgm</code> GIN index or full-text search (tsvector)</td><td>Seq scan → index scan</td></tr>
+<tr><td>Comment count</td><td>read-modify-write in listener</td><td><code>UPDATE post SET comment_count = comment_count + 1</code> + idempotency key table</td><td>Correct under concurrency/replay</td></tr>
+<tr><td>Events</td><td>Dual write, fire-and-forget</td><td>Transactional outbox (Debezium or poller), DLQ, retry/backoff</td><td>No lost/poison events</td></tr>
+<tr><td>Cache</td><td>Entire lists cached; stale user snapshots</td><td>Cache IDs + per-entity cache; TTL; invalidate on user/tag events</td><td>Smaller memory, fewer stale reads</td></tr>
+<tr><td>Kafka</td><td>Zookeeper</td><td>KRaft mode</td><td>One fewer component</td></tr>
+<tr><td>Discovery</td><td>Eureka + lb:// + URL overrides</td><td>K8s DNS/Service names; drop Eureka</td><td>Simpler ops, less memory</td></tr>
+<tr><td>Build</td><td>7 separate poms, duplicated code</td><td>Parent POM + BOM, <code>blog-common</code> lib (DTOs, error model, clients, env post-processor), OpenAPI clients</td><td>Less drift, ~10–15% LOC cut</td></tr>
+<tr><td>Observability cost</td><td>100% trace sampling, DEBUG logs</td><td>Sample 5–10%, INFO in prod, structured JSON logs</td><td>Lower CPU/IO/storage</td></tr>
+<tr><td>Images</td><td>Per-service Dockerfile</td><td>Layered jars / Jib, distroless, non-root, JVM container flags</td><td>Smaller, faster, safer images</td></tr></table>
+</section>
+
+<section id="target"><h2>8. Target architecture &amp; ADRs</h2>
+<ol>
+<li><b>ADR-1 AuthN/Z:</b> gateway verifies JWT; every service is a resource server (validates JWT itself or trusts mTLS + signed internal header) and derives user from the token, never the body. Ownership checks in service layer; roles (USER/ADMIN).</li>
+<li><b>ADR-2 Secrets:</b> external secret store (Sealed Secrets / External Secrets / Vault); RS256/EdDSA keys with <code>kid</code>, rotation, <code>iss/aud</code>, refresh tokens or short access TTL.</li>
+<li><b>ADR-3 Resilience:</b> Resilience4j timeout + retry (idempotent only) + circuit breaker + bulkhead on every client; gateway rate limiting (Redis).</li>
+<li><b>ADR-4 Data:</b> Flyway migrations, <code>ddl-auto: validate</code>, schema/DB per service, FK-free cross-service IDs, indexes on postId/userId.</li>
+<li><b>ADR-5 Events:</b> outbox pattern, versioned event schemas (Avro/JSON schema), idempotent consumers, DLQ.</li>
+<li><b>ADR-6 Platform:</b> one source of truth (Helm or Kustomize), HPA, PDB, NetworkPolicy, resources, probes, non-root, StatefulSets with PVCs or managed Postgres/Kafka/Redis.</li>
+<li><b>ADR-7 Quality gates:</b> CI with build, unit+integration (Testcontainers), contract tests, SpotBugs/Checkstyle, dependency + image scanning, secret scanning.</li></ol>
+</section>
+
+<section id="road"><h2>9. Roadmap</h2>
+<div class="grid">
+<div class="card"><h4 class="crit">Week 1 — stop the bleeding</h4><ul><li>Derive userId from token; ownership checks (users/posts/votes)</li><li>Rotate &amp; externalise JWT secret; fail on default</li><li>Lock actuator; remove wildcard CORS</li><li>Unique constraint on votes</li><li>Strip client <code>X-User-*</code> headers</li><li>Debug logs off; remove tracked <code>.claude/</code>, <code>.impeccable/</code></li></ul></div>
+<div class="card"><h4 class="high">Days 30 — stabilise</h4><ul><li>CI + first tests (auth, ownership, votes)</li><li>Timeouts/retries/breakers; typed exceptions → proper 4xx</li><li>Pagination everywhere; batch user lookup</li><li>Flyway; k8s probes/resources/replicas</li></ul></div>
+<div class="card"><h4 class="med">Days 60 — harden</h4><ul><li>Outbox + DLQ + idempotent consumers</li><li>Shared parent POM/common lib</li><li>Rate limiting, login lockout, password policy</li><li>HPA, PDB, NetworkPolicy, non-root images</li></ul></div>
+<div class="card"><h4 class="low">Days 90 — evolve</h4><ul><li>Asymmetric JWT + refresh/rotation; httpOnly cookie</li><li>KRaft, drop Eureka on k8s</li><li>Read models / search; DB per service</li><li>Load tests + SLOs + alerts</li></ul></div></div>
+<h3>Effort vs impact</h3>
+<table><tr><th>Quadrant</th><th>Items</th></tr>
+<tr><td>High impact / low effort</td><td>token-derived userId, ownership checks, vote unique index, secrets, CORS, actuator, probes/resources, log levels</td></tr>
+<tr><td>High impact / high effort</td><td>outbox, per-service DB, asymmetric JWT, test suite, batch APIs</td></tr>
+<tr><td>Low impact / low effort</td><td>typo fixes (<code>unautorized</code>, <code>dashbaords.yml</code>), template comments, doc consolidation</td></tr></table>
+</section>
+
+<section id="good"><h2>10. What is done well</h2>
+<div class="callout good"><ul>
+<li>BCrypt password hashing; generic login failure message.</li>
+<li>Gateway centralises JWT verification; clean per-service package structure.</li>
+<li>Redis caching with pub/sub invalidation across instances.</li>
+<li>Strong observability baseline (OTel, Tempo, Prometheus, Grafana, traceId in logs).</li>
+<li>Multiple deployment paths documented; Dockerfile per service.</li>
+<li>Event-driven comment count shows good architectural instinct.</li></ul></div>
+<h3>To verify (not fully inspected)</h3>
+<ul><li>Dockerfile base images, multi-stage, <code>USER</code> directive.</li><li>CI config presence; <code>.gitignore</code> coverage; dependency CVEs (run <code>mvn dependency-check</code>).</li><li>Exception → HTTP mapping for unique violations on user create.</li><li>Comment-count staleness in cached post detail.</li></ul>
+<h3>Appendix: process hygiene</h3>
+<ul><li>Terse commit messages (“ds”, “ewq”, “inti”) — adopt Conventional Commits and PR review.</li><li>Overlapping docs: README, ARCHITECTURE.txt, DELIVERY_SUMMARY.txt, START_HERE.txt, docs/, k8s/ARCHITECTURE.md — consolidate into one docs site.</li><li>No Kotlin sources despite Kotlin-port notes in docs — align docs with reality.</li></ul>
+</section>
+</main>
+<script>
+const F=[
+["Critical","Security","No downstream service consumes <code>X-User-Id</code>; post/like services take <code>userId</code> from the request body (PostService:40-60, LikeDislikeService)","Any authenticated user can create posts / vote as any other user","Derive identity from verified JWT or trusted header; remove userId from request DTOs","M"],
+["Critical","Security","update/delete of users, posts, votes have no ownership check (UserService:75-102, PostService:107-141, deleteLikeDislike)","IDOR: edit/delete anyone's data","Check owner or ADMIN role in service layer; add tests","M"],
+["Critical","Security","user-service <code>SecurityFilterConfig:18</code> csrf off + <code>anyRequest().permitAll()</code>","Direct/in-cluster calls bypass auth entirely","Make services resource servers; NetworkPolicy so only gateway reaches them","M"],
+["Critical","Security","Placeholder JWT secret committed: gateway yml:88, user yml:44, docker-compose (×6), k8s/secrets.yaml:21, helm values.yaml:51","Anyone can forge admin-less but valid tokens for any user","Remove defaults (fail fast), inject from secret manager, rotate; scan git history","S"],
+["Critical","Security","Public <code>/actuator*</code> with <code>gateway</code>+<code>prometheus</code> exposed (gateway yml:77, JwtAuthFilter isPublic)","Route table, metrics and internals leak unauthenticated","Expose only health/info; separate management port; auth the rest","S"],
+["Critical","Security","CORS wildcard + credentials: <code>globalcors allowedOriginPatterns:*</code> (yml:36-42) and Java config allows <code>https://*.vercel.app</code> with credentials; <code>@CrossOrigin(\"*\")</code> on TrackingController","Any Vercel tenant or origin can call API with credentials","Single CORS definition, explicit origin allow-list","S"],
+["Critical","Correctness","LikeDislike has no unique (userId, postId); find-then-save race","Duplicate votes, wrong counts","Unique constraint + upsert / handle violation","S"],
+["Critical","Reliability","Synchronous HTTP between services without timeouts, retries, breakers","Cascading failures; thread exhaustion","Resilience4j + sane client timeouts","M"],
+["Critical","Data consistency","Dual-write: DB save, cache evict, <code>kafkaTemplate.send</code> fire-and-forget; no outbox","Lost events → wrong comment counts","Transactional outbox; check send result","L"],
+["Critical","Data","<code>ddl-auto: update</code> in every service; no Flyway/Liquibase","Unreviewed schema drift, data loss risk","Flyway + <code>validate</code>","M"],
+["Critical","Testing","No test sources in any module; no CI observed","Regressions undetected; refactors unsafe","CI pipeline; unit + Testcontainers integration tests","L"],
+["Critical","DevOps","k8s services: replicas 1, no liveness/startup probes, no resources (only postgres.yaml:41)","Outages on any restart; noisy neighbour; no autoscale","Probes, requests/limits, ≥2 replicas, HPA, PDB","M"],
+["High","Security","Gateway doesn't strip client-supplied <code>X-User-Id</code>/<code>X-Username</code> on public paths","Header spoofing once services trust them","Always remove inbound identity headers before forwarding","S"],
+["High","Security","JwtAuthFilter:46 <code>claims.get(\"userId\").toString()</code> NPE when claim missing; not a JwtException","500 instead of 401","Null-safe validation, explicit 401","S"],
+["High","Security","HS256 shared secret in gateway+user-service; no <code>iss/aud</code>, no <code>kid</code>, no rotation","Any service holding secret can mint tokens","RS256/EdDSA, JWKS, claims validation","M"],
+["High","Security","JWT 1h, no refresh, no revocation; token in <code>localStorage</code> (App.tsx:35-39,130)","XSS = account takeover; no logout invalidation","HttpOnly SameSite cookie or in-memory + refresh rotation; CSP","M"],
+["High","Security","No rate limiting/lockout on login; no password policy; <code>LoginRequest</code> lacks <code>@Valid</code>","Brute force / credential stuffing","Gateway Redis rate-limiter, lockout/backoff, validation","M"],
+["High","Security","createUser returns distinct “Username/Email already exists” and logs them (UserService:27-49)","User enumeration, PII in logs","Generic response; hash/mask in logs","S"],
+["High","Security","<code>DELETE /api/tracking/history</code> open to any token holder; tracking endpoints exposed in prod","Tampering with diagnostics; info disclosure","Admin role or remove from prod profile","S"],
+["High","Security","JWT secret injected via secretRef into every service, incl. those that don't need it","Larger blast radius","Least-privilege secrets per service","S"],
+["High","Security","Default DB password <code>postgres</code> in all services, k8s/secrets.yaml:9; one shared DB user","Credential reuse; lateral movement","Per-service DB users, generated secrets","S"],
+["High","Correctness","post-service <code>catch(Exception)</code> (line 51) maps any failure to “User not found”","Misleading errors, masks outages","Catch specific exceptions; propagate 5xx/503","S"],
+["High","Correctness","comment-count listener read-modify-write (CommentEventListener:20-26), no idempotency","Lost updates, double-count on replay","Atomic SQL increment + processed-event table","M"],
+["High","Correctness","Like service wraps failures in RuntimeException(\"Post or User not found\") → 500; toggle-off returns null","Wrong status codes; ambiguous API","Typed exceptions, @ControllerAdvice, explicit response","S"],
+["High","Correctness","comment-service: 6 broad catch blocks (47,55,100,113,128,152)","Swallowed errors, silent data issues","Narrow catches, rethrow/map","M"],
+["High","Performance","N+1 HTTP: PostService.mapToDTO calls tag-service per post; getAllPosts/search call user-service per post","List latency grows linearly; amplifies failures","Batch endpoints, caching, denormalised read model","M"],
+["High","Performance","<code>findAll()</code> unpaginated: posts, users (UserService:72), tags (TagService:92)","Memory/latency blow-up with growth","Pageable + max page size","S"],
+["High","Performance","<code>findByTitleContainingIgnoreCase</code> = leading-wildcard LIKE, unpaginated","Full table scan","pg_trgm GIN / full-text; paginate","M"],
+["High","Performance","Like vote loads whole post (+user+tags) from post-service just to validate existence","Heavy hot-path coupling","Existence endpoint / local projection fed by events","M"],
+["High","Architecture","Services are coupled synchronously; shared single Postgres instance","Coupling, noisy neighbour, no independent scaling","DB/schema per service; event-carried state","L"],
+["High","Reliability","Gateway RequestTrackingService: plain HashMap + LinkedList, not thread-safe; entries leak if doFinally never fires","Race conditions, memory leak","ConcurrentHashMap, bounded ring buffer, TTL","S"],
+["High","Reliability","Tracking history in-memory per instance","Wrong with >1 gateway replica","Move to Redis or drop from prod","M"],
+["High","DevOps","No NetworkPolicy, PodSecurityContext (non-root), PDB, HPA","Flat network, root containers, no disruption budget","Add baseline policies","M"],
+["High","DevOps","Infra (kafka, zookeeper, redis, postgres) single replica, no PVC/StatefulSet observed","Data loss on reschedule","StatefulSets+PVC or managed services","L"],
+["High","DevOps","post-service image <code>blog/post-service:local</code>; no registry/tag strategy","Non-reproducible deploys","Immutable SHA tags, registry, scanning","S"],
+["Medium","Security","Gateway <code>isPublic</code> allows all GET on /api/posts,/tags,/comments,/likedislike, and POST /api/users","Over-broad public surface; scraping","Explicit allow-list per route; rate-limit","S"],
+["Medium","Security","JwtService uses <code>secret.getBytes()</code> with no min-length/entropy check","Weak secrets accepted","Validate ≥32 bytes at startup","S"],
+["Medium","Security","<code>getAllUsers()</code> returns every user incl. emails","PII exposure","Admin-only, paginated, minimal projection","S"],
+["Medium","Security","UserDTO has <code>password</code> field used for both request and response","Accidental leakage risk","Separate Create/Update/Response DTOs","S"],
+["Medium","Correctness","createUser check-then-save race on username/email","Possible 500 on concurrent signup","Rely on unique constraint, map violation to 409","S"],
+["Medium","Correctness","Post cache embeds user/tag/comment snapshot; user/tag updates don't invalidate","Stale data","Invalidate via events or cache IDs only + TTL","M"],
+["Medium","Correctness","Tags stored as string on Post and also via tag-service PostTag","Two sources of truth","Pick one model","M"],
+["Medium","Correctness","<code>createdAt</code> as <code>Long</code> epoch in vote entity; DTO mapping drops id","Weak typing, API inconsistency","Use <code>Instant</code>; include id","S"],
+["Medium","Reliability","Kafka listener: no DLQ, no retry/backoff, single consumer factory typed to one event","Poison message blocks partition","DefaultErrorHandler + DLT; per-topic factories","M"],
+["Medium","Reliability","Eureka + <code>lb://</code> + URL overrides together; Eureka SPOF","Confusing resolution, extra moving part","K8s Services + DNS; drop Eureka","M"],
+["Medium","Reliability","No gateway timeouts/retries/circuit breakers/rate limit on routes","Slow upstream ties up gateway","Route-level timeouts, CB, RequestRateLimiter","M"],
+["Medium","Performance","Cache key allPosts holds whole list; invalidated wholesale","Memory & thundering herd","Per-page keys, TTL, single-flight","M"],
+["Medium","Performance","Likes counts via 2 COUNT queries per request","Repeated aggregate cost","Counters / cache","S"],
+["Medium","Performance","Tracing sampling 1.0 (gateway yml:68)","Overhead and storage","Sample 5–10%","S"],
+["Medium","Observability","DEBUG for <code>com.blog</code> and Spring Cloud Gateway (yml:51-53); <code>System.out.println</code> in listener","Noisy logs, possible data leakage, perf hit","INFO in prod; SLF4J; structured JSON","S"],
+["Medium","Observability","No metrics/alerts/SLOs defined beyond default dashboards","Slow detection","RED metrics, alert rules, SLOs","M"],
+["Medium","Code quality","<code>RenderDatabaseUrlEnvironmentPostProcessor</code> copy-pasted in several services; duplicated DTOs/REST clients","Drift, repeated bugs","Common library + parent POM","M"],
+["Medium","Code quality","No OpenAPI / contract tests between services","Breaking changes unnoticed","springdoc + Pact/Spring Cloud Contract","M"],
+["Medium","Code quality","RequestTrackingFilter hard-codes ports 8081-8084 and file names; no /api/tags mapping","Demo logic in prod path","Config-driven or separate demo module","S"],
+["Medium","Code quality","@Transactional on repositories (PostTagRepository:15,18) but not on service layer","Wrong transaction boundaries","Move to service methods","S"],
+["Medium","DevOps","Config duplicated across compose/Render/Railway/k8s/Helm","Drift, confusion","Single source (Helm) + generated compose","M"],
+["Medium","DevOps","redis:7.0.11 pinned to old patch; cp-kafka 7.4.0 + Zookeeper legacy","Missing fixes; EOL path","Update; KRaft","S"],
+["Medium","DevOps","Dockerfile hardening unverified (base, multi-stage, USER, JVM flags)","Possible root/large images","Review; distroless + non-root","S"],
+["Medium","Frontend","Trusts userId from localStorage; no visible token-expiry handling","Broken UX / spoofable client state","Decode token, handle 401, refresh flow","M"],
+["Low","Code quality","Typo <code>unautorized</code>; leftover template comments JwtAuthFilter:29-31; <code>rawPath.split(\"\\\\?\")</code> pointless","Noise","Cleanup","S"],
+["Low","Code quality","<code>dashbaords.yml</code> filename typo","Confusion","Rename","S"],
+["Low","Docs/Process","Overlapping docs: README, ARCHITECTURE.txt, DELIVERY_SUMMARY.txt, START_HERE.txt, docs/, k8s/ARCHITECTURE.md","Contradictions","Consolidate","S"],
+["Low","Docs/Process","<code>.claude/agent-memory-local/*</code> and <code>.impeccable/critique/*</code> tracked in git","Repo noise, possible info leak","git rm --cached; .gitignore","S"],
+["Low","Docs/Process","Terse commit messages (“ds”, “ewq”, “inti”, “jwt”); docs mention Kotlin port but no .kt files","Poor history, misleading docs","Conventional Commits; PR template; fix docs","S"],
+["Low","Architecture","Gateway <code>eureka.instance.prefer-ip-address</code> plus hard-coded OTLP endpoint <code>otel-collector:4318</code>","Environment coupling","Externalise via env","S"],
+["Low","Architecture","JWT expiration, route URLs and endpoints hard-coded as defaults across services","Config sprawl","Central config / Helm values","S"]
+["High","Security","/actuator/** is public at the gateway","Leaks env, beans, metrics","Expose only health; secure on a management port","S"],
+["High","Security","Gateway isPublic uses startsWith path matching","Prefix-confusion bypass of auth","Use exact PathPattern matching","S"],
+["High","Security","X-User-Id not stripped on public paths","Client can spoof identity header","Strip inbound X-User-* on every request","S"],
+["Medium","Reliability","NPE when JWT lacks userId claim","500 instead of 401","Validate claims, return 401","S"],
+["High","Security","Two conflicting CORS configs (wildcard+credentials vs WebFilter)","Unpredictable, over-permissive origin policy","Single explicit origin allow-list","S"],
+["High","Resilience","No rate limit, timeout or circuit breaker at gateway","Slow downstream exhausts gateway","Resilience4j + Redis rate limiter","M"],
+["Medium","Observability","DEBUG logging and 100% trace sampling","Cost, PII in logs","INFO + 5-10% sampling","S"],
+["High","Security","Default JWT secret in source","Token forgery if unset in prod","Fail on startup without secret; use KMS/secret store","S"],
+["Medium","Security","Gateway Dockerfile runs as root, skips tests (|| true)","Container escape risk, broken builds ship","Non-root USER; remove || true","S"],
+["High","Data","Dual write DB + Redis + Kafka without outbox","Inconsistent state on partial failure","Transactional outbox / CDC","L"],
+["High","Performance","N+1 Feign calls in post read path","Latency scales with page size","Batch endpoints / denormalise","M"],
+["High","Performance","getAllPosts unpaginated, cached under one key","Memory blowup, stale giant entry","Cursor pagination, per-page keys","M"],
+["Medium","Performance","LIKE %x% search","Full table scans","pg_trgm/FTS or OpenSearch","M"],
+["High","Data","CommentEventListener lost updates, non-idempotent","Counts drift on redelivery","Atomic SQL increment + dedupe by event id","M"],
+["Medium","Reliability","No Kafka DLT / retry policy; System.out.println in listener","Poison messages block partition","DefaultErrorHandler + DLT, real logging","M"],
+["High","Security","Jackson default typing with permissive validator in RedisCacheConfig","Deserialisation gadget risk","Typed serializers / strict PolymorphicTypeValidator","M"],
+["Medium","Performance","60s TTL, no jitter; lossy pub/sub invalidation","Stampedes and stale reads","TTL jitter, single-flight, versioned keys","S"],
+["High","Data","ddl-auto: update with shared main_db and postgres/postgres","Uncontrolled schema drift, shared coupling","Flyway; DB per service; unique creds","M"],
+["High","Data","No unique (userId,postId) on likes","Duplicate votes under race","Unique constraint + upsert","S"],
+["Medium","Data","Tag-service N+1 and orphan PostTag rows","Slow reads, dangling data","Join fetch, FK cascade/cleanup events","M"],
+["Medium","Code","@Transactional on repositories","Misplaced transaction boundaries","Move to service layer","S"],
+["High","Security","IDOR on updateUser/deleteUser/deleteLikeDislike/tag endpoints","Any user modifies others' data","Ownership checks from JWT subject","M"],
+["High","Security","All downstream services permitAll","Gateway bypass if network reachable","Verify JWT in services / mTLS + NetworkPolicy","M"],
+["High","Security","Secrets in Helm values.yaml","Credentials in git","External Secrets / sealed secrets","S"],
+["Medium","Infra","imagePullPolicy: Never, replicas: 1","Not deployable beyond local; SPOF","Registry images, >=2 replicas, PDB","S"],
+["Medium","Infra","Duplicate k8s and Helm manifests","Drift between definitions","Keep Helm only","S"],
+["High","Infra","No probes, resources or NetworkPolicy","Bad scheduling, no self-healing","Add probes/limits/policies","S"],
+["Medium","Infra","Single-broker Kafka + Zookeeper; unauthenticated Redis","Data loss, open cache","KRaft 3 brokers, Redis auth/TLS","M"],
+["High","Quality","No automated tests","Regressions undetected","Unit + Testcontainers integration","L"],
+["High","Process","No CI pipeline","No gate on build/security","GitHub Actions build/test/scan","M"],
+["Medium","Security","Frontend token handling in browser storage","XSS token theft","HttpOnly cookie + CSP","M"],
+["Medium","API","No OpenAPI contract or error model","Inconsistent clients","springdoc + RFC7807","M"],
+["Medium","Data","No DB indexes beyond PKs (verify)","Slow filters","Index FK/search columns","S"],
+["Low","Hygiene","Typos: unautorized, expirationsMs, dashbaords.yml","Confusion","Rename","S"],
+["Low","Hygiene","Tooling dirs (.claude, .impeccable, docs/superpowers) committed; .gitignore lacks .env","Noise, secret leak risk","Ignore and remove","S"],
+["Low","Process","Terse commit messages","Poor history","Conventional commits","S"],
+["Medium","Docs","Overlapping docs may contradict","Onboarding confusion","Single source README + ADRs","S"],
+["Medium","Reliability","Eureka security and self-preservation unverified","Open registry","Secure / use k8s DNS","M"],
+["Medium","Observability","No correlation IDs / structured logs / alerts","Hard debugging","JSON logs, trace id, SLO alerts","M"],
+];
+const sevs=["Critical","High","Medium","Low"];
+const cats=[...new Set(F.map(f=>f[1]))];
+const tb=document.querySelector('#ft tbody');
+F.forEach((f,i)=>{const tr=document.createElement('tr');tr.dataset.sev=f[0];tr.dataset.cat=f[1];
+tr.innerHTML=`<td>F-${String(i+1).padStart(2,'0')}</td><td><span class="badge b-${f[0]}">${f[0]}</span></td><td>${f[1]}</td><td>${f[2]}</td><td>${f[3]}</td><td>${f[4]}</td><td>${f[5]}</td>`;tb.appendChild(tr)});
+let sevSel=new Set(),catSel=new Set();
+function chips(id,list,set){const el=document.getElementById(id);list.forEach(x=>{const b=document.createElement('button');b.className='chip';b.textContent=x;b.onclick=()=>{set.has(x)?set.delete(x):set.add(x);b.classList.toggle('on');apply()};el.appendChild(b)})}
+chips('sevChips',sevs,sevSel);chips('catChips',cats,catSel);
+function apply(){const q=document.getElementById('q').value.toLowerCase();let n=0;
+[...tb.rows].forEach(r=>{const ok=(!sevSel.size||sevSel.has(r.dataset.sev))&&(!catSel.size||catSel.has(r.dataset.cat))&&r.textContent.toLowerCase().includes(q);r.style.display=ok?'':'none';if(ok)n++});
+document.getElementById('count').textContent=n+' of '+F.length+' shown'}
+document.getElementById('q').oninput=apply;apply();
+const st=document.getElementById('stats');
+st.innerHTML=`<div class="card"><div class="stat">${F.length}</div>total findings</div>`+sevs.map(s=>`<div class="card"><div class="stat ${s=='Critical'?'crit':s=='High'?'high':s=='Medium'?'med':'low'}">${F.filter(f=>f[0]==s).length}</div>${s}</div>`).join('');
+const top=["Identity from request body + no ownership checks (IDOR) across users/posts/votes","user-service is fully open (permitAll); gateway is the only gate","Placeholder JWT secret committed in 6+ places","Public actuator exposes routes and metrics","Wildcard CORS with credentials (+ any *.vercel.app)","No unique constraint on votes","Sync N+1 inter-service calls with no timeouts/retries/breakers","Kafka dual-write, no outbox/DLQ/idempotency","ddl-auto: update; no migrations","Zero tests; single-replica k8s with no probes/resources"];
+document.getElementById('top10').innerHTML=top.map(t=>`<li>${t}</li>`).join('');
+const toc=document.getElementById('toc');
+document.querySelectorAll('main section').forEach(s=>{const a=document.createElement('a');a.href='#'+s.id;a.textContent=s.querySelector('h2').textContent;toc.appendChild(a)});
+const links=[...toc.children];
+addEventListener('scroll',()=>{let cur=null;document.querySelectorAll('main section').forEach(s=>{if(s.getBoundingClientRect().top<120)cur=s.id});links.forEach(a=>a.classList.toggle('on',a.hash=='#'+cur))});
+document.getElementById('theme').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme=='dark'?'light':'dark'};
+</script>
+</body>
+</html>
