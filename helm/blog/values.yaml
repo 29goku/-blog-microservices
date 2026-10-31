@@ -55,6 +55,14 @@ otelCollector:
   otlpGrpcPort: 4317
   otlpHttpPort: 4318
 
+loki:
+  image: grafana/loki:latest
+  port: 3100
+
+promtail:
+  image: grafana/promtail:latest
+  httpPort: 3101
+
 secrets:
   postgresUser: postgres
   postgresPassword: postgres
