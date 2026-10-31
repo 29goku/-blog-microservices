@@ -389,6 +389,9 @@ concerns remain open. Captured here as an honest backlog:
   Frontend "create user" posts to            Should call POST /api/users
     nonexistent /api/auth/register (500)     instead; AuthController only
                                              has /api/auth/login
+  Analytics/data warehouse (Databricks)      No export pipeline exists yet;
+                                             needs a job to move data out of
+                                             main_db before this is actionable
 
 Suggested order of value:
   1. Move Grafana/Prometheus/Tempo/otel-collector into helm/blog — Phase 8

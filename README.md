@@ -249,7 +249,14 @@ blog-microservices/
 ├── pom.xml                        # Maven parent POM (Spring Boot 3.3, Java 17)
 ├── docker-compose.yml             # Local full-stack (PostgreSQL, Kafka, all services)
 ├── render.yaml                    # Render IaC blueprint
-├── railway.toml                   # Railway.com backend config
+├── railway/                        # Per-service Railway config (see docs/RAILWAY_DEPLOY.md)
+│   ├── eureka-server.toml
+│   ├── api-gateway.toml
+│   ├── user-service.toml
+│   ├── post-service.toml
+│   ├── comment-service.toml
+│   ├── like-dislike-service.toml
+│   └── tag-service.toml
 ├── architecture-explorer.html     # Standalone interactive architecture diagram
 ├── eureka-server/
 ├── api-gateway/
@@ -336,6 +343,7 @@ The platform is functional and deployed, but several production-grade concerns a
 | Metrics aggregation (Prometheus/Grafana) | Observability | Actuator is exposed but nothing scrapes/aggregates it |
 | Centralized config (Spring Cloud Config Server) | Configuration | Each service carries its own `application.yml` |
 | Rate limiting at the gateway | Resilience | Could reuse the Redis instance now backing `post-service`'s read caching |
+| Analytics/data warehouse (Databricks) | Data layer | No pipeline exists yet; would need an export job from `main_db` before this is actionable |
 
 ### Suggested order of value
 
