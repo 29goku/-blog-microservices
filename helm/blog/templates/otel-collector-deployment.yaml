@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      containers:
+        - name: otel-collector
+          image: {{ .Values.otelCollector.image }}
+          args: ["--config=/etc/otel-collector-config.yaml"]
+          ports:
+            - containerPort: {{ .Values.otelCollector.otlpGrpcPort }}
+            - containerPort: {{ .Values.otelCollector.otlpHttpPort }}
+          volumeMounts:
+            - name: otel-collector-config
+              mountPath: /etc/otel-collector-config.yaml
+              subPath: otel-collector-config.yaml
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.otelCollector.otlpGrpcPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: otel-collector-config
+          configMap:
+            name: otel-collector-config

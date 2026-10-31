@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tempo
+spec:
+  selector:
+    app: tempo
+  ports:
+    - name: http
+      port: {{ .Values.tempo.port }}
+      targetPort: {{ .Values.tempo.port }}
+    - name: otlp-grpc
+      port: {{ .Values.tempo.otlpGrpcPort }}
+      targetPort: {{ .Values.tempo.otlpGrpcPort }}
+    - name: otlp-http
+      port: {{ .Values.tempo.otlpHttpPort }}
+      targetPort: {{ .Values.tempo.otlpHttpPort }}

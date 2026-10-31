@@ -32,7 +32,7 @@ Service  Service] Service]   Service]      Service]
 
 All domain services share a single PostgreSQL database (`main_db`), each owning its own tables. Inter-service calls use **OpenFeign** with **Resilience4j** circuit breakers. On Render, Eureka is disabled and services resolve each other via injected HTTPS URLs.
 
----
+-----
 
 ## Services
 

@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:{{ .Values.otelCollector.otlpGrpcPort }}
+          http:
+            endpoint: 0.0.0.0:{{ .Values.otelCollector.otlpHttpPort }}
+
+    processors:
+      batch: {}
+      tail_sampling:
+        decision_wait: 5s
+        policies:
+          - name: keep-errors
+            type: status_code
+            status_code: {status_codes: [ERROR]}
+          - name: keep-slow
+            type: latency
+            latency: {threshold_ms: 500}
+          - name: sample-rest
+            type: probabilistic
+            probabilistic: {sampling_percentage: 5}
+    exporters:
+      otlp/tempo:
+        endpoint: tempo:{{ .Values.tempo.otlpGrpcPort }}
+        tls:
+          insecure: true
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [tail_sampling, batch]
+          exporters: [otlp/tempo]

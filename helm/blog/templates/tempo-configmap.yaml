@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+data:
+  tempo.yaml: |
+    server:
+      http_listen_port: {{ .Values.tempo.port }}
+
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:{{ .Values.tempo.otlpGrpcPort }}
+            http:
+              endpoint: 0.0.0.0:{{ .Values.tempo.otlpHttpPort }}
+
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /tmp/tempo/traces
+        wal:
+          path: /tmp/tempo/wal

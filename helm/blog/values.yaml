@@ -44,6 +44,17 @@ zookeeper:
   image: confluentinc/cp-zookeeper:7.4.0
   port: 2181
 
+tempo:
+  image: grafana/tempo:latest
+  port: 3200
+  otlpGrpcPort: 4317
+  otlpHttpPort: 4318
+
+otelCollector:
+  image: otel/opentelemetry-collector-contrib:latest
+  otlpGrpcPort: 4317
+  otlpHttpPort: 4318
+
 secrets:
   postgresUser: postgres
   postgresPassword: postgres
