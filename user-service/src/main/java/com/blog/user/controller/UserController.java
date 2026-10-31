@@ -3,64 +3,91 @@ package com.blog.user.controller;
 import com.blog.user.dto.UserDTO;
 import com.blog.user.service.UserService;
 import jakarta.validation.Valid;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-  private final UserService userService;
-  private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-  public UserController(UserService userService) {
-    this.userService = userService;
-  }
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
-  @PostMapping
-  public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
-    log.info("REST call: POST /api/users - Create user");
-    UserDTO createdUser = userService.createUser(userDTO);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-  }
+    @PostMapping
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
+        log.info("REST call: POST /api/users - Create user");
+        UserDTO createdUser = userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-    log.info("REST call: GET /api/users/{} - Get user by id", id);
-    UserDTO user = userService.getUserById(id);
-    return ResponseEntity.ok(user);
-  }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        log.info("REST call: GET /api/users/{} - Get user by id", id);
+        UserDTO user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
 
-  @GetMapping("/username/{username}")
-  public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-    log.info("REST call: GET /api/users/username/{} - Get user by username", username);
-    UserDTO user = userService.getUserByUsername(username);
-    return ResponseEntity.ok(user);
-  }
+    @GetMapping("/username/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+        log.info("REST call: GET /api/users/username/{} - Get user by username", username);
+        UserDTO user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(user);
+    }
 
-  @GetMapping
-  public ResponseEntity<List<UserDTO>> getAllUsers() {
-    log.info("REST call: GET /api/users - Get all users");
-    List<UserDTO> users = userService.getAllUsers();
-    return ResponseEntity.ok(users);
-  }
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        log.info("REST call: GET /api/users - Get all users");
+        List<UserDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<UserDTO> updateUser(
-      @PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
-    log.info("REST call: PUT /api/users/{} - Update user", id);
-    UserDTO updatedUser = userService.updateUser(id, userDTO);
-    return ResponseEntity.ok(updatedUser);
-  }
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> updateUser(
+            @PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
+        log.info("REST call: PUT /api/users/{} - Update user", id);
+        UserDTO updatedUser = userService.updateUser(id, userDTO);
+        return ResponseEntity.ok(updatedUser);
+    }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-    log.info("REST call: DELETE /api/users/{} - Delete user", id);
-    userService.deleteUser(id);
-    return ResponseEntity.noContent().build();
-  }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        log.info("REST call: DELETE /api/users/{} - Delete user", id);
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<UserDTO> uploadAvatar(
+            @PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        log.info("REST call: POST /api/users/{}/avatar - Upload avatar", id);
+        UserDTO updatedUser = userService.storeAvatar(id, file);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/{id}/avatar")
+    public ResponseEntity<org.springframework.core.io.Resource> getAvatar(@PathVariable Long id)
+            throws IOException {
+        Path path = userService.getAvatarPath(id);
+        org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(path.toUri());
+        String contentType = Files.probeContentType(path);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
+                .body(resource);
+    }
+
 }

@@ -66,4 +66,15 @@ public class GlobalExceptionHandler {
             LocalDateTime.now());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
   }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleInvalidFileException(InvalidFileException ex) {
+    log.error("Invalid File: {}", ex.getMessage());
+    ErrorResponse error =
+            new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    LocalDateTime.now());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
 }

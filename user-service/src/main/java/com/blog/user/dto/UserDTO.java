@@ -3,6 +3,8 @@ package com.blog.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
+
 public class UserDTO {
   private Long id;
 
@@ -24,12 +26,22 @@ public class UserDTO {
 
   private Long createdAt;
 
+  private String avatarUrl;
+
   public Long getId() {
     return id;
   }
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getAvatarUrl() {
+    return avatarUrl;
+  }
+
+  public void setAvatarUrl(String avatarUrl) {
+    this.avatarUrl = avatarUrl;
   }
 
   public String getUsername() {

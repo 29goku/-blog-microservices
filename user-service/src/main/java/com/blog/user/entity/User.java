@@ -24,6 +24,8 @@ public class User {
 
   private String bio;
 
+  private String avatarUrl;
+
   @Column(columnDefinition = "BIGINT DEFAULT 0")
   private Long createdAt;
 
@@ -96,5 +98,12 @@ public class User {
 
   public void setPostCount(Integer postCount) {
     this.postCount = postCount;
+  }
+
+  public String getAvatarUrl() {
+    return avatarUrl;
+  }
+  public void setAvatarUrl(String avatarUrl){
+    this.avatarUrl = avatarUrl;
   }
 }
