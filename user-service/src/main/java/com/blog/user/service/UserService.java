@@ -56,7 +56,7 @@ public class UserService {
         try {
             Path dir = Paths.get(avatarStorageDir);
             Files.createDirectories(dir);
-            Path target = dir.resolve(id + '.' + ext);
+            Path target = dir.resolve(id + "." + ext);
             for (String e : List.of("jpg", "png", "gif", "webp")) {
                 Files.deleteIfExists(dir.resolve(id + "." + e));
             }
