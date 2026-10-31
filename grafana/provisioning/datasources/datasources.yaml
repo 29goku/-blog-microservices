@@ -12,7 +12,7 @@ datasources:
     uid: tempo
     type: tempo
     access: proxy
-    url: http://tempo:3200
+    url: http://host.docker.internal:3200
     isDefault: true
     editable: true
     jsonData:
