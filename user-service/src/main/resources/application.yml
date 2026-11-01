@@ -1,6 +1,6 @@
 app:
   avatar:
-    storage-dir: ${AVATAR_STORAGE_DIR:/tmp/avatars}
+    s3-bucket: ${AVATAR_S3_BUCKET:blog-microservices-avatars-29shobhitsingh}
 spring:
   application:
     name: user-service

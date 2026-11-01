@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 @RestController
 @RequestMapping("/api/users")
@@ -80,14 +82,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/avatar")
-    public ResponseEntity<org.springframework.core.io.Resource> getAvatar(@PathVariable Long id)
+    public ResponseEntity<byte[]> getAvatar(@PathVariable Long id)
             throws IOException {
-        Path path = userService.getAvatarPath(id);
-        org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(path.toUri());
-        String contentType = Files.probeContentType(path);
+        var object = userService.getAvatarPath(id);
+        String contentType = object.response().contentType();
+        byte[] bytes = object.readAllBytes();
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
-                .body(resource);
+                .body(bytes);
     }
 
 }

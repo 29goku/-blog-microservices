@@ -7,12 +7,7 @@ import com.blog.user.exception.UserAlreadyExistsException;
 import com.blog.user.exception.UserNotFoundException;
 import com.blog.user.repository.UserRepository;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,19 +18,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final S3Client s3Client=S3Client.create();
     private final PasswordEncoder passwordEncoder;
 
     private static final Set<String> ALLOWED_TYPES = Set.of("image/png", "image/jpeg", "image/gif", "image/webp");
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
-    @Value("${app.avatar.storage-dir:/tmp/avatars}")
-    private String avatarStorageDir;
+    @Value("${app.avatar.s3-bucket:blog-microservices-avatars-29shobhitsingh}")
+    private String avatarS3Bucket;
 
     public UserDTO storeAvatar(Long id, MultipartFile file) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
@@ -54,13 +55,10 @@ public class UserService {
             default -> throw new InvalidFileException("Unsupported file type: " + file.getContentType());
         };
         try {
-            Path dir = Paths.get(avatarStorageDir);
-            Files.createDirectories(dir);
-            Path target = dir.resolve(id + "." + ext);
-            for (String e : List.of("jpg", "png", "gif", "webp")) {
-                Files.deleteIfExists(dir.resolve(id + "." + e));
-            }
-            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            // Upload to S3 bucket
+            String key = id + "." + ext;
+            s3Client.putObject(builder -> builder.bucket(avatarS3Bucket).key(key).build(),
+                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
         } catch (IOException e) {
             throw new RuntimeException("Failed to store avatar file", e);
         }
@@ -69,17 +67,20 @@ public class UserService {
         log.info("Avatar stored successfully for user id: {}", id);
         return mapToDTO(saved);
     }
-  public Path getAvatarPath(Long id){
-    User user = userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-    if (user.getAvatarUrl() == null) {
-      throw new UserNotFoundException("Avatar not found for user with id: " + id);
-    }
-    for (String ext : List.of("jpg", "png", "gif", "webp")) {
-      Path candidate = Paths.get(avatarStorageDir).resolve(id + "." + ext);
-      if (Files.exists(candidate)) return candidate;
-    }
-    throw new UserNotFoundException("Avatar file missing for user with id: " + id);
+  public ResponseInputStream<GetObjectResponse> getAvatarPath(Long id) {
+      User user = userRepository.findById(id)
+              .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+      if (user.getAvatarUrl() == null) {
+          throw new UserNotFoundException("Avatar not found for user with id: " + id);
+      }
+      for (String ext : List.of("jpg", "png", "gif", "webp")) {
+          try {
+              return s3Client.getObject(builder -> builder.bucket(avatarS3Bucket).key(id + "." + ext).build());
+          } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException ignored) {
+
+          }
+      }
+      throw new UserNotFoundException("Avatar file missing for user with id: " + id);
   }
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
