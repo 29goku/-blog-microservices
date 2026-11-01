@@ -63,6 +63,10 @@ promtail:
   image: grafana/promtail:latest
   httpPort: 3101
 
+prometheus:
+  image: prom/prometheus:latest
+  port: 9090
+
 secrets:
   postgresUser: postgres
   postgresPassword: postgres

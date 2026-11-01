@@ -24,6 +24,21 @@ spec:
             - secretRef:
                 name: jwt-secret
           env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_REGION
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -39,18 +54,9 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: POSTGRES_DB
-            - name: AVATAR_STORAGE_DIR
-              value: /data/avatars
-          volumeMounts:
-            - name: user-avatars
-              mountPath: /data/avatars
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: {{ .Values.userService.port }}
             initialDelaySeconds: 25
             periodSeconds: 10
-      volumes:
-        - name: user-avatars
-          persistentVolumeClaim:
-            claimName: user-avatars
