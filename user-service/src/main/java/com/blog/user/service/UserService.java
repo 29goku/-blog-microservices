@@ -57,6 +57,11 @@ public class UserService {
         try {
             // Upload to S3 bucket
             String key = id + "." + ext;
+            for (String e : List.of("jpg", "png", "gif", "webp")) {
+                if (!e.equals(ext)) {
+                    s3Client.deleteObject(builder -> builder.bucket(avatarS3Bucket).key(id + "." + e).build());
+                }
+            }
             s3Client.putObject(builder -> builder.bucket(avatarS3Bucket).key(key).build(),
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
         } catch (IOException e) {

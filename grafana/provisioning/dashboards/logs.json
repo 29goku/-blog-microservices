@@ -23,6 +23,7 @@
         "query": "label_values({namespace=\"blog\"}, app)",
         "refresh": 2,
         "includeAll": true,
+        "allValue": ".*",
         "multi": true,
         "current": {
           "text": "All",
