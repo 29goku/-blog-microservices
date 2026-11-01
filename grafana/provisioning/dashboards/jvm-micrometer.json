@@ -1,0 +1,386 @@
+{
+  "uid": "jvm-micrometer-v2",
+  "title": "JVM (Micrometer)",
+  "tags": ["jvm", "micrometer", "prometheus"],
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "application",
+        "type": "query",
+        "label": "Application",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(process_uptime_seconds, application)",
+        "refresh": 2,
+        "includeAll": false,
+        "multi": false,
+        "sort": 1
+      },
+      {
+        "name": "instance",
+        "type": "query",
+        "label": "Instance",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(jvm_memory_used_bytes{application=\"$application\"}, instance)",
+        "refresh": 2,
+        "includeAll": false,
+        "multi": false,
+        "sort": 1
+      },
+      {
+        "name": "jvm_memory_pool_heap",
+        "type": "query",
+        "label": "JVM Memory Pools Heap",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", area=\"heap\"}, id)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": { "text": "All", "value": ["$__all"] },
+        "hide": 2,
+        "sort": 1
+      },
+      {
+        "name": "jvm_memory_pool_nonheap",
+        "type": "query",
+        "label": "JVM Memory Pools Non-Heap",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", area=\"nonheap\"}, id)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": { "text": "All", "value": ["$__all"] },
+        "hide": 2,
+        "sort": 2
+      },
+      {
+        "name": "jvm_buffer_pool",
+        "type": "query",
+        "label": "JVM Buffer Pools",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(jvm_buffer_memory_used_bytes{application=\"$application\", instance=\"$instance\"}, id)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": { "text": "All", "value": ["$__all"] },
+        "hide": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Restart Detection",
+        "enable": true,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "expr": "resets(process_uptime_seconds{application=\"$application\", instance=\"$instance\"}[1m]) > 0",
+        "titleFormat": "Restart",
+        "textFormat": "uptime reset"
+      }
+    ]
+  },
+  "panels": [
+    { "id": 100, "type": "row", "title": "Quick Facts", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 } },
+    {
+      "id": 1, "type": "stat", "title": "Uptime",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_uptime_seconds{application=\"$application\", instance=\"$instance\"}" }]
+    },
+    {
+      "id": 2, "type": "stat", "title": "Start time",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "dateTimeAsIso" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_start_time_seconds{application=\"$application\", instance=\"$instance\"}*1000" }]
+    },
+    {
+      "id": 3, "type": "stat", "title": "Heap used",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "decimals": 1,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 70 },
+            { "color": "red", "value": 90 }
+          ]}
+        },
+        "overrides": []
+      },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", area=\"heap\"})*100/sum(jvm_memory_max_bytes{application=\"$application\",instance=\"$instance\", area=\"heap\"})" }]
+    },
+    {
+      "id": 4, "type": "stat", "title": "Non-Heap used",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "decimals": 2,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 70 },
+            { "color": "red", "value": 90 }
+          ]}
+        },
+        "overrides": []
+      },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", area=\"nonheap\"})*100/sum(jvm_memory_max_bytes{application=\"$application\",instance=\"$instance\", area=\"nonheap\"})" }]
+    },
+
+    { "id": 101, "type": "row", "title": "I/O Overview", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 } },
+    {
+      "id": 5, "type": "timeseries", "title": "Rate",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=\"$instance\"}[1m]))", "legendFormat": "HTTP" }]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Errors",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=\"$instance\", status=~\"5..\"}[1m]))", "legendFormat": "HTTP - 5xx" }]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Duration",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(http_server_requests_seconds_sum{application=\"$application\", instance=\"$instance\", status!~\"5..\"}[1m]))/sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=\"$instance\", status!~\"5..\"}[1m]))", "legendFormat": "HTTP - AVG" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "max(http_server_requests_seconds_max{application=\"$application\", instance=\"$instance\", status!~\"5..\"})", "legendFormat": "HTTP - MAX" }
+      ]
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Utilisation",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "tomcat_threads_busy_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "TOMCAT - BSY" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "tomcat_threads_current_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "TOMCAT - CUR" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "tomcat_threads_config_max_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "TOMCAT - MAX" },
+        { "refId": "D", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jetty_threads_busy{application=\"$application\", instance=\"$instance\"}", "legendFormat": "JETTY - BSY" },
+        { "refId": "E", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jetty_threads_current{application=\"$application\", instance=\"$instance\"}", "legendFormat": "JETTY - CUR" },
+        { "refId": "F", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jetty_threads_config_max{application=\"$application\", instance=\"$instance\"}", "legendFormat": "JETTY - MAX" }
+      ]
+    },
+
+    { "id": 102, "type": "row", "title": "JVM Memory", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 } },
+    {
+      "id": 9, "type": "timeseries", "title": "JVM Heap",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 17 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", area=\"heap\"})", "legendFormat": "used" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_committed_bytes{application=\"$application\", instance=\"$instance\", area=\"heap\"})", "legendFormat": "committed" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_max_bytes{application=\"$application\", instance=\"$instance\", area=\"heap\"})", "legendFormat": "max" }
+      ]
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "JVM Non-Heap",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 17 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", area=\"nonheap\"})", "legendFormat": "used" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_committed_bytes{application=\"$application\", instance=\"$instance\", area=\"nonheap\"})", "legendFormat": "committed" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_max_bytes{application=\"$application\", instance=\"$instance\", area=\"nonheap\"})", "legendFormat": "max" }
+      ]
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "JVM Total",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 17 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\"})", "legendFormat": "used" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_committed_bytes{application=\"$application\", instance=\"$instance\"})", "legendFormat": "committed" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(jvm_memory_max_bytes{application=\"$application\", instance=\"$instance\"})", "legendFormat": "max" }
+      ]
+    },
+    {
+      "id": 12, "type": "timeseries", "title": "JVM Process Memory",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 17 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_memory_vss_bytes{application=\"$application\", instance=\"$instance\"}", "legendFormat": "vss" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_memory_rss_bytes{application=\"$application\", instance=\"$instance\"}", "legendFormat": "rss" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_memory_swap_bytes{application=\"$application\", instance=\"$instance\"}", "legendFormat": "swap" },
+        { "refId": "D", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_memory_rss_bytes{application=\"$application\", instance=\"$instance\"} + process_memory_swap_bytes{application=\"$application\", instance=\"$instance\"}", "legendFormat": "total" }
+      ]
+    },
+
+    { "id": 103, "type": "row", "title": "JVM Misc", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 } },
+    {
+      "id": 13, "type": "timeseries", "title": "CPU Usage",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 26 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "max": 1, "min": 0 }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "system_cpu_usage{application=\"$application\", instance=\"$instance\"}", "legendFormat": "system" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_cpu_usage{application=\"$application\", instance=\"$instance\"}", "legendFormat": "process" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "avg_over_time(process_cpu_usage{application=\"$application\", instance=\"$instance\"}[15m])", "legendFormat": "process-15m" }
+      ]
+    },
+    {
+      "id": 14, "type": "timeseries", "title": "Load",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 26 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "system_load_average_1m{application=\"$application\", instance=\"$instance\"}", "legendFormat": "system-1m" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "system_cpu_count{application=\"$application\", instance=\"$instance\"}", "legendFormat": "cpus" }
+      ]
+    },
+    {
+      "id": 15, "type": "timeseries", "title": "Threads",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 26 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_threads_live_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "live" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_threads_daemon_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "daemon" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_threads_peak_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "peak" },
+        { "refId": "D", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "process" }
+      ]
+    },
+    {
+      "id": 16, "type": "timeseries", "title": "Thread States",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 26 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_threads_states_threads{application=\"$application\", instance=\"$instance\"}", "legendFormat": "{{state}}" }]
+    },
+    {
+      "id": 17, "type": "timeseries", "title": "GC Pressure",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 34 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "The percent of time spent on Garbage Collection over all CPUs assigned to the JVM process.",
+      "fieldConfig": { "defaults": { "unit": "percentunit", "max": 1, "min": 0 }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(rate(jvm_gc_pause_seconds_sum{application=\"$application\", instance=\"$instance\"}[1m])) by (application, instance) / on(application, instance) system_cpu_count", "legendFormat": "CPU time spent on GC" }]
+    },
+    {
+      "id": 18, "type": "timeseries", "title": "Log Events",
+      "gridPos": { "h": 8, "w": 12, "x": 6, "y": 34 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "increase(logback_events_total{application=\"$application\", instance=\"$instance\"}[1m])", "legendFormat": "{{level}}" }]
+    },
+    {
+      "id": 19, "type": "timeseries", "title": "File Descriptors",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 34 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_files_open_files{application=\"$application\", instance=\"$instance\"}", "legendFormat": "open" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "process_files_max_files{application=\"$application\", instance=\"$instance\"}", "legendFormat": "max" }
+      ]
+    },
+
+    { "id": 104, "type": "row", "title": "JVM Memory Pools (Heap)", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 42 } },
+    {
+      "id": 20, "type": "timeseries", "title": "$jvm_memory_pool_heap",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 43 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "repeat": "jvm_memory_pool_heap",
+      "repeatDirection": "h",
+      "maxPerRow": 3,
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_memory_pool_heap\"}", "legendFormat": "used" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_memory_committed_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_memory_pool_heap\"}", "legendFormat": "committed" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_memory_max_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_memory_pool_heap\"}", "legendFormat": "max" }
+      ]
+    },
+
+    { "id": 105, "type": "row", "title": "JVM Memory Pools (Non-Heap)", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 51 } },
+    {
+      "id": 21, "type": "timeseries", "title": "$jvm_memory_pool_nonheap",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 52 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "repeat": "jvm_memory_pool_nonheap",
+      "repeatDirection": "h",
+      "maxPerRow": 3,
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_memory_used_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_memory_pool_nonheap\"}", "legendFormat": "used" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_memory_committed_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_memory_pool_nonheap\"}", "legendFormat": "committed" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_memory_max_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_memory_pool_nonheap\"}", "legendFormat": "max" }
+      ]
+    },
+
+    { "id": 106, "type": "row", "title": "Garbage Collection", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 60 } },
+    {
+      "id": 22, "type": "timeseries", "title": "Collections",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 61 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(jvm_gc_pause_seconds_count{application=\"$application\", instance=\"$instance\"}[1m])", "legendFormat": "{{action}} ({{cause}})" }]
+    },
+    {
+      "id": 23, "type": "timeseries", "title": "Pause Durations",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 61 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(jvm_gc_pause_seconds_sum{application=\"$application\", instance=\"$instance\"}[1m])/rate(jvm_gc_pause_seconds_count{application=\"$application\", instance=\"$instance\"}[1m])", "legendFormat": "avg {{action}} ({{cause}})" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_gc_pause_seconds_max{application=\"$application\", instance=\"$instance\"}", "legendFormat": "max {{action}} ({{cause}})" }
+      ]
+    },
+    {
+      "id": 24, "type": "timeseries", "title": "Allocated/Promoted",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 61 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(jvm_gc_memory_allocated_bytes_total{application=\"$application\", instance=\"$instance\"}[1m])", "legendFormat": "allocated" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(jvm_gc_memory_promoted_bytes_total{application=\"$application\", instance=\"$instance\"}[1m])", "legendFormat": "promoted" }
+      ]
+    },
+
+    { "id": 107, "type": "row", "title": "Classloading", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 69 } },
+    {
+      "id": 25, "type": "timeseries", "title": "Classes loaded",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 70 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_classes_loaded_classes{application=\"$application\", instance=\"$instance\"}", "legendFormat": "loaded" }]
+    },
+    {
+      "id": 26, "type": "timeseries", "title": "Class delta",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 70 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [{ "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "delta(jvm_classes_loaded_classes{application=\"$application\",instance=\"$instance\"}[1m])", "legendFormat": "delta-1m" }]
+    },
+
+    { "id": 108, "type": "row", "title": "Buffer Pools", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 78 } },
+    {
+      "id": 27, "type": "timeseries", "title": "$jvm_buffer_pool",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 79 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "repeat": "jvm_buffer_pool",
+      "repeatDirection": "h",
+      "maxPerRow": 3,
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_buffer_memory_used_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_buffer_pool\"}", "legendFormat": "used" },
+        { "refId": "B", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_buffer_total_capacity_bytes{application=\"$application\", instance=\"$instance\", id=~\"$jvm_buffer_pool\"}", "legendFormat": "capacity" },
+        { "refId": "C", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "jvm_buffer_count_buffers{application=\"$application\", instance=\"$instance\", id=~\"$jvm_buffer_pool\"}", "legendFormat": "buffers" }
+      ]
+    }
+  ]
+}
